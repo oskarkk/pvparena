@@ -8,15 +8,16 @@ import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.classes.PABlockLocation;
-import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.commands.PAA_Region;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.events.PAGoalEvent;
+import net.slipcor.pvparena.exceptions.GameplayException;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
 import net.slipcor.pvparena.managers.InventoryManager;
+import net.slipcor.pvparena.managers.WorkflowManager;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.managers.TeamManager;
 import net.slipcor.pvparena.runnables.EndRunnable;
@@ -86,19 +87,10 @@ public class GoalFood extends ArenaGoal implements Listener {
     }
 
     @Override
-    public PACheck checkCommand(final PACheck res, final String string) {
-        if (res.getPriority() > PRIORITY) {
-            return res;
-        }
-
-        for (final ArenaTeam team : this.arena.getTeams()) {
-            final String sTeam = team.getName();
-            if (string.contains(sTeam + "foodchest") || string.contains(sTeam + "foodfurnace")) {
-                res.setPriority(this, PRIORITY);
-            }
-        }
-
-        return res;
+    public boolean checkCommand(final String string) {
+        return this.arena.getTeams().stream()
+                .map(ArenaTeam::getName)
+                .anyMatch(sTeam -> string.contains(sTeam + "foodchest") || string.contains(sTeam + "foodfurnace"));
     }
 
     @Override
@@ -115,20 +107,16 @@ public class GoalFood extends ArenaGoal implements Listener {
     }
 
     @Override
-    public PACheck checkEnd(final PACheck res) {
-        if (res.getPriority() > PRIORITY) {
-            return res;
-        }
-
+    public boolean checkEnd() throws GameplayException {
         final int count = TeamManager.countActiveTeams(this.arena);
 
         if (count == 1) {
-            res.setPriority(this, PRIORITY); // yep. only one team left. go!
+            return true; // yep. only one team left. go!
         } else if (count == 0) {
-            res.setError(this, MSG.ERROR_NOTEAMFOUND.toString());
+            throw new GameplayException(MSG.ERROR_TEAMNOTFOUND);
         }
 
-        return res;
+        return false;
     }
 
     @Override
@@ -141,65 +129,23 @@ public class GoalFood extends ArenaGoal implements Listener {
     }
 
     @Override
-    public PACheck checkJoin(final CommandSender sender, final PACheck res, final String[] args) {
-        if (res.getPriority() >= PRIORITY) {
-            return res;
-        }
-
-        final int maxPlayers = this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS);
-        final int maxTeamPlayers = this.arena.getArenaConfig().getInt(
-                CFG.READY_MAXTEAMPLAYERS);
-
-        if (maxPlayers > 0 && this.arena.getFighters().size() >= maxPlayers) {
-            res.setError(this, Language.parse(this.arena, MSG.ERROR_JOIN_ARENA_FULL));
-            return res;
-        }
-
-        if (args == null || args.length < 1) {
-            return res;
-        }
-
-        if (!this.arena.isFreeForAll()) {
-            final ArenaTeam team = this.arena.getTeam(args[0]);
-
-            if (team != null && maxTeamPlayers > 0
-                    && team.getTeamMembers().size() >= maxTeamPlayers) {
-                res.setError(this, Language.parse(this.arena, MSG.ERROR_JOIN_TEAM_FULL, team.getName()));
-                return res;
-            }
-        }
-
-        res.setPriority(this, PRIORITY);
-        return res;
+    public Boolean checkPlayerDeath(Player player) {
+        return true;
     }
 
     @Override
-    public PACheck checkPlayerDeath(final PACheck res, final Player player) {
-        if (res.getPriority() <= PRIORITY) {
-            res.setPriority(this, PRIORITY);
-        }
-        return res;
-    }
+    public boolean checkSetBlock(final Player player, final Block block) {
 
-    @Override
-    public PACheck checkSetBlock(final PACheck res, final Player player, final Block block) {
-
-        if (res.getPriority() > PRIORITY
-                || !PAA_Region.activeSelections.containsKey(player.getName())) {
-            return res;
+        if (!PAA_Region.activeSelections.containsKey(player.getName())) {
+            return false;
         }
+
         if (this.flagName == null || block == null
                 || block.getType() != Material.CHEST && block.getType() != Material.FURNACE) {
-            return res;
+            return false;
         }
 
-        if (!PVPArena.hasAdminPerms(player)
-                && !PVPArena.hasCreatePerms(player, this.arena)) {
-            return res;
-        }
-        res.setPriority(this, PRIORITY); // success :)
-
-        return res;
+        return PVPArena.hasAdminPerms(player) || PVPArena.hasCreatePerms(player, this.arena);
     }
 
     private String flagName;
@@ -275,7 +221,7 @@ public class GoalFood extends ArenaGoal implements Listener {
 
     @Override
     public void commitPlayerDeath(final Player respawnPlayer, final boolean doesRespawn,
-                                  final String error, final PlayerDeathEvent event) {
+                                  final PlayerDeathEvent event) {
 
         if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
             this.broadcastSimpleDeathMessage(respawnPlayer, event);
@@ -291,7 +237,7 @@ public class GoalFood extends ArenaGoal implements Listener {
             returned = new ArrayList<>(event.getDrops());
         }
 
-        PACheck.handleRespawn(this.arena, ArenaPlayer.parsePlayer(respawnPlayer.getName()), returned);
+        WorkflowManager.handleRespawn(this.arena, ArenaPlayer.parsePlayer(respawnPlayer.getName()), returned);
 
     }
 
@@ -350,16 +296,8 @@ public class GoalFood extends ArenaGoal implements Listener {
     }
 
     @Override
-    public PACheck getLives(final PACheck res, final ArenaPlayer aPlayer) {
-        if (res.getPriority() <= PRIORITY + 1000) {
-            res.setError(
-                    this,
-                    String.valueOf(this.arena.getArenaConfig()
-                            .getInt(CFG.GOAL_FOOD_FMAXITEMS) - (this.getLifeMap()
-                            .containsKey(aPlayer.getArenaTeam().getName()) ? this.getLifeMap()
-                            .get(aPlayer.getArenaTeam().getName()) : 0)));
-        }
-        return res;
+    public int getLives(ArenaPlayer aPlayer) {
+        return this.getLifeMap().getOrDefault(aPlayer.getArenaTeam().getName(), 0);
     }
 
     @Override
@@ -577,7 +515,7 @@ public class GoalFood extends ArenaGoal implements Listener {
                     }
                 }
             }
-            PACheck.handleEnd(arena, false);
+            WorkflowManager.handleEnd(arena, false);
             return;
         }
 

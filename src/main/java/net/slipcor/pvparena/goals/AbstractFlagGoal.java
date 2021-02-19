@@ -7,7 +7,6 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
-import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.commands.PAA_Region;
 import net.slipcor.pvparena.core.ColorUtils;
@@ -70,23 +69,12 @@ public abstract class AbstractFlagGoal extends ArenaGoal implements Listener {
     }
 
     @Override
-    public PACheck checkCommand(final PACheck res, final String string) {
-        if (res.getPriority() > PRIORITY) {
-            return res;
-        }
-
+    public boolean checkCommand(final String string) {
         if ("flagtype".equalsIgnoreCase(string) || "flageffect".equalsIgnoreCase(string) || TOUCHDOWN.equalsIgnoreCase(string)) {
-            res.setPriority(this, PRIORITY);
+            return true;
         }
 
-        for (final ArenaTeam team : this.arena.getTeams()) {
-            final String sTeam = team.getName();
-            if (string.contains(sTeam + "flag")) {
-                res.setPriority(this, PRIORITY);
-            }
-        }
-
-        return res;
+        return this.arena.getTeams().stream().anyMatch(team -> string.contains(team.getName() + "flag"));
     }
 
     @Override
@@ -109,21 +97,16 @@ public abstract class AbstractFlagGoal extends ArenaGoal implements Listener {
     }
 
     @Override
-    public PACheck checkEnd(final PACheck res) {
-
-        if (res.getPriority() > PRIORITY) {
-            return res;
-        }
-
+    public boolean checkEnd() {
         final int count = TeamManager.countActiveTeams(this.arena);
 
         if (count == 1) {
-            res.setPriority(this, PRIORITY); // yep. only one team left. go!
+            return true; // yep. only one team left. go!
         } else if (count == 0) {
             debug(this.arena, "No teams playing!");
         }
 
-        return res;
+        return false;
     }
 
     @Override
@@ -178,55 +161,18 @@ public abstract class AbstractFlagGoal extends ArenaGoal implements Listener {
     }
 
     @Override
-    public PACheck checkJoin(final CommandSender sender, final PACheck res, final String[] args) {
-        if (res.getPriority() >= PRIORITY) {
-            return res;
-        }
+    public boolean checkSetBlock(final Player player, final Block block) {
 
-        final int maxPlayers = this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS);
-        final int maxTeamPlayers = this.arena.getArenaConfig().getInt(CFG.READY_MAXTEAMPLAYERS);
-
-        if (maxPlayers > 0 && this.arena.getFighters().size() >= maxPlayers) {
-            res.setError(this, Language.parse(this.arena, MSG.ERROR_JOIN_ARENA_FULL));
-            return res;
-        }
-
-        if (args == null || args.length < 1) {
-            return res;
-        }
-
-        if (!this.arena.isFreeForAll()) {
-            final ArenaTeam team = this.arena.getTeam(args[0]);
-
-            if (team != null && maxTeamPlayers > 0
-                    && team.getTeamMembers().size() >= maxTeamPlayers) {
-                res.setError(this, Language.parse(this.arena, MSG.ERROR_JOIN_TEAM_FULL, team.getName()));
-                return res;
-            }
-        }
-
-        res.setPriority(this, PRIORITY);
-        return res;
-    }
-
-    @Override
-    public PACheck checkSetBlock(final PACheck res, final Player player, final Block block) {
-
-        if (res.getPriority() > PRIORITY || !PAA_Region.activeSelections.containsKey(player.getName())) {
-            return res;
+        if (!PAA_Region.activeSelections.containsKey(player.getName())) {
+            return false;
         }
 
         Material flagType = this.getFlagType();
         if (block == null || !ColorUtils.isSubType(block.getType(), flagType)) {
-            return res;
+            return false;
         }
 
-        if (!PVPArena.hasAdminPerms(player) && !PVPArena.hasCreatePerms(player, this.arena)) {
-            return res;
-        }
-        res.setPriority(this, PRIORITY); // success :)
-
-        return res;
+        return PVPArena.hasAdminPerms(player) || PVPArena.hasCreatePerms(player, this.arena);
     }
 
     @Override
@@ -423,14 +369,8 @@ public abstract class AbstractFlagGoal extends ArenaGoal implements Listener {
     }
 
     @Override
-    public PACheck getLives(final PACheck res, final ArenaPlayer aPlayer) {
-        if (res.getPriority() <= PRIORITY + 1000) {
-            res.setError(
-                    this,
-                    String.valueOf(this.getLifeMap().getOrDefault(aPlayer.getArenaTeam().getName(), 0))
-            );
-        }
-        return res;
+    public int getLives(ArenaPlayer aPlayer) {
+        return this.getLifeMap().getOrDefault(aPlayer.getArenaTeam().getName(), 0);
     }
 
     protected Map<String, ItemStack> getHeadGearMap() {

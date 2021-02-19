@@ -5,7 +5,6 @@ import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -15,6 +14,7 @@ import net.slipcor.pvparena.listeners.PlayerListener;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
 import net.slipcor.pvparena.managers.InventoryManager;
+import net.slipcor.pvparena.managers.WorkflowManager;
 import net.slipcor.pvparena.managers.TeamManager;
 import net.slipcor.pvparena.runnables.EndRunnable;
 import org.bukkit.Bukkit;
@@ -55,36 +55,20 @@ public class GoalPlayerLives extends ArenaGoal {
     private static final int PRIORITY = 2;
 
     @Override
-    public PACheck checkEnd(final PACheck res) {
+    public boolean checkEnd() {
         debug(this.arena, "checkEnd - " + this.arena.getName());
-        if (res.getPriority() > PRIORITY) {
-            debug(this.arena, res.getPriority() + ">" + PRIORITY);
-            return res;
-        }
 
         if (!this.arena.isFreeForAll()) {
             debug(this.arena, "TEAMS!");
             final int count = TeamManager.countActiveTeams(this.arena);
             debug(this.arena, "count: " + count);
 
-            if (count <= 1) {
-                res.setPriority(this, PRIORITY); // yep. only one team left. go!
-            }
-            return res;
+            return (count <= 1); // yep. only one team left. go!
         }
-
-        final int count = this.getLifeMap().size();
 
         debug(this.arena, "lives: " + StringParser.joinSet(this.getLifeMap().keySet(), "|"));
-
-        if (count <= 1) {
-            res.setPriority(this, PRIORITY); // yep. only one player left. go!
-        }
-        if (count == 0) {
-            res.setError(this, "");
-        }
-
-        return res;
+        final int count = this.getLifeMap().size();
+        return (count <= 1); // yep. only one team left. go!
     }
 
     @Override
@@ -96,50 +80,10 @@ public class GoalPlayerLives extends ArenaGoal {
     }
 
     @Override
-    public PACheck checkJoin(final CommandSender sender, final PACheck res, final String[] args) {
-        if (res.getPriority() >= PRIORITY) {
-            return res;
-        }
-
-        final int maxPlayers = this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS);
-        final int maxTeamPlayers = this.arena.getArenaConfig().getInt(
-                CFG.READY_MAXTEAMPLAYERS);
-
-        if (maxPlayers > 0 && this.arena.getFighters().size() >= maxPlayers) {
-            res.setError(this, Language.parse(this.arena, MSG.ERROR_JOIN_ARENA_FULL));
-            return res;
-        }
-
-        if (args == null || args.length < 1) {
-            return res;
-        }
-
-        if (!this.arena.isFreeForAll()) {
-            final ArenaTeam team = this.arena.getTeam(args[0]);
-
-            if (team != null && maxTeamPlayers > 0
-                    && team.getTeamMembers().size() >= maxTeamPlayers) {
-                res.setError(this, Language.parse(this.arena, MSG.ERROR_JOIN_TEAM_FULL, team.getName()));
-                return res;
-            }
-        }
-
-        res.setPriority(this, PRIORITY);
-        return res;
-    }
-
-    @Override
-    public PACheck checkPlayerDeath(final PACheck res, final Player player) {
-        if (res.getPriority() <= PRIORITY) {
-            res.setPriority(this, PRIORITY);
-
-            final int pos = this.getLifeMap().get(player.getName());
-            debug(this.arena, player, "lives before death: " + pos);
-            if (pos <= 1) {
-                res.setError(this, "0");
-            }
-        }
-        return res;
+    public Boolean checkPlayerDeath(Player player) {
+        final int pos = this.getLifeMap().get(player.getName());
+        debug(this.arena, player, "lives before death: " + pos);
+        return pos > 1;
     }
 
     @Override
@@ -200,7 +144,7 @@ public class GoalPlayerLives extends ArenaGoal {
 
     @Override
     public void commitPlayerDeath(final Player player, final boolean doesRespawn,
-                                  final String error, final PlayerDeathEvent event) {
+                                  final PlayerDeathEvent event) {
         if (!this.getLifeMap().containsKey(player.getName())) {
             return;
         }
@@ -221,7 +165,7 @@ public class GoalPlayerLives extends ArenaGoal {
                 PlayerListener.finallyKillPlayer(this.arena, player, event);
             }
             // player died => commit death!
-            PACheck.handleEnd(this.arena, false);
+            WorkflowManager.handleEnd(this.arena, false);
         } else {
             pos--;
             this.getLifeMap().put(player.getName(), pos);
@@ -244,7 +188,7 @@ public class GoalPlayerLives extends ArenaGoal {
                 returned.addAll(event.getDrops());
             }
 
-            PACheck.handleRespawn(this.arena, ArenaPlayer.parsePlayer(player.getName()), returned);
+            WorkflowManager.handleRespawn(this.arena, ArenaPlayer.parsePlayer(player.getName()), returned);
 
         }
     }
@@ -256,38 +200,18 @@ public class GoalPlayerLives extends ArenaGoal {
     }
 
     @Override
-    public PACheck getLives(final PACheck res, final ArenaPlayer aPlayer) {
-        if (res.getPriority() <= PRIORITY + 1000) {
-
-            if (this.arena.isFreeForAll()) {
-                res.setError(
-                        this,
-                        String.valueOf(this.getLifeMap().getOrDefault(aPlayer.getName(), 0))
-                );
-            } else {
-
-                if (this.getLifeMap().containsKey(aPlayer.getArenaTeam().getName())) {
-                    res.setError(this, String.valueOf(
-                            this.getLifeMap().get(aPlayer.getName())));
-                } else {
-
-                    int sum = 0;
-
-                    for (final ArenaPlayer player : aPlayer.getArenaTeam().getTeamMembers()) {
-                        if (this.getLifeMap().containsKey(player.getName())) {
-                            sum += this.getLifeMap().get(player.getName());
-                        }
-                    }
-
-                    res.setError(
-                            this,
-                            String.valueOf(sum));
-                }
-            }
-
-
+    public int getLives(ArenaPlayer aPlayer) {
+        if (this.arena.isFreeForAll()) {
+            return this.getLifeMap().getOrDefault(aPlayer.getName(), 0);
         }
-        return res;
+
+        if (this.getLifeMap().containsKey(aPlayer.getArenaTeam().getName())) {
+            return this.getLifeMap().get(aPlayer.getName());
+        }
+
+        return aPlayer.getArenaTeam().getTeamMembers().stream()
+                .mapToInt(ap -> this.getLifeMap().getOrDefault(ap.getName(), 0))
+                .sum();
     }
 
     @Override

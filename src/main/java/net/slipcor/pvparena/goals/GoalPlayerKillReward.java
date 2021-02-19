@@ -6,7 +6,6 @@ import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -17,6 +16,7 @@ import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.InventoryManager;
+import net.slipcor.pvparena.managers.WorkflowManager;
 import net.slipcor.pvparena.managers.TeamManager;
 import net.slipcor.pvparena.runnables.EndRunnable;
 import org.bukkit.Bukkit;
@@ -68,13 +68,8 @@ public class GoalPlayerKillReward extends ArenaGoal {
     }
 
     @Override
-    public PACheck checkCommand(final PACheck res, final String string) {
-        if (res.getPriority() < PRIORITY
-                && "killrewards".equalsIgnoreCase(string)
-                || "!kr".equalsIgnoreCase(string)) {
-            res.setPriority(this, PRIORITY);
-        }
-        return res;
+    public boolean checkCommand(final String string) {
+        return "killrewards".equalsIgnoreCase(string) || "!kr".equalsIgnoreCase(string);
     }
 
     @Override
@@ -95,30 +90,15 @@ public class GoalPlayerKillReward extends ArenaGoal {
     }
 
     @Override
-    public PACheck checkEnd(final PACheck res) {
-        if (res.getPriority() > PRIORITY) {
-            return res;
-        }
-
+    public boolean checkEnd() {
         if (!this.arena.isFreeForAll()) {
             final int count = TeamManager.countActiveTeams(this.arena);
 
-            if (count <= 1) {
-                res.setPriority(this, PRIORITY); // yep. only one team left. go!
-            }
-            return res;
+            return (count <= 1); // yep. only one team left. go!
         }
 
         final int count = this.getLifeMap().size();
-
-        if (count <= 1) {
-            res.setPriority(this, PRIORITY); // yep. only one player left. go!
-        }
-        if (count == 0) {
-            res.setError(this, "");
-        }
-
-        return res;
+        return (count <= 1); // yep. only one team left. go!
     }
 
     @Override
@@ -128,39 +108,6 @@ public class GoalPlayerKillReward extends ArenaGoal {
         }
 
         return this.checkForMissingSpawn(list);
-    }
-
-    @Override
-    public PACheck checkJoin(final CommandSender sender, final PACheck res, final String[] args) {
-        if (res.getPriority() >= PRIORITY) {
-            return res;
-        }
-
-        final int maxPlayers = this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS);
-        final int maxTeamPlayers = this.arena.getArenaConfig().getInt(
-                CFG.READY_MAXTEAMPLAYERS);
-
-        if (maxPlayers > 0 && this.arena.getFighters().size() >= maxPlayers) {
-            res.setError(this, Language.parse(this.arena, MSG.ERROR_JOIN_ARENA_FULL));
-            return res;
-        }
-
-        if (args == null || args.length < 1) {
-            return res;
-        }
-
-        if (!this.arena.isFreeForAll()) {
-            final ArenaTeam team = this.arena.getTeam(args[0]);
-
-            if (team != null && maxTeamPlayers > 0
-                    && team.getTeamMembers().size() >= maxTeamPlayers) {
-                res.setError(this, Language.parse(this.arena, MSG.ERROR_JOIN_TEAM_FULL, team.getName()));
-                return res;
-            }
-        }
-
-        res.setPriority(this, PRIORITY);
-        return res;
     }
 
     @Override
@@ -340,7 +287,7 @@ public class GoalPlayerKillReward extends ArenaGoal {
             if (ArenaManager.checkAndCommit(this.arena, false)) {
                 return;
             }
-            PACheck.handleEnd(this.arena, false);
+            WorkflowManager.handleEnd(this.arena, false);
         } else {
             final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, "playerKill:" + killer.getName() + ':' + player.getName(), "playerDeath:" + player.getName());
             Bukkit.getPluginManager().callEvent(gEvent);
@@ -550,30 +497,18 @@ public class GoalPlayerKillReward extends ArenaGoal {
     }
 
     @Override
-    public PACheck getLives(PACheck res, ArenaPlayer player) {
-        if (res.getPriority() <= PRIORITY + 1000) {
-            if (this.arena.isFreeForAll()) {
-                res.setError(
-                        this, String.valueOf(this.getLifeMap().getOrDefault(player.getName(), 0))
-                );
-            } else {
-                if (this.getLifeMap().containsKey(player.getArenaTeam().getName())) {
-                    res.setError(this, String.valueOf(this.getLifeMap().get(player.getName())));
-                } else {
-
-                    int sum = 0;
-
-                    for (final ArenaPlayer ap : player.getArenaTeam().getTeamMembers()) {
-                        if (this.getLifeMap().containsKey(ap.getName())) {
-                            sum += this.getLifeMap().get(ap.getName());
-                        }
-                    }
-
-                    res.setError(this, String.valueOf(sum));
-                }
-            }
+    public int getLives(ArenaPlayer aPlayer) {
+        if (this.arena.isFreeForAll()) {
+            return this.getLifeMap().getOrDefault(aPlayer.getName(), 0);
         }
-        return res;
+
+        if (this.getLifeMap().containsKey(aPlayer.getArenaTeam().getName())) {
+            return this.getLifeMap().get(aPlayer.getName());
+        }
+
+        return aPlayer.getArenaTeam().getTeamMembers().stream()
+                .mapToInt(ap -> this.getLifeMap().getOrDefault(ap.getName(), 0))
+                .sum();
     }
 
     @Override

@@ -5,7 +5,6 @@ import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -15,6 +14,7 @@ import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.InventoryManager;
+import net.slipcor.pvparena.managers.WorkflowManager;
 import net.slipcor.pvparena.runnables.EndRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -57,21 +57,10 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
     }
 
     @Override
-    public PACheck checkEnd(final PACheck res) {
-        if (res.getPriority() > PRIORITY) {
-            return res;
-        }
-
+    public boolean checkEnd() {
         final int count = this.getLifeMap().size();
 
-        if (count <= 1) {
-            res.setPriority(this, PRIORITY); // yep. only one player left. go!
-        }
-        if (count == 0) {
-            res.setError(this, "");
-        }
-
-        return res;
+        return count <= 1; // yep. only one player left. go!
     }
 
     @Override
@@ -84,45 +73,8 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
     }
 
     @Override
-    public PACheck checkJoin(final CommandSender sender, final PACheck res, final String[] args) {
-        if (res.getPriority() >= PRIORITY) {
-            return res;
-        }
-
-        final int maxPlayers = this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS);
-        final int maxTeamPlayers = this.arena.getArenaConfig().getInt(
-                CFG.READY_MAXTEAMPLAYERS);
-
-        if (maxPlayers > 0 && this.arena.getFighters().size() >= maxPlayers) {
-            res.setError(this, Language.parse(this.arena, MSG.ERROR_JOIN_ARENA_FULL));
-            return res;
-        }
-
-        if (args == null || args.length < 1) {
-            return res;
-        }
-
-        if (!this.arena.isFreeForAll()) {
-            final ArenaTeam team = this.arena.getTeam(args[0]);
-
-            if (team != null && maxTeamPlayers > 0
-                    && team.getTeamMembers().size() >= maxTeamPlayers) {
-                res.setError(this, Language.parse(this.arena, MSG.ERROR_JOIN_TEAM_FULL, team.getName()));
-                return res;
-            }
-        }
-
-        res.setPriority(this, PRIORITY);
-        return res;
-    }
-
-    @Override
-    public PACheck checkPlayerDeath(final PACheck res, final Player player) {
-        if (res.getPriority() <= PRIORITY && player.getKiller() != null
-                && this.arena.hasPlayer(player.getKiller())) {
-            res.setPriority(this, PRIORITY);
-        }
-        return res;
+    public Boolean checkPlayerDeath(Player player) {
+        return true;
     }
 
     @Override
@@ -160,7 +112,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
 
     @Override
     public void commitPlayerDeath(final Player player, final boolean doesRespawn,
-                                  final String error, final PlayerDeathEvent event) {
+                                  final PlayerDeathEvent event) {
 
         if (player.getKiller() == null
                 || !this.getLifeMap().containsKey(player.getKiller().getName())
@@ -182,7 +134,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
                 returned = new ArrayList<>(event.getDrops());
             }
 
-            PACheck.handleRespawn(this.arena, ArenaPlayer.parsePlayer(player.getName()), returned);
+            WorkflowManager.handleRespawn(this.arena, ArenaPlayer.parsePlayer(player.getName()), returned);
 
             if (this.arena.getArenaConfig().getBoolean(CFG.USES_SUICIDEPUNISH)) {
                 for (ArenaPlayer ap : this.arena.getFighters()) {
@@ -224,7 +176,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
             returned = new ArrayList<>(event.getDrops());
         }
 
-        PACheck.handleRespawn(this.arena, ArenaPlayer.parsePlayer(player.getName()), returned);
+        WorkflowManager.handleRespawn(this.arena, ArenaPlayer.parsePlayer(player.getName()), returned);
     }
 
     private boolean increaseScore(Player killer, Player killed) {
@@ -262,7 +214,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
                 PlayerListener.finallyKillPlayer(this.arena, killed, killed.getLastDamageCause());
             }
 
-            PACheck.handleEnd(this.arena, false);
+            WorkflowManager.handleEnd(this.arena, false);
             return true;
         }
         iLives--;
@@ -277,16 +229,8 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
     }
 
     @Override
-    public PACheck getLives(final PACheck res, final ArenaPlayer aPlayer) {
-        if (res.getPriority() <= PRIORITY + 1000) {
-            res.setError(
-                    this,
-                    String.valueOf(this.arena.getArenaConfig()
-                            .getInt(CFG.GOAL_PDM_LIVES) - (this.getLifeMap()
-                            .containsKey(aPlayer.getName()) ? this.getLifeMap().get(aPlayer
-                            .getName()) : 0)));
-        }
-        return res;
+    public int getLives(ArenaPlayer aPlayer) {
+        return this.getLifeMap().getOrDefault(aPlayer.getName(), 0);
     }
 
     @Override

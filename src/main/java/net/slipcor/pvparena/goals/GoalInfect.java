@@ -5,7 +5,6 @@ import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
@@ -13,11 +12,13 @@ import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.events.PAGoalEvent;
 import net.slipcor.pvparena.events.PATeamChangeEvent;
+import net.slipcor.pvparena.exceptions.GameplayException;
 import net.slipcor.pvparena.listeners.PlayerListener;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
 import net.slipcor.pvparena.managers.InventoryManager;
+import net.slipcor.pvparena.managers.WorkflowManager;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.runnables.EndRunnable;
 import org.bukkit.Bukkit;
@@ -53,7 +54,6 @@ public class GoalInfect extends ArenaGoal {
     public GoalInfect() {
         super("Infect");
     }
-// BREAK, PLACE, TNT, TNTBREAK, DROP, INVENTORY, PICKUP, CRAFT;
     private EndRunnable endRunner;
 
     @Override
@@ -64,22 +64,10 @@ public class GoalInfect extends ArenaGoal {
     private static final int PRIORITY = 9;
 
     @Override
-    public PACheck checkEnd(final PACheck res) {
-        if (res.getPriority() > PRIORITY) {
-            return res;
-        }
-
+    public boolean checkEnd() {
         final int count = this.getLifeMap().size();
 
-        if (count <= 1
-                || this.anyTeamEmpty()) {
-            res.setPriority(this, PRIORITY); // yep. only one player left. go!
-        }
-        if (count == 0) {
-            res.setError(this, "");
-        }
-
-        return res;
+        return count <= 1 || this.anyTeamEmpty(); // yep. only one player left. go!
     }
 
     private boolean anyTeamEmpty() {
@@ -123,21 +111,12 @@ public class GoalInfect extends ArenaGoal {
         return count > 3 ? null : "need more spawns! (" + count + "/4)";
     }
     @Override
-    public PACheck checkCommand(final PACheck res, final String string) {
-        if (res.getPriority() > PRIORITY) {
-            return res;
-        }
-
-        if ("getprotect".equalsIgnoreCase(string)
-                || "setprotect".equalsIgnoreCase(string)) {
-            res.setPriority(this, PRIORITY);
-        }
-
-        return res;
+    public boolean checkCommand(final String string) {
+        return "getprotect".equalsIgnoreCase(string) || "setprotect".equalsIgnoreCase(string);
     }
 
     @Override
-    public PACheck checkBreak(PACheck result, BlockBreakEvent event) {
+    public void checkBreak(BlockBreakEvent event) throws GameplayException {
         ArenaPlayer ap = ArenaPlayer.parsePlayer(event.getPlayer().getName());
         if (this.arena.equals(ap.getArena()) && ap.getStatus() == Status.FIGHT) {
             if ("infected".equals(ap.getArenaTeam().getName())) {
@@ -146,22 +125,21 @@ public class GoalInfect extends ArenaGoal {
                 )) {
                     event.setCancelled(true);
                     this.arena.msg(event.getPlayer(), Language.parse(arena, MSG.PLAYER_PREVENTED_BREAK));
-                    result.setError(this, "BREAK not allowed");
+                    throw new GameplayException("BREAK not allowed");
                 } else if (event.getBlock().getType() == Material.TNT &&
                         ArenaPlayer.PlayerPrevention.has(
                                 this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), ArenaPlayer.PlayerPrevention.TNTBREAK
                         )) {
                     event.setCancelled(true);
                     this.arena.msg(event.getPlayer(), Language.parse(arena, MSG.PLAYER_PREVENTED_TNTBREAK));
-                    result.setError(this, "TNTBREAK not allowed");
+                    throw new GameplayException("TNTBREAK not allowed");
                 }
             }
         }
-        return result;
     }
 
     @Override
-    public PACheck checkCraft(PACheck result, CraftItemEvent event) {
+    public void checkCraft(CraftItemEvent event) throws GameplayException {
         ArenaPlayer ap = ArenaPlayer.parsePlayer(((Player) event.getInventory().getHolder()).getName());
         if (this.arena.equals(ap.getArena()) && ap.getStatus() == Status.FIGHT) {
             if ("infected".equals(ap.getArenaTeam().getName())) {
@@ -170,15 +148,14 @@ public class GoalInfect extends ArenaGoal {
                 )) {
                     event.setCancelled(true);
                     this.arena.msg(event.getWhoClicked(), Language.parse(arena, MSG.PLAYER_PREVENTED_CRAFT));
-                    result.setError(this, "CRAFT not allowed");
+                    throw new GameplayException("CRAFT not allowed");
                 }
             }
         }
-        return result;
     }
 
     @Override
-    public PACheck checkDrop(PACheck result, PlayerDropItemEvent event) {
+    public void checkDrop(PlayerDropItemEvent event) throws GameplayException {
         ArenaPlayer ap = ArenaPlayer.parsePlayer(event.getPlayer().getName());
         if (this.arena.equals(ap.getArena()) && ap.getStatus() == Status.FIGHT) {
             if ("infected".equals(ap.getArenaTeam().getName())) {
@@ -187,15 +164,14 @@ public class GoalInfect extends ArenaGoal {
                 )) {
                     event.setCancelled(true);
                     this.arena.msg(event.getPlayer(), Language.parse(arena, MSG.PLAYER_PREVENTED_DROP));
-                    result.setError(this, "DROP not allowed");
+                    throw new GameplayException("DROP not allowed");
                 }
             }
         }
-        return result;
     }
 
     @Override
-    public PACheck checkInventory(PACheck result, InventoryClickEvent event) {
+    public void checkInventory(InventoryClickEvent event) throws GameplayException {
         ArenaPlayer ap = ArenaPlayer.parsePlayer(event.getWhoClicked().getName());
         if (this.arena.equals(ap.getArena()) && ap.getStatus() == Status.FIGHT) {
             if ("infected".equals(ap.getArenaTeam().getName())) {
@@ -205,15 +181,14 @@ public class GoalInfect extends ArenaGoal {
                     event.setCancelled(true);
                     event.getWhoClicked().closeInventory();
                     this.arena.msg(event.getWhoClicked(), Language.parse(arena, MSG.PLAYER_PREVENTED_INVENTORY));
-                    result.setError(this, "INVENTORY not allowed");
+                    throw new GameplayException("INVENTORY not allowed");
                 }
             }
         }
-        return result;
     }
 
     @Override
-    public PACheck checkPickup(PACheck result, EntityPickupItemEvent event) {
+    public void checkPickup(EntityPickupItemEvent event) throws GameplayException {
         ArenaPlayer ap = ArenaPlayer.parsePlayer(event.getEntity().getName());
         if (this.arena.equals(ap.getArena()) && ap.getStatus() == Status.FIGHT) {
             if ("infected".equals(ap.getArenaTeam().getName())) {
@@ -221,15 +196,14 @@ public class GoalInfect extends ArenaGoal {
                         this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), ArenaPlayer.PlayerPrevention.PICKUP
                 )) {
                     event.setCancelled(true);
-                    result.setError(this, "PICKUP not allowed");
+                    throw new GameplayException("PICKUP not allowed");
                 }
             }
         }
-        return result;
     }
 
     @Override
-    public PACheck checkPlace(PACheck result, BlockPlaceEvent event) {
+    public void checkPlace(BlockPlaceEvent event) throws GameplayException {
         ArenaPlayer ap = ArenaPlayer.parsePlayer(event.getPlayer().getName());
         if (this.arena.equals(ap.getArena()) && ap.getStatus() == Status.FIGHT) {
             if ("infected".equals(ap.getArenaTeam().getName())) {
@@ -238,77 +212,32 @@ public class GoalInfect extends ArenaGoal {
                 )) {
                     event.setCancelled(true);
                     this.arena.msg(event.getPlayer(), Language.parse(arena, MSG.PLAYER_PREVENTED_PLACE));
-                    result.setError(this, "PLACE not allowed");
+                    throw new GameplayException("PLACE not allowed");
                 } else if (event.getBlock().getType() == Material.TNT &&
                         ArenaPlayer.PlayerPrevention.has(
                                 this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), ArenaPlayer.PlayerPrevention.TNT
                         )) {
                     event.setCancelled(true);
                     this.arena.msg(event.getPlayer(), Language.parse(arena, MSG.PLAYER_PREVENTED_TNT));
-                    result.setError(this, "TNT not allowed");
+                    throw new GameplayException("TNT not allowed");
                 }
             }
         }
-        return result;
     }
 
     @Override
-    public PACheck checkJoin(final CommandSender sender, final PACheck res, final String[] args) {
-        if (res.getPriority() >= PRIORITY) {
-            return res;
-        }
-
-        final int maxPlayers = this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS);
-        final int maxTeamPlayers = this.arena.getArenaConfig().getInt(
-                CFG.READY_MAXTEAMPLAYERS);
-
-        if (maxPlayers > 0 && this.arena.getFighters().size() >= maxPlayers) {
-            res.setError(this, Language.parse(this.arena, MSG.ERROR_JOIN_ARENA_FULL));
-            return res;
-        }
-
-        if (args == null || args.length < 1) {
-            return res;
-        }
-
-        if (!this.arena.isFreeForAll()) {
-            final ArenaTeam team = this.arena.getTeam(args[0]);
-
-            if (team != null && maxTeamPlayers > 0
-                    && team.getTeamMembers().size() >= maxTeamPlayers) {
-                res.setError(this, Language.parse(this.arena, MSG.ERROR_JOIN_TEAM_FULL, team.getName()));
-                return res;
-            }
-        }
-
-        res.setPriority(this, PRIORITY);
-        return res;
-    }
-
-    @Override
-    public PACheck checkPlayerDeath(final PACheck res, final Player player) {
-        if (res.getPriority() <= PRIORITY) {
-            res.setPriority(this, PRIORITY);
-
-            if (!this.getLifeMap().containsKey(player.getName())) {
-                return res;
-            }
+    public Boolean checkPlayerDeath(final Player player) {
+        if (this.getLifeMap().containsKey(player.getName())) {
             final int iLives = this.getLifeMap().get(player.getName());
             debug(this.arena, player, "lives before death: " + iLives);
-            if (iLives <= 1 && "infected".equals(ArenaPlayer.parsePlayer(player.getName()).getArenaTeam().getName())) {
-                res.setError(this, "0");
-            }
-
+            return iLives > 1 || !"infected".equals(ArenaPlayer.parsePlayer(player.getName()).getArenaTeam().getName());
         }
-        return res;
+        return true;
     }
 
     @Override
-    public PACheck checkStart(final PACheck res) {
-        if (res.getPriority() < PRIORITY) {
-            res.setPriority(this, PRIORITY);
-        }
-        return res;
+    public boolean overridesStart() {
+        return true;
     }
 
     @Override
@@ -437,7 +366,7 @@ public class GoalInfect extends ArenaGoal {
 
     @Override
     public void commitPlayerDeath(final Player player, final boolean doesRespawn,
-                                  final String error, final PlayerDeathEvent event) {
+                                  final PlayerDeathEvent event) {
         if (!this.getLifeMap().containsKey(player.getName())) {
             return;
         }
@@ -496,11 +425,11 @@ public class GoalInfect extends ArenaGoal {
                     returned = new ArrayList<>(event.getDrops());
                 }
 
-                PACheck.handleRespawn(this.arena,
+                WorkflowManager.handleRespawn(this.arena,
                         aPlayer, returned);
 
                 if (this.anyTeamEmpty()) {
-                    PACheck.handleEnd(this.arena, false);
+                    WorkflowManager.handleEnd(this.arena, false);
                 }
                 return;
             }
@@ -526,12 +455,12 @@ public class GoalInfect extends ArenaGoal {
                 returned = new ArrayList<>(event.getDrops());
             }
 
-            PACheck.handleRespawn(this.arena,
+            WorkflowManager.handleRespawn(this.arena,
                     aPlayer, returned);
 
 
             // player died => commit death!
-            PACheck.handleEnd(this.arena, false);
+            WorkflowManager.handleEnd(this.arena, false);
         } else {
             iLives--;
             this.getLifeMap().put(player.getName(), iLives);
@@ -550,7 +479,7 @@ public class GoalInfect extends ArenaGoal {
                 returned = new ArrayList<>(event.getDrops());
             }
 
-            PACheck.handleRespawn(this.arena,
+            WorkflowManager.handleRespawn(this.arena,
                     aPlayer, returned);
         }
     }
@@ -577,14 +506,8 @@ public class GoalInfect extends ArenaGoal {
     }
 
     @Override
-    public PACheck getLives(final PACheck res, final ArenaPlayer aPlayer) {
-        if (res.getPriority() <= PRIORITY + 1000) {
-            res.setError(
-                    this,
-                    String.valueOf(this.getLifeMap().getOrDefault(aPlayer.getName(), 0))
-            );
-        }
-        return res;
+    public int getLives(ArenaPlayer aPlayer) {
+        return this.getLifeMap().getOrDefault(aPlayer.getName(), 0);
     }
 
     @Override

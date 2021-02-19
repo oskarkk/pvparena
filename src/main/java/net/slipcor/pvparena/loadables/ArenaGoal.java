@@ -5,10 +5,10 @@ import net.slipcor.pvparena.api.IArenaCommandHandler;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.exceptions.GameplayException;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -66,22 +66,21 @@ public class ArenaGoal implements IArenaCommandHandler {
     /**
      * check if the goal should commit a command
      *
-     * @param res    the PACheck instance
      * @param string the command argument
-     * @return the PACheck instance
+     * @return true if the goal commits the command
      */
-    public PACheck checkCommand(final PACheck res, final String string) {
-        return res;
+    public boolean checkCommand(final String string) {
+        return false;
     }
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList(new String[0]);
+        return Collections.emptyList();
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList(new String[0]);
+        return Collections.emptyList();
     }
 
     @Override
@@ -106,38 +105,31 @@ public class ArenaGoal implements IArenaCommandHandler {
         return "outdated";
     }
 
-    public PACheck checkBreak(PACheck result, BlockBreakEvent event) {
-        return result;
+    public void checkBreak(BlockBreakEvent event) throws GameplayException {
     }
 
-    public PACheck checkCraft(PACheck result, CraftItemEvent event) {
-        return result;
+    public void checkCraft(CraftItemEvent result) throws GameplayException {
     }
 
-    public PACheck checkDrop(PACheck result, PlayerDropItemEvent event) {
-        return result;
+    public void checkDrop(PlayerDropItemEvent event) throws GameplayException {
     }
 
-    public PACheck checkInventory(PACheck result, InventoryClickEvent event) {
-        return result;
+    public void checkInventory(InventoryClickEvent event) throws GameplayException {
     }
 
-    public PACheck checkPickup(PACheck result, EntityPickupItemEvent event) {
-        return result;
+    public void checkPickup(EntityPickupItemEvent event) throws GameplayException {
     }
 
-    public PACheck checkPlace(PACheck result, BlockPlaceEvent event) {
-        return result;
+    public void checkPlace(BlockPlaceEvent event) throws GameplayException {
     }
 
     /**
      * check if the goal should commit the end
      *
-     * @param res the PACheck instance
-     * @return the PACheck instance
+     * @return true if the goal handles the end
      */
-    public PACheck checkEnd(final PACheck res) {
-        return res;
+    public boolean checkEnd() throws GameplayException {
+        return false;
     }
 
     /**
@@ -195,8 +187,7 @@ public class ArenaGoal implements IArenaCommandHandler {
      *
      * @return null if ready, error message otherwise
      */
-    protected String checkForMissingTeamCustom(final Set<String> list,
-                                               final String custom) {
+    protected String checkForMissingTeamCustom(final Set<String> list, final String custom) {
         for (final ArenaTeam team : this.arena.getTeams()) {
             final String sTeam = team.getName();
             if (!list.contains(sTeam + custom)) {
@@ -218,60 +209,65 @@ public class ArenaGoal implements IArenaCommandHandler {
     /**
      * hook into an interacting player
      *
-     * @param res          the PACheck instance
      * @param player       the interacting player
      * @param clickedBlock the block being clicked
-     * @return the PACheck instance
+     * @return true if the goals handle the event
      */
-    public PACheck checkInteract(final PACheck res, final Player player,
-                                 final Block clickedBlock) {
-        return res;
+    public boolean checkInteract(final Player player, final Block clickedBlock) {
+        return false;
     }
 
     /**
      * check if the goal should commit a player join
-     *
-     * @param sender the joining player
-     * @param res    the PACheck instance
+     *  @param player the joining player
      * @param args   command arguments
-     * @return the PACheck instance
      */
-    public PACheck checkJoin(final CommandSender sender, final PACheck res,
-                             final String[] args) {
-        return res;
+    public void checkJoin(final Player player, final String[] args) throws GameplayException {
+        final int maxPlayers = this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS);
+        final int maxTeamPlayers = this.arena.getArenaConfig().getInt(
+                CFG.READY_MAXTEAMPLAYERS);
+
+        if (maxPlayers > 0 && this.arena.getFighters().size() >= maxPlayers) {
+            throw new GameplayException(Language.parse(this.arena, Language.MSG.ERROR_JOIN_ARENA_FULL));
+        }
+
+        if (!this.arena.isFreeForAll() && args != null && args.length > 0) {
+            final ArenaTeam team = this.arena.getTeam(args[0]);
+
+            if (team != null && maxTeamPlayers > 0 && team.getTeamMembers().size() >= maxTeamPlayers) {
+                throw new GameplayException(Language.parse(this.arena, Language.MSG.ERROR_JOIN_TEAM_FULL));
+            }
+        }
     }
 
     /**
      * check if the goal should commit a player death
      *
      * @param player the dying player
-     * @return the PACheck instance
+     * @return true if player should respawn, false otherwise, null if goal doesn't handle respawn
      */
-    public PACheck checkPlayerDeath(final PACheck res, final Player player) {
-        return res;
+    public Boolean checkPlayerDeath(final Player player) {
+        return null;
     }
 
     /**
      * check if the goal should set a block
      *
-     * @param res    the PACheck instance
      * @param player the setting player
      * @param block  the block being set
-     * @return the PACheck instance
+     * @return true if the handling is successful
      */
-    public PACheck checkSetBlock(final PACheck res, final Player player,
-                                 final Block block) {
-        return res;
+    public boolean checkSetBlock(final Player player, final Block block) {
+        return false;
     }
 
     /**
      * check if the goal should start the game
      *
-     * @param res the PACheck instance
-     * @return the PACheck instance
+     * @return true if the goal overrides default starting
      */
-    public PACheck checkStart(final PACheck res) {
-        return res;
+    public boolean overridesStart() {
+        return false;
     }
 
     /**
@@ -305,14 +301,12 @@ public class ArenaGoal implements IArenaCommandHandler {
 
     /**
      * commit a player death
-     *
-     * @param player      the dying player
+     *  @param player      the dying player
      * @param doesRespawn true if the player will respawn
-     * @param error       an optional error string
      * @param event       the causing death event
      */
     public void commitPlayerDeath(final Player player,
-                                  final boolean doesRespawn, final String error,
+                                  final boolean doesRespawn,
                                   final PlayerDeathEvent event) {
         throw new IllegalStateException(this.getName());
     }
@@ -374,13 +368,12 @@ public class ArenaGoal implements IArenaCommandHandler {
     /**
      * Get a player's remaining lives
      *
-     * @param res    the PACheck instance
      * @param player the player to check
      * @return the PACheck instance for more information, eventually an ERROR
      * containing the lives
      */
-    public PACheck getLives(final PACheck res, final ArenaPlayer player) {
-        return res;
+    public int getLives(ArenaPlayer player) {
+        return 0;
     }
 
     /**
@@ -433,8 +426,7 @@ public class ArenaGoal implements IArenaCommandHandler {
      * @param player          the dying player
      * @param lastDamageCause the last damage cause
      */
-    public void parsePlayerDeath(final Player player,
-                                 final EntityDamageEvent lastDamageCause) {
+    public void parsePlayerDeath(final Player player, final EntityDamageEvent lastDamageCause) {
     }
 
     /**

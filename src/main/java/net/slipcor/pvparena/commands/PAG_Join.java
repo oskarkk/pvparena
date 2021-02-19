@@ -3,7 +3,6 @@ package net.slipcor.pvparena.commands;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
@@ -12,6 +11,7 @@ import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaRegion;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.ConfigurationManager;
+import net.slipcor.pvparena.managers.WorkflowManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -85,10 +85,10 @@ public class PAG_Join extends AbstractArenaCommand {
             if (!arena.getArenaConfig().getBoolean(CFG.PERMS_ALWAYSJOININBATTLE) &&
                     !arena.getArenaConfig().getBoolean(CFG.JOIN_ONLYIFHASPLAYED) &&
                     arena.hasAlreadyPlayed(aPlayer.getName())) {
-                debug(arena, sender, "Join_2");
-                arena.msg(sender, Language.parse(arena, MSG.ERROR_ARENA_ALREADY_PART_OF, ArenaManager.getIndirectArenaName(arena)));
+                debug(arena, aPlayer.get(), "Join_2");
+                arena.msg(aPlayer.get(), Language.parse(arena, MSG.ERROR_ARENA_ALREADY_PART_OF, ArenaManager.getIndirectArenaName(arena)));
             } else {
-                PACheck.handleJoin(arena, sender, args);
+                WorkflowManager.handleJoin(arena, aPlayer.get(), args);
             }
         } else {
             final Arena pArena = aPlayer.getArena();
