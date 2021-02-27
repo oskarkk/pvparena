@@ -398,7 +398,7 @@ public class EntityListener implements Listener {
 
                 if (!arena.getArenaConfig().getBoolean(CFG.PERMS_TEAMKILL)) {
                     for (ArenaPlayer ap : aPlayer.getArenaTeam().getTeamMembers()) {
-                        if (event.getTarget().equals(ap.get())) {
+                        if (event.getTarget().equals(ap.getPlayer())) {
                             event.setCancelled(true);
                         }
                     }
@@ -456,11 +456,11 @@ public class EntityListener implements Listener {
             return;
         }
 
-        debug(shooter.get(), "legit player");
+        debug(shooter.getPlayer(), "legit player");
 
         if (shooter.getArena() == null
                 || !shooter.getStatus().equals(Status.FIGHT)) {
-            debug(shooter.get(), "something is null!");
+            debug(shooter.getPlayer(), "something is null!");
             return;
         }
 

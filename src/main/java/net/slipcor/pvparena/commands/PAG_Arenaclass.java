@@ -120,10 +120,10 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
         }
 
         if (!arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSWITCH_AFTER_RESPAWN) || !arena.isFightInProgress()) {
-            InventoryManager.clearInventory(aPlayer.get());
+            InventoryManager.clearInventory(aPlayer.getPlayer());
             aPlayer.setArenaClass(aClass);
             if (aPlayer.getArenaClass() != null) {
-                ArenaPlayer.givePlayerFightItems(arena, aPlayer.get());
+                ArenaPlayer.givePlayerFightItems(arena, aPlayer.getPlayer());
 
                 arena.msg(sender,
                         Language.parse(arena, MSG.CLASS_SELECTED, aClass.getName()));

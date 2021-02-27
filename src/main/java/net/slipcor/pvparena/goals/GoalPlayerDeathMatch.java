@@ -138,10 +138,10 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
 
             if (this.arena.getArenaConfig().getBoolean(CFG.USES_SUICIDEPUNISH)) {
                 for (ArenaPlayer ap : this.arena.getFighters()) {
-                    if (player.equals(ap.get())) {
+                    if (player.equals(ap.getPlayer())) {
                         continue;
                     }
-                    if (this.increaseScore(ap.get(), player)) {
+                    if (this.increaseScore(ap.getPlayer(), player)) {
                         return;
                     }
                 }
@@ -198,8 +198,8 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
                 ap.addLosses();
 
                 if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
-                    debug(this.arena, ap.get(), "faking player death");
-                    PlayerListener.finallyKillPlayer(this.arena, ap.get(), killed.getLastDamageCause());
+                    debug(this.arena, ap.getPlayer(), "faking player death");
+                    PlayerListener.finallyKillPlayer(this.arena, ap.getPlayer(), killed.getLastDamageCause());
                 }
 
                 if (ArenaManager.checkAndCommit(this.arena, false)) {
@@ -274,7 +274,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
     public void parseStart() {
         for (final ArenaTeam team : this.arena.getTeams()) {
             for (final ArenaPlayer ap : team.getTeamMembers()) {
-                this.updateLives(ap.get(), this.arena.getArenaConfig().getInt(CFG.GOAL_PDM_LIVES));
+                this.updateLives(ap.getPlayer(), this.arena.getArenaConfig().getInt(CFG.GOAL_PDM_LIVES));
             }
         }
     }

@@ -60,13 +60,13 @@ public class PAA_Spawn extends AbstractArenaCommand {
             final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(sender.getName());
 
             if (spawns.contains(args[0])) {
-                this.commitSet(arena, sender, new PALocation(aPlayer.get().getLocation()), args[0]);
+                this.commitSet(arena, sender, new PALocation(aPlayer.getPlayer().getLocation()), args[0]);
                 return;
             }
 
             for (final ArenaModule mod : arena.getMods()) {
                 if (mod.hasSpawn(args[0])) {
-                    this.commitSet(arena, sender, new PALocation(aPlayer.get().getLocation()), args[0]);
+                    this.commitSet(arena, sender, new PALocation(aPlayer.getPlayer().getLocation()), args[0]);
                     return;
                 }
             }
@@ -77,7 +77,7 @@ public class PAA_Spawn extends AbstractArenaCommand {
             }
 
             if (arena.getGoal().hasSpawn(args[0])) {
-                this.commitSet(arena, sender, new PALocation(aPlayer.get().getLocation()), args[0]);
+                this.commitSet(arena, sender, new PALocation(aPlayer.getPlayer().getLocation()), args[0]);
                 return;
             }
 

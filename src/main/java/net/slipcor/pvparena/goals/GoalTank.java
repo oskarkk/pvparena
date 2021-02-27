@@ -255,7 +255,7 @@ public class GoalTank extends ArenaGoal {
             int pos = random.nextInt(team.getTeamMembers().size());
             debug(this.arena, "team " + team.getName() + " random " + pos);
             for (final ArenaPlayer ap : team.getTeamMembers()) {
-                debug(this.arena, ap.get(), "#" + pos + ": " + ap);
+                debug(this.arena, ap.getPlayer(), "#" + pos + ": " + ap);
                 if (pos-- == 0) {
                     tank = ap;
                 }
@@ -268,9 +268,9 @@ public class GoalTank extends ArenaGoal {
 
         for (final ArenaTeam team : this.arena.getTeams()) {
             if (team.getTeamMembers().contains(tank)) {
-                final PATeamChangeEvent tcEvent = new PATeamChangeEvent(this.arena, tank.get(), team, tankTeam);
+                final PATeamChangeEvent tcEvent = new PATeamChangeEvent(this.arena, tank.getPlayer(), team, tankTeam);
                 Bukkit.getPluginManager().callEvent(tcEvent);
-                this.arena.updateScoreboardTeam(tank.get(), team, tankTeam);
+                this.arena.updateScoreboardTeam(tank.getPlayer(), team, tankTeam);
                 team.remove(tank);
             }
         }
@@ -280,11 +280,11 @@ public class GoalTank extends ArenaGoal {
         final ArenaClass tankClass = this.arena.getClass("%tank%");
         if (tankClass != null) {
             tank.setArenaClass(tankClass);
-            InventoryManager.clearInventory(tank.get());
-            tankClass.equip(tank.get());
+            InventoryManager.clearInventory(tank.getPlayer());
+            tankClass.equip(tank.getPlayer());
             for (final ArenaModule mod : this.arena.getMods()) {
-                mod.parseRespawn(tank.get(), tankTeam, DamageCause.CUSTOM,
-                        tank.get());
+                mod.parseRespawn(tank.getPlayer(), tankTeam, DamageCause.CUSTOM,
+                        tank.getPlayer());
             }
         }
 

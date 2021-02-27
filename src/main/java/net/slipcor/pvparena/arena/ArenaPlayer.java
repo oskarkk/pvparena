@@ -1,5 +1,6 @@
 package net.slipcor.pvparena.arena;
 
+import org.jetbrains.annotations.NotNull;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PALocation;
@@ -42,9 +43,10 @@ import static net.slipcor.pvparena.config.Debugger.debug;
  */
 
 public class ArenaPlayer {
-    private static final Map<String, ArenaPlayer> totalPlayers = new HashMap<>();
+    private static final Map<UUID, ArenaPlayer> totalPlayers = new HashMap<>();
 
-    private final String name;
+    private final Player player;
+
     private boolean telePass;
     private boolean ignoreAnnouncements;
     private boolean teleporting;
@@ -110,8 +112,18 @@ public class ArenaPlayer {
     private boolean publicChatting = true;
     private final PABlockLocation[] selection = new PABlockLocation[2];
 
-    private ArenaPlayer(final String playerName) {
-        this.name = playerName;
+    /**
+     * Create new ArenaPlayer
+     * 
+     * @param player bukkit player
+     */
+    private ArenaPlayer(@NotNull final Player player) {
+        Objects.requireNonNull(player);
+        this.player = player;
+    }
+
+    public Player getPlayer() {
+        return this.player;
     }
 
     public static Set<ArenaPlayer> getAllArenaPlayers() {
@@ -204,29 +216,41 @@ public class ArenaPlayer {
 
             // Offline player or NPC
             if (player == null) {
-                return new ArenaPlayer(name);
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+                if(offlinePlayer.getPlayer() == null) {
+                    throw new RuntimeException(String.format("Player %s not found", name));
+                }
+                player = offlinePlayer.getPlayer();
             }
 
-            if (!totalPlayers.containsKey(name)) {
-                ArenaPlayer ap = new ArenaPlayer(player.getName());
-                totalPlayers.putIfAbsent(name, ap);
+            if (!totalPlayers.containsKey(player.getUniqueId())) {
+                ArenaPlayer ap = new ArenaPlayer(player);
+                totalPlayers.putIfAbsent(player.getUniqueId(), ap);
             }
-            return totalPlayers.get(name);
+            return totalPlayers.get(player.getUniqueId());
         }
     }
 
     /**
      * add an ArenaPlayer (used to load statistics)
      *
-     * @param name the playername to use
+     * @param player the player to use
      * @return an ArenaPlayer instance belonging to that player
      */
-    public static ArenaPlayer addPlayer(final String name) {
+    public static ArenaPlayer addPlayer(final Player player) {
         synchronized (ArenaPlayer.class) {
-            ArenaPlayer aPlayer = new ArenaPlayer(name);
-            totalPlayers.putIfAbsent(name, aPlayer);
-            return totalPlayers.get(name);
+            ArenaPlayer aPlayer = new ArenaPlayer(player);
+            totalPlayers.putIfAbsent(player.getUniqueId(), aPlayer);
+            return totalPlayers.get(player.getUniqueId());
         }
+    }
+
+    public static ArenaPlayer addPlayer(UUID uuid) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+        if(offlinePlayer.getPlayer() == null) {
+            throw new RuntimeException(String.format("Player with uuid %s not found", uuid));
+        }
+        return addPlayer(offlinePlayer.getPlayer());
     }
 
     /**
@@ -351,10 +375,10 @@ public class ArenaPlayer {
     }
 
     private void clearDump() {
-        debug(this.get(), "clearing dump of {}", this.name);
+        debug(this.getPlayer(), "clearing dump of {}", this.player.getName());
         this.debugPrint();
         final File file = new File(PVPArena.getInstance().getDataFolder().getPath()
-                + "/dumps/" + this.name + ".yml");
+                + "/dumps/" + this.player.getName() + ".yml");
         if (!file.exists()) {
             return;
         }
@@ -381,33 +405,33 @@ public class ArenaPlayer {
 
     public void debugPrint() {
         if (this.status == null || this.location == null) {
-            debug(this.get(), "DEBUG PRINT OUT:");
-            debug(this.get(), this.name);
-            debug(this.get(), String.valueOf(this.status));
-            debug(this.get(), String.valueOf(this.location));
-            debug(this.get(), String.valueOf(this.selection[0]));
-            debug(this.get(), String.valueOf(this.selection[1]));
+            debug(this.getPlayer(), "DEBUG PRINT OUT:");
+            debug(this.getPlayer(), this.player.getName());
+            debug(this.getPlayer(), String.valueOf(this.status));
+            debug(this.getPlayer(), String.valueOf(this.location));
+            debug(this.getPlayer(), String.valueOf(this.selection[0]));
+            debug(this.getPlayer(), String.valueOf(this.selection[1]));
             return;
         }
-        debug(this.get(), "------------------");
-        debug(this.get(), "Player: {}", this.name);
-        debug(this.get(), "telepass: {} | mayDropInv: {} | chatting: {}", this.telePass, this.mayDropInventory, this.publicChatting);
-        debug(this.get(), "arena: {}", (this.arena == null ? "null" : this.arena.getName()));
-        debug(this.get(), "aClass: {}", (this.aClass == null ? "null" : this.aClass.getName()));
-        debug(this.get(), "location: {}", this.location);
-        debug(this.get(), "status: {}", this.status.name());
-        debug(this.get(), "tempPermissions:");
+        debug(this.getPlayer(), "------------------");
+        debug(this.getPlayer(), "Player: {}", this.player.getName());
+        debug(this.getPlayer(), "telepass: {} | mayDropInv: {} | chatting: {}", this.telePass, this.mayDropInventory, this.publicChatting);
+        debug(this.getPlayer(), "arena: {}", (this.arena == null ? "null" : this.arena.getName()));
+        debug(this.getPlayer(), "aClass: {}", (this.aClass == null ? "null" : this.aClass.getName()));
+        debug(this.getPlayer(), "location: {}", this.location);
+        debug(this.getPlayer(), "status: {}", this.status.name());
+        debug(this.getPlayer(), "tempPermissions:");
         for (final PermissionAttachment pa : this.tempPermissions) {
-            debug(this.get(), "> {}", pa);
+            debug(this.getPlayer(), "> {}", pa);
         }
-        debug(this.get(), "------------------");
+        debug(this.getPlayer(), "------------------");
     }
 
     public void dump() {
-        debug(this.get(), "dumping...");
+        debug(this.getPlayer(), "dumping...");
         this.debugPrint();
         final File file = new File(PVPArena.getInstance().getDataFolder().getPath()
-                + "/dumps/" + this.name + ".yml");
+                + "/dumps/" + this.player.getName() + ".yml");
         try {
             file.createNewFile();
         } catch (final Exception e) {
@@ -429,15 +453,6 @@ public class ArenaPlayer {
         } catch (final Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * return the PVP Arena bukkit player
-     *
-     * @return the bukkit player instance
-     */
-    public Player get() {
-        return Bukkit.getPlayerExact(this.name);
     }
 
     /**
@@ -483,9 +498,9 @@ public class ArenaPlayer {
     }
 
     public PALocation getSavedLocation() {
-        debug(this.get(), "reading loc!");
+        debug(this.getPlayer(), "reading loc!");
         if (this.location != null) {
-            debug(this.get(), ": {}", this.location);
+            debug(this.getPlayer(), ": {}", this.location);
         }
         return this.location;
     }
@@ -496,7 +511,7 @@ public class ArenaPlayer {
      * @return the player name
      */
     public String getName() {
-        return this.name;
+        return this.player.getName();
     }
 
     public PABlockLocation[] getSelection() {
@@ -582,12 +597,12 @@ public class ArenaPlayer {
     }
 
     public void readDump() {
-        debug(this.get(), "reading dump: {}", this.name);
+        debug(this.getPlayer(), "reading dump: {}", this.player.getName());
         this.debugPrint();
         final File file = new File(PVPArena.getInstance().getDataFolder().getPath()
-                + "/dumps/" + this.name + ".yml");
+                + "/dumps/" + this.player.getName() + ".yml");
         if (!file.exists()) {
-            debug(this.get(), "no dump!");
+            debug(this.getPlayer(), "no dump!");
             return;
         }
 
@@ -611,11 +626,11 @@ public class ArenaPlayer {
                 this.location = SpawnManager.getSpawnByExactName(this.arena, "exit");
             }
 
-            if (Bukkit.getPlayer(this.name) == null) {
-                debug(this.get(), "player offline, OUT!");
+            if (Bukkit.getPlayer(this.player.getName()) == null) {
+                debug(this.getPlayer(), "player offline, OUT!");
                 return;
             }
-            this.state = PlayerState.undump(cfg, this.name);
+            this.state = PlayerState.undump(cfg, this.player.getName());
         }
 
         file.delete();
@@ -626,7 +641,7 @@ public class ArenaPlayer {
      * save and reset a player instance
      */
     public void reset() {
-        debug(this.get(), "destroying arena player {}", this.name);
+        debug(this.getPlayer(), "destroying arena player {}", this.player.getName());
         this.debugPrint();
         final YamlConfiguration cfg = new YamlConfiguration();
         try {
@@ -638,32 +653,32 @@ public class ArenaPlayer {
 
                 if (this.arena != null) {
                     final String arenaName = this.arena.getName();
-                    cfg.set(arenaName + '.' + this.name + ".losses", this.getStatistics()
+                    cfg.set(arenaName + '.' + this.player.getName() + ".losses", this.getStatistics()
                             .getStat(Type.LOSSES)
                             + this.getTotalStatistics(Type.LOSSES));
-                    cfg.set(arenaName + '.' + this.name + ".wins",
+                    cfg.set(arenaName + '.' + this.player.getName() + ".wins",
                             this.getStatistics()
                                     .getStat(Type.WINS)
                                     + this.getTotalStatistics(Type.WINS));
-                    cfg.set(arenaName + '.' + this.name + ".kills",
+                    cfg.set(arenaName + '.' + this.player.getName() + ".kills",
                             this.getStatistics().getStat(
                                     Type.KILLS)
                                     + this.getTotalStatistics(Type.KILLS));
-                    cfg.set(arenaName + '.' + this.name + ".deaths", this.getStatistics()
+                    cfg.set(arenaName + '.' + this.player.getName() + ".deaths", this.getStatistics()
                             .getStat(Type.DEATHS)
                             + this.getTotalStatistics(Type.DEATHS));
-                    cfg.set(arenaName + '.' + this.name + ".damage", this.getStatistics()
+                    cfg.set(arenaName + '.' + this.player.getName() + ".damage", this.getStatistics()
                             .getStat(Type.DAMAGE)
                             + this.getTotalStatistics(Type.DAMAGE));
-                    cfg.set(arenaName + '.' + this.name + ".maxdamage",
+                    cfg.set(arenaName + '.' + this.player.getName() + ".maxdamage",
                             this.getStatistics().getStat(
                                     Type.MAXDAMAGE)
                                     + this.getTotalStatistics(Type.MAXDAMAGE));
-                    cfg.set(arenaName + '.' + this.name + ".damagetake",
+                    cfg.set(arenaName + '.' + this.player.getName() + ".damagetake",
                             this.getStatistics().getStat(
                                     Type.DAMAGETAKE)
                                     + this.getTotalStatistics(Type.DAMAGETAKE));
-                    cfg.set(arenaName + '.' + this.name + ".maxdamagetake",
+                    cfg.set(arenaName + '.' + this.player.getName() + ".maxdamagetake",
                             this.getStatistics().getStat(
                                     Type.MAXDAMAGETAKE)
                                     + this.getTotalStatistics(Type.MAXDAMAGETAKE));
@@ -675,8 +690,8 @@ public class ArenaPlayer {
             e.printStackTrace();
         }
 
-        if (this.get() == null) {
-            debug(this.get(), "reset() ; out! null");
+        if (this.getPlayer() == null) {
+            debug(this.getPlayer(), "reset() ; out! null");
             return;
         }
 
@@ -686,7 +701,6 @@ public class ArenaPlayer {
             this.state.reset();
             this.state = null;
         }
-        // location = null;
 
         this.setStatus(Status.NULL);
         this.naClass = null;
@@ -699,14 +713,11 @@ public class ArenaPlayer {
         }
         this.arena = null;
         this.aClass = null;
-        this.get().setFireTicks(0);
+        this.getPlayer().setFireTicks(0);
         try {
-            Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    if (ArenaPlayer.this.get() != null && ArenaPlayer.this.get().getFireTicks() > 0) {
-                        ArenaPlayer.this.get().setFireTicks(0);
-                    }
+            Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), () -> {
+                if (ArenaPlayer.this.getPlayer() != null && ArenaPlayer.this.getPlayer().getFireTicks() > 0) {
+                    ArenaPlayer.this.getPlayer().setFireTicks(0);
                 }
             }, 5L);
         } catch (Exception e) {
@@ -730,11 +741,11 @@ public class ArenaPlayer {
      * @param aClass the arena class to set
      */
     public void setArenaClass(final ArenaClass aClass) {
-        final PAPlayerClassChangeEvent event = new PAPlayerClassChangeEvent(this.arena, this.get(), aClass);
+        final PAPlayerClassChangeEvent event = new PAPlayerClassChangeEvent(this.arena, this.getPlayer(), aClass);
         Bukkit.getServer().getPluginManager().callEvent(event);
         this.aClass = event.getArenaClass();
         if (this.arena != null && this.getStatus() != Status.NULL) {
-            ArenaModuleManager.parseClassChange(this.arena, this.get(), this.aClass);
+            ArenaModuleManager.parseClassChange(this.arena, this.getPlayer(), this.aClass);
         }
     }
 
@@ -752,8 +763,7 @@ public class ArenaPlayer {
             }
         }
         PVPArena.getInstance().getLogger().warning(
-                "[PA-debug] failed to set unknown class " + className + " to player "
-                        + this.name);
+                String.format("[PA-debug] failed to set unknown class %s to player %s", className, this.player.getName()));
     }
 
     public void setBackupScoreboard(Scoreboard board) {
@@ -807,7 +817,7 @@ public class ArenaPlayer {
     }
 
     public void setStatus(final Status status) {
-        debug(this.get(),"{}>{}", this.name, status.name());
+        debug(this.getPlayer(),"{}>{}", this.player.getName(), status.name());
         this.status = status;
     }
 
@@ -828,10 +838,9 @@ public class ArenaPlayer {
     }
 
     public void showBloodParticles() {
-        Player player = this.get();
-        player.getLocation()
+        this.player.getLocation()
                 .getWorld()
-                .playEffect(player.getEyeLocation(), Effect.STEP_SOUND, Material.NETHER_WART_BLOCK);
+                .playEffect(this.player.getEyeLocation(), Effect.STEP_SOUND, Material.NETHER_WART_BLOCK);
 
     }
 
@@ -839,7 +848,7 @@ public class ArenaPlayer {
     public String toString() {
         final ArenaTeam team = this.getArenaTeam();
 
-        return team == null ? this.name : team.getColorCodeString() + this.name + ChatColor.RESET;
+        return team == null ? this.player.getName() : team.getColorCodeString() + this.player.getName() + ChatColor.RESET;
     }
 
     public void unsetSelection() {

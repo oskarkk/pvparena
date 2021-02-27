@@ -61,7 +61,7 @@ public class Debugger {
             if (sender instanceof Player) {
                 ArenaPlayer ap = ArenaPlayer.parsePlayer(sender.getName());
                 if (ap.getArena() != null) {
-                    formatAndPrint(ap.getArena(), ap.get(), FINE, string);
+                    formatAndPrint(ap.getArena(), ap.getPlayer(), FINE, string);
                     return;
                 }
             }

@@ -4,7 +4,6 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PAStatMap;
-import net.slipcor.pvparena.config.Debugger;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.events.PADeathEvent;
@@ -18,6 +17,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.reverseOrder;
@@ -299,7 +299,7 @@ public final class StatisticsManager {
 
             try {
                 if(playerName != null) {
-                    aPlayer = ArenaPlayer.addPlayer(playerName);
+                    aPlayer = ArenaPlayer.addPlayer(UUID.fromString(playerID));
                 } else {
                     continue;
                 }
@@ -349,13 +349,7 @@ public final class StatisticsManager {
 
         final PAStatMap map = aPlayer.getStatistics(arena);
 
-        String node = aPlayer.getName();
-
-        try {
-            node = aPlayer.get().getUniqueId().toString();
-        } catch (final Exception ignored) {
-
-        }
+        String node = aPlayer.getPlayer().getUniqueId().toString();
 
         final int losses = map.getStat(Type.LOSSES);
         config.set(arena.getName() + '.' + node + ".losses", losses);

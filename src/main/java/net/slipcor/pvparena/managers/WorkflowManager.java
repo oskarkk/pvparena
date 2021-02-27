@@ -332,13 +332,13 @@ public class WorkflowManager {
                 return;
             }
         }
-        debug(arena, aPlayer.get(), "handleRespawn!");
-        new InventoryRefillRunnable(arena, aPlayer.get(), drops);
+        debug(arena, aPlayer.getPlayer(), "handleRespawn!");
+        new InventoryRefillRunnable(arena, aPlayer.getPlayer(), drops);
         SpawnManager.respawn(arena, aPlayer, null);
-        EntityDamageEvent.DamageCause damageCause = ofNullable(aPlayer.get().getLastDamageCause())
+        EntityDamageEvent.DamageCause damageCause = ofNullable(aPlayer.getPlayer().getLastDamageCause())
                 .map(EntityDamageEvent::getCause)
                 .orElse(null);
-        arena.unKillPlayer(aPlayer.get(), damageCause, aPlayer.get().getKiller());
+        arena.unKillPlayer(aPlayer.getPlayer(), damageCause, aPlayer.getPlayer().getKiller());
 
     }
 

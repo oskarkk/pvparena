@@ -553,7 +553,7 @@ public class GoalInfect extends ArenaGoal {
             int pos = random.nextInt(team.getTeamMembers().size());
             debug(this.arena, "team " + team.getName() + " random " + pos);
             for (final ArenaPlayer ap : team.getTeamMembers()) {
-                debug(this.arena, ap.get(), "#" + pos + ": " + ap);
+                debug(this.arena, ap.getPlayer(), "#" + pos + ": " + ap);
                 this.getLifeMap().put(ap.getName(),
                         this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_NLIVES));
                 if (pos-- == 0) {
@@ -567,9 +567,9 @@ public class GoalInfect extends ArenaGoal {
         final ArenaTeam infectedTeam = new ArenaTeam("infected", "PINK");
         for (final ArenaTeam team : this.arena.getTeams()) {
             if (team.getTeamMembers().contains(infected)) {
-                final PATeamChangeEvent tcEvent = new PATeamChangeEvent(this.arena, infected.get(), team, infectedTeam);
+                final PATeamChangeEvent tcEvent = new PATeamChangeEvent(this.arena, infected.getPlayer(), team, infectedTeam);
                 Bukkit.getPluginManager().callEvent(tcEvent);
-                this.arena.updateScoreboardTeam(infected.get(), team, infectedTeam);
+                this.arena.updateScoreboardTeam(infected.getPlayer(), team, infectedTeam);
                 team.remove(infected);
             }
         }
@@ -578,15 +578,15 @@ public class GoalInfect extends ArenaGoal {
         final ArenaClass infectedClass = this.arena.getClass("%infected%");
         if (infectedClass != null) {
             infected.setArenaClass(infectedClass);
-            InventoryManager.clearInventory(infected.get());
-            infectedClass.equip(infected.get());
+            InventoryManager.clearInventory(infected.getPlayer());
+            infectedClass.equip(infected.getPlayer());
             for (final ArenaModule mod : this.arena.getMods()) {
-                mod.parseRespawn(infected.get(), infectedTeam, DamageCause.CUSTOM,
-                        infected.get());
+                mod.parseRespawn(infected.getPlayer(), infectedTeam, DamageCause.CUSTOM,
+                        infected.getPlayer());
             }
         }
 
-        this.arena.msg(infected.get(), Language.parse(this.arena, MSG.GOAL_INFECTED_YOU, infected.getName()));
+        this.arena.msg(infected.getPlayer(), Language.parse(this.arena, MSG.GOAL_INFECTED_YOU, infected.getName()));
         this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_INFECTED_PLAYER, infected.getName()));
 
         final Set<PASpawn> spawns = new HashSet<>(SpawnManager.getPASpawnsStartingWith(this.arena, "infected"));

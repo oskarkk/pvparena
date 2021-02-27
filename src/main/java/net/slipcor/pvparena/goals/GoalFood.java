@@ -362,7 +362,7 @@ public class GoalFood extends ArenaGoal implements Listener {
         }
 
         if (!validSpawns.contains(new PABlockLocation(event.getClickedBlock().getLocation()))) {
-            this.arena.msg(player.get(), Language.parse(this.arena, MSG.GOAL_FOOD_NOTYOURFOOD));
+            this.arena.msg(player.getPlayer(), Language.parse(this.arena, MSG.GOAL_FOOD_NOTYOURFOOD));
             event.setCancelled(true);
         }
 
@@ -487,10 +487,10 @@ public class GoalFood extends ArenaGoal implements Listener {
             if (totalAmount < 1) {
                 totalAmount = 1;
             }
-            for (final ArenaPlayer player : team.getTeamMembers()) {
+            for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
 
-                player.get().getInventory().addItem(new ItemStack(this.getFoodMap().get(team), totalAmount));
-                player.get().updateInventory();
+                arenaPlayer.getPlayer().getInventory().addItem(new ItemStack(this.getFoodMap().get(team), totalAmount));
+                arenaPlayer.getPlayer().updateInventory();
             }
             this.chestMap.put(SpawnManager.getBlockByExactName(this.arena, team.getName() + "foodchest").toLocation().getBlock(), team);
             this.getLifeMap().put(team.getName(),
@@ -510,7 +510,7 @@ public class GoalFood extends ArenaGoal implements Listener {
                 for (final ArenaPlayer ap : otherTeam.getTeamMembers()) {
                     if (ap.getStatus() == Status.FIGHT) {
                         ap.setStatus(Status.LOST);/*
-                        arena.removePlayer(ap.get(), CFG.TP_LOSE.toString(),
+                        arena.removePlayer(ap.getPlayer(), CFG.TP_LOSE.toString(),
 								true, false);*/
                     }
                 }

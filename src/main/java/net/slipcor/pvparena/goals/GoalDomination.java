@@ -144,13 +144,13 @@ public class GoalDomination extends ArenaGoal {
         final Set<String> result = new HashSet<>();
         final Location flagCenter = Utils.getCenteredLocation(loc);
 
-        for (final ArenaPlayer p : this.arena.getFighters()) {
+        for (final ArenaPlayer arenaPlayer : this.arena.getFighters()) {
 
-            if (p.get().getLocation().distance(flagCenter) > distance) {
+            if (arenaPlayer.getPlayer().getLocation().distance(flagCenter) > distance) {
                 continue;
             }
 
-            result.add(p.getArenaTeam().getName());
+            result.add(arenaPlayer.getArenaTeam().getName());
         }
 
         return result;
@@ -426,7 +426,7 @@ public class GoalDomination extends ArenaGoal {
 
                 ap.addLosses();
 				/*
-				arena.tpPlayerToCoordName(ap.get(), "spectator");
+				arena.tpPlayerToCoordName(ap.getPlayer(), "spectator");
 				ap.setTelePass(false);
 				*/
 

@@ -150,7 +150,7 @@ public class GoalSabotage extends ArenaGoal implements Listener {
                 debug(this.arena, player, "vFlag: " + vFlag);
 
                 if (aTeam.equals(pTeam.getName())) {
-                    this.arena.msg(aPlayer.get(), Language.parse(arena, MSG.ERROR_ERROR));
+                    this.arena.msg(aPlayer.getPlayer(), Language.parse(arena, MSG.ERROR_ERROR));
                     continue;
                 }
 
@@ -201,7 +201,7 @@ public class GoalSabotage extends ArenaGoal implements Listener {
 
                 ap.addStatistic(arena.getName(), Type.LOSSES, 1);
                 /*
-				arena.tpPlayerToCoordName(ap.get(), "spectator");
+				arena.tpPlayerToCoordName(ap.getPlayer(), "spectator");
 				ap.setTelePass(false);*/
 
                 ap.setStatus(Status.LOST);
@@ -320,7 +320,7 @@ public class GoalSabotage extends ArenaGoal implements Listener {
     @Override
     public void disconnect(final ArenaPlayer aPlayer) {
 
-        final String flag = this.getHeldFlagTeam(aPlayer.get());
+        final String flag = this.getHeldFlagTeam(aPlayer.getPlayer());
         if (flag != null) {
             final ArenaTeam flagTeam = this.arena.getTeam(flag);
             this.getFlagMap().remove(flag);
@@ -334,15 +334,15 @@ public class GoalSabotage extends ArenaGoal implements Listener {
         int pos = new Random().nextInt(players.size());
 
         for (final ArenaPlayer ap : players) {
-            debug(this.arena, ap.get(), "distributing sabotage: " + ap.getName());
+            debug(this.arena, ap.getPlayer(), "distributing sabotage: " + ap.getName());
             if (ap.equals(player)) {
                 continue;
             }
             if (--pos <= 1) {
                 this.getFlagMap().put(team.getName(), ap.getName());
-                ap.get().getInventory()
+                ap.getPlayer().getInventory()
                         .addItem(new ItemStack(Material.FLINT_AND_STEEL, 1));
-                this.arena.msg(ap.get(), Language.parse(this.arena, MSG.GOAL_SABOTAGE_YOUTNT));
+                this.arena.msg(ap.getPlayer(), Language.parse(this.arena, MSG.GOAL_SABOTAGE_YOUTNT));
                 return;
             }
         }

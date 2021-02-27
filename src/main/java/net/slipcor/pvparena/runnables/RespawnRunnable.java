@@ -22,7 +22,7 @@ public class RespawnRunnable implements Runnable {
 
     public RespawnRunnable(final Arena arena, final ArenaPlayer player, final String coord) {
         Validate.notNull(arena, "Arena cannot be null!");
-        debug(arena, player.get(), "RespawnRunnable constructor to spawn " + coord);
+        debug(arena, player.getPlayer(), "RespawnRunnable constructor to spawn " + coord);
         this.arena = arena;
         this.player = player;
         this.coordName = coord;
@@ -30,7 +30,7 @@ public class RespawnRunnable implements Runnable {
 
     @Override
     public void run() {
-        if (this.player.get() == null || this.player.getArenaTeam() == null) {
+        if (this.player.getPlayer() == null || this.player.getArenaTeam() == null) {
             PVPArena.getInstance().getLogger().warning("player null!");
             return;
         }

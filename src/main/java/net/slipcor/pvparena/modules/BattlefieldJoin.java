@@ -75,15 +75,15 @@ public class BattlefieldJoin extends ArenaModule {
     @Override
     public void commitJoin(final Player sender, final ArenaTeam team) {
         // standard join --> lounge
-        final ArenaPlayer player = ArenaPlayer.parsePlayer(sender.getName());
-        player.setLocation(new PALocation(player.get().getLocation()));
+        final ArenaPlayer arenaPlayer = ArenaPlayer.parsePlayer(sender.getName());
+        arenaPlayer.setLocation(new PALocation(arenaPlayer.getPlayer().getLocation()));
 
-        player.setArena(this.arena);
-        player.setStatus(Status.LOUNGE);
-        team.add(player);
+        arenaPlayer.setArena(this.arena);
+        arenaPlayer.setStatus(Status.LOUNGE);
+        team.add(arenaPlayer);
         final Set<PASpawn> spawns = new HashSet<>();
         if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
-            final String arenaClass = player.getArenaClass().getName();
+            final String arenaClass = arenaPlayer.getArenaClass().getName();
             spawns.addAll(SpawnManager.getPASpawnsStartingWith(this.arena, team.getName() + arenaClass + "spawn"));
         } else if (this.arena.isFreeForAll()) {
             if ("free".equals(team.getName())) {
@@ -99,32 +99,32 @@ public class BattlefieldJoin extends ArenaModule {
 
         for (final PASpawn spawn : spawns) {
             if (--pos < 0) {
-                this.arena.tpPlayerToCoordNameForJoin(player, spawn.getName(), true);
+                this.arena.tpPlayerToCoordNameForJoin(arenaPlayer, spawn.getName(), true);
                 break;
             }
         }
 
-        if (player.getState() == null) {
+        if (arenaPlayer.getState() == null) {
 
-            final Arena arena = player.getArena();
-
-
-            player.createState(player.get());
-            ArenaPlayer.backupAndClearInventory(arena, player.get());
-            player.dump();
+            final Arena arena = arenaPlayer.getArena();
 
 
-            if (player.getArenaTeam() != null && player.getArenaClass() == null) {
+            arenaPlayer.createState(arenaPlayer.getPlayer());
+            ArenaPlayer.backupAndClearInventory(arena, arenaPlayer.getPlayer());
+            arenaPlayer.dump();
+
+
+            if (arenaPlayer.getArenaTeam() != null && arenaPlayer.getArenaClass() == null) {
                 String autoClass = arena.getArenaConfig().getDefinedString(CFG.READY_AUTOCLASS);
-                if (arena.getArenaConfig().getBoolean(CFG.USES_PLAYERCLASSES) && arena.getClass(player.getName()) != null) {
-                    autoClass = player.getName();
+                if (arena.getArenaConfig().getBoolean(CFG.USES_PLAYERCLASSES) && arena.getClass(arenaPlayer.getName()) != null) {
+                    autoClass = arenaPlayer.getName();
                 }
                 if (autoClass != null && arena.getClass(autoClass) != null) {
-                    arena.chooseClass(player.get(), null, autoClass);
+                    arena.chooseClass(arenaPlayer.getPlayer(), null, autoClass);
                 }
             }
         } else {
-            PVPArena.getInstance().getLogger().warning("Player has a state while joining: " + player.getName());
+            PVPArena.getInstance().getLogger().warning("Player has a state while joining: " + arenaPlayer.getName());
         }
 
         class RunLater implements Runnable {

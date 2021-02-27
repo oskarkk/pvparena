@@ -40,12 +40,12 @@ public class ArenaTeam {
     /**
      * add an arena player to the arena team
      *
-     * @param player the player to add
+     * @param arenaPlayer the player to add
      */
-    public void add(final ArenaPlayer player) {
-        this.players.add(player);
-        debug(player.get(), "Added player " + player.getName() + " to team " + this.name);
-        player.getArena().increasePlayerCount();
+    public void add(final ArenaPlayer arenaPlayer) {
+        this.players.add(arenaPlayer);
+        debug(arenaPlayer.getPlayer(), "Added player " + arenaPlayer.getName() + " to team " + this.name);
+        arenaPlayer.getArena().increasePlayerCount();
     }
 
     /**

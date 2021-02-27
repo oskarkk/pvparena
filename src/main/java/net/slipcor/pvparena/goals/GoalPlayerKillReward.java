@@ -274,14 +274,14 @@ public class GoalPlayerKillReward extends ArenaGoal {
             for (final ArenaPlayer ap : plrs) {
                 this.getLifeMap().remove(ap.getName());
 				/*
-				arena.debug("faking player death", ap.get());
-				arena.removePlayer(ap.get(), CFG.TP_LOSE.toString(), true,
+				arena.debug("faking player death", ap.getPlayer());
+				arena.removePlayer(ap.getPlayer(), CFG.TP_LOSE.toString(), true,
 						false);*/
 
                 ap.setStatus(Status.LOST);
                 ap.addLosses();
 
-                //PlayerState.fullReset(arena, ap.get());
+                //PlayerState.fullReset(arena, ap.getPlayer());
             }
 
             if (ArenaManager.checkAndCommit(this.arena, false)) {

@@ -133,9 +133,9 @@ public abstract class ArenaRunnable extends BukkitRunnable {
                 if (ap.getName().equals(this.sPlayer)) {
                     continue;
                 }
-                if (ap.get() != null) {
-                    if (!ArenaModuleManager.checkCountOverride(this.arena, ap.get(), message)) {
-                        this.arena.msg(ap.get(), message);
+                if (ap.getPlayer() != null) {
+                    if (!ArenaModuleManager.checkCountOverride(this.arena, ap.getPlayer(), message)) {
+                        this.arena.msg(ap.getPlayer(), message);
                     }
                 }
             }
@@ -147,8 +147,8 @@ public abstract class ArenaRunnable extends BukkitRunnable {
             if (aPlayer.getArena() == null) {
                 Arena.pmsg(Bukkit.getPlayer(this.sPlayer), message);
             } else {
-                if (!ArenaModuleManager.checkCountOverride(aPlayer.getArena(), aPlayer.get(), message)) {
-                    aPlayer.getArena().msg(aPlayer.get(), message);
+                if (!ArenaModuleManager.checkCountOverride(aPlayer.getArena(), aPlayer.getPlayer(), message)) {
+                    aPlayer.getArena().msg(aPlayer.getPlayer(), message);
                 }
             }
         }
