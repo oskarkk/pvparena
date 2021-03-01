@@ -1,6 +1,5 @@
 package net.slipcor.pvparena.commands;
 
-import com.google.common.collect.ImmutableMap;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
@@ -14,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.List;
 
 public class PAA_ForceWin extends AbstractArenaCommand {
@@ -52,32 +50,32 @@ public class PAA_ForceWin extends AbstractArenaCommand {
                     // skip winner
                     continue;
                 }
-                for (final ArenaPlayer ap : team.getTeamMembers()) {
-                    if (ap.getStatus() == ArenaPlayer.Status.FIGHT) {
-                        ap.get().getWorld().strikeLightningEffect(ap.get().getLocation());
-                        final EntityDamageEvent e = new EntityDamageEvent(ap.get(), EntityDamageEvent.DamageCause.LIGHTNING,
+                for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
+                    if (arenaPlayer.getStatus() == ArenaPlayer.Status.FIGHT) {
+                        arenaPlayer.getPlayer().getWorld().strikeLightningEffect(arenaPlayer.getPlayer().getLocation());
+                        final EntityDamageEvent e = new EntityDamageEvent(arenaPlayer.getPlayer(), EntityDamageEvent.DamageCause.LIGHTNING,
                                 10.0);
-                        PlayerListener.finallyKillPlayer(arena, ap.get(), e);
+                        PlayerListener.finallyKillPlayer(arena, arenaPlayer.getPlayer(), e);
                     }
                 }
             }
         } else {
             // existing player name
-            ArenaPlayer aplayer = ArenaPlayer.parsePlayer(Bukkit.getPlayer(args[0]).getName());
+            ArenaPlayer aplayer = ArenaPlayer.parsePlayer(args[0]);
             if (!arena.equals(aplayer.getArena())) {
                 arena.msg(sender, Language.parse(MSG.ERROR_PLAYER_NOTFOUND, args[0]));
                 return;
             }
             if (arena.isFreeForAll()) {
-                for (ArenaPlayer ap : arena.getFighters()) {
-                    if (ap.equals(aplayer)) {
+                for (ArenaPlayer arenaPlayer : arena.getFighters()) {
+                    if (arenaPlayer.equals(aplayer)) {
                         continue;
                     }
-                    if (ap.getStatus() == ArenaPlayer.Status.FIGHT) {
-                        ap.get().getWorld().strikeLightningEffect(ap.get().getLocation());
-                        final EntityDamageEvent e = new EntityDamageEvent(ap.get(), EntityDamageEvent.DamageCause.LIGHTNING,
+                    if (arenaPlayer.getStatus() == ArenaPlayer.Status.FIGHT) {
+                        arenaPlayer.getPlayer().getWorld().strikeLightningEffect(arenaPlayer.getPlayer().getLocation());
+                        final EntityDamageEvent e = new EntityDamageEvent(arenaPlayer.getPlayer(), EntityDamageEvent.DamageCause.LIGHTNING,
                                 10.0);
-                        PlayerListener.finallyKillPlayer(arena, ap.get(), e);
+                        PlayerListener.finallyKillPlayer(arena, arenaPlayer.getPlayer(), e);
                     }
                 }
             } else {
@@ -86,12 +84,12 @@ public class PAA_ForceWin extends AbstractArenaCommand {
                         // skip winner
                         continue;
                     }
-                    for (final ArenaPlayer ap : team.getTeamMembers()) {
-                        if (ap.getStatus() == ArenaPlayer.Status.FIGHT) {
-                            ap.get().getWorld().strikeLightningEffect(ap.get().getLocation());
-                            final EntityDamageEvent e = new EntityDamageEvent(ap.get(), EntityDamageEvent.DamageCause.LIGHTNING,
+                    for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
+                        if (arenaPlayer.getStatus() == ArenaPlayer.Status.FIGHT) {
+                            arenaPlayer.getPlayer().getWorld().strikeLightningEffect(arenaPlayer.getPlayer().getLocation());
+                            final EntityDamageEvent e = new EntityDamageEvent(arenaPlayer.getPlayer(), EntityDamageEvent.DamageCause.LIGHTNING,
                                     10.0);
-                            PlayerListener.finallyKillPlayer(arena, ap.get(), e);
+                            PlayerListener.finallyKillPlayer(arena, arenaPlayer.getPlayer(), e);
                         }
                     }
                 }

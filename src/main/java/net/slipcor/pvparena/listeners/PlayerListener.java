@@ -147,7 +147,7 @@ public class PlayerListener implements Listener {
         }
         final ArenaTeam team = aPlayer.getArenaTeam();
         if (team == null ||
-                aPlayer.getStatus() == Status.DEAD && aPlayer.get() == null ||
+                aPlayer.getStatus() == Status.DEAD && aPlayer.getPlayer() == null ||
                 aPlayer.getStatus() == Status.LOST ||
                 aPlayer.getStatus() == Status.WATCH) {
             if (!arena.getArenaConfig().getBoolean(CFG.PERMS_SPECTALK)) {
@@ -601,7 +601,7 @@ public class PlayerListener implements Listener {
                 Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), new Runnable() {
                     @Override
                     public void run() {
-                        aPlayer.get().updateInventory();
+                        aPlayer.getPlayer().updateInventory();
                     }
                 }, 1L);
                 final boolean alreadyReady = aPlayer.getStatus() == Status.READY;
@@ -616,7 +616,7 @@ public class PlayerListener implements Listener {
                         arena.msg(player, Language.parse(arena, MSG.READY_DONE));
                         if (!alreadyReady) {
                             arena.broadcast(Language.parse(arena, MSG.PLAYER_READY, aPlayer
-                                    .getArenaTeam().colorizePlayer(aPlayer.get())));
+                                    .getArenaTeam().colorizePlayer(aPlayer.getPlayer())));
                         }
                     }
                     aPlayer.setStatus(Status.READY);
@@ -925,8 +925,8 @@ public class PlayerListener implements Listener {
                 @Override
                 public void run() {
                     for (final ArenaPlayer otherPlayer : arena.getFighters()) {
-                        if (otherPlayer.get() != null) {
-                            otherPlayer.get().showPlayer(PVPArena.getInstance(), player);
+                        if (otherPlayer.getPlayer() != null) {
+                            otherPlayer.getPlayer().showPlayer(PVPArena.getInstance(), player);
                         }
                     }
                 }

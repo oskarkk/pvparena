@@ -33,8 +33,8 @@ public class ArenaWarmupRunnable extends ArenaRunnable {
      * @param player the player to reset
      */
     public ArenaWarmupRunnable(final Arena arena, final ArenaPlayer player, final String team, final boolean spectator, final int seconds) {
-        super(MSG.TIMER_WARMINGUP.getNode(), seconds, player.get(), null, false);
-        debug(arena, player.get(), "ArenaWarmupRunnable constructor");
+        super(MSG.TIMER_WARMINGUP.getNode(), seconds, player.getPlayer(), null, false);
+        debug(arena, player.getPlayer(), "ArenaWarmupRunnable constructor");
         this.player = player;
         this.teamName = team;
         this.spectator = spectator;
@@ -43,19 +43,19 @@ public class ArenaWarmupRunnable extends ArenaRunnable {
 
     @Override
     protected void commit() {
-        debug(this.wArena, this.player.get(), "ArenaWarmupRunnable commiting");
+        debug(this.wArena, this.player.getPlayer(), "ArenaWarmupRunnable commiting");
         this.player.setStatus(Status.WARM);
         if (this.spectator) {
             this.wArena.hasNotPlayed(this.player);
-            (new PAG_Spectate()).commit(this.wArena, this.player.get(), null);
+            (new PAG_Spectate()).commit(this.wArena, this.player.getPlayer(), null);
         } else if (this.teamName == null) {
             this.wArena.hasNotPlayed(this.player);
-            (new PAG_Join()).commit(this.wArena, this.player.get(), null);
+            (new PAG_Join()).commit(this.wArena, this.player.getPlayer(), null);
         } else {
             this.wArena.hasNotPlayed(this.player);
             final String[] args = new String[1];
             args[0] = this.teamName;
-            (new PAG_Join()).commit(this.wArena, this.player.get(), args);
+            (new PAG_Join()).commit(this.wArena, this.player.getPlayer(), args);
         }
     }
 

@@ -192,26 +192,26 @@ public class TimedEndRunnable extends ArenaRunnable {
         if (this.arena.isFreeForAll() && this.arena.getTeams().size() <= 1) {
             debug(this.arena, "FFA and <= 1!");
             for (final ArenaTeam team : this.arena.getTeams()) {
-                final Set<ArenaPlayer> apSet = new HashSet<>(team.getTeamMembers());
+                final Set<ArenaPlayer> arenaPlayers = new HashSet<>(team.getTeamMembers());
 
-                for (final ArenaPlayer p : apSet) {
+                for (final ArenaPlayer arenaPlayer : arenaPlayers) {
                     if (winners.isEmpty()) {
-                        this.arena.removePlayer(p.get(), this.arena.getArenaConfig()
+                        this.arena.removePlayer(arenaPlayer.getPlayer(), this.arena.getArenaConfig()
                                 .getString(Config.CFG.TP_LOSE), true, false);
                     } else {
-                        if (winners.contains(p.getName())) {
+                        if (winners.contains(arenaPlayer.getName())) {
 
                             ArenaModuleManager.announce(
                                     this.arena,
-                                    Language.parse(this.arena, MSG.PLAYER_HAS_WON, p.getName()), WINNER);
+                                    Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()), WINNER);
                             this.arena.broadcast(Language.parse(this.arena, MSG.PLAYER_HAS_WON,
-                                    p.getName()));
+                                    arenaPlayer.getName()));
                         } else {
-                            if (p.getStatus() != ArenaPlayer.Status.FIGHT) {
+                            if (arenaPlayer.getStatus() != ArenaPlayer.Status.FIGHT) {
                                 continue;
                             }
-                            p.addLosses();
-                            p.setStatus(ArenaPlayer.Status.LOST);
+                            arenaPlayer.addLosses();
+                            arenaPlayer.setStatus(ArenaPlayer.Status.LOST);
                         }
                     }
                 }

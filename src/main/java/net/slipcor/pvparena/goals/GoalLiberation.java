@@ -184,7 +184,7 @@ public class GoalLiberation extends ArenaGoal {
                             }
                             iList.add(item.clone());
                         }
-                        new InventoryRefillRunnable(this.arena, jailedPlayer.get(), iList);
+                        new InventoryRefillRunnable(this.arena, jailedPlayer.getPlayer(), iList);
                         if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
                             player.getScoreboard().getObjective("lives").getScore(player.getName()).setScore(0);
                         }
@@ -359,16 +359,16 @@ public class GoalLiberation extends ArenaGoal {
                 } else {
                     returned = new ArrayList<>(event.getDrops());
                 }
-                new InventoryRefillRunnable(this.arena, aPlayer.get(), returned);
+                new InventoryRefillRunnable(this.arena, aPlayer.getPlayer(), returned);
 
                 String teamName = aPlayer.getArenaTeam().getName();
 
                 Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), new RespawnRunnable(this.arena, aPlayer, teamName + "jail"), 1L);
 
-                this.arena.unKillPlayer(aPlayer.get(), ofNullable(aPlayer.get().getLastDamageCause()).map(EntityDamageEvent::getCause).orElse(null), aPlayer.get().getKiller());
+                this.arena.unKillPlayer(aPlayer.getPlayer(), ofNullable(aPlayer.getPlayer().getLastDamageCause()).map(EntityDamageEvent::getCause).orElse(null), aPlayer.getPlayer().getKiller());
 
                 if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
-                    aPlayer.get().getScoreboard().getObjective("lives").getScore(aPlayer.getName()).setScore(101);
+                    aPlayer.getPlayer().getScoreboard().getObjective("lives").getScore(aPlayer.getName()).setScore(101);
                 }
             } else {
                 this.getLifeMap().remove(player.getName());

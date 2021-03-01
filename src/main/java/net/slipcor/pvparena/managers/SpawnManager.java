@@ -624,7 +624,7 @@ public final class SpawnManager {
         }
 
         // Trick to avoid death screen
-        Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.getInstance(), () -> aPlayer.get().closeInventory(), 1);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.getInstance(), () -> aPlayer.getPlayer().closeInventory(), 1);
 
         if (overrideSpawn == null) {
 
@@ -695,12 +695,12 @@ public final class SpawnManager {
 
                 final Set<PALocation> pLocs = new HashSet<>();
 
-                for (final ArenaPlayer app : aPlayer.getArenaTeam().getTeamMembers()) {
-                    if (app.getName().equals(aPlayer.getName())) {
+                for (final ArenaPlayer arenaPlayer : aPlayer.getArenaTeam().getTeamMembers()) {
+                    if (arenaPlayer.getName().equals(aPlayer.getName())) {
                         continue;
                     }
-                    pLocs.add(new PALocation(app.get().getLocation()));
-                    debug(arena, "pos of " + app.getName() + new PALocation(app.get().getLocation()));
+                    pLocs.add(new PALocation(arenaPlayer.getPlayer().getLocation()));
+                    debug(arena, "pos of " + arenaPlayer.getName() + new PALocation(arenaPlayer.getPlayer().getLocation()));
                 }
                 debug(arena, "pLocs.size: " + pLocs.size());
 

@@ -45,7 +45,7 @@ public class PAI_Ready extends AbstractArenaCommand {
 
         final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(sender.getName());
 
-        if (!arena.hasPlayer(aPlayer.get())) {
+        if (!arena.hasPlayer(aPlayer.getPlayer())) {
 
             arena.msg(sender, Language.parse(arena, MSG.ERROR_NOT_IN_ARENA));
             return;
@@ -64,7 +64,7 @@ public class PAI_Ready extends AbstractArenaCommand {
 
             if (aPlayer.getStatus() != Status.READY) {
                 arena.msg(sender, Language.parse(arena, MSG.READY_DONE));
-                arena.broadcast(Language.parse(arena, MSG.PLAYER_READY, aPlayer.getArenaTeam().colorizePlayer(aPlayer.get())));
+                arena.broadcast(Language.parse(arena, MSG.PLAYER_READY, aPlayer.getArenaTeam().colorizePlayer(aPlayer.getPlayer())));
             }
 
             aPlayer.setStatus(Status.READY);

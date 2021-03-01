@@ -495,48 +495,48 @@ public class ArenaRegion {
     }
 
     public void tick() {
-        for (final ArenaPlayer ap : this.arena.getEveryone()) {
-            if (ap.get() == null || ap.isTeleporting()) {
+        for (final ArenaPlayer arenaPlayer : this.arena.getEveryone()) {
+            if (arenaPlayer.getPlayer() == null || arenaPlayer.isTeleporting()) {
                 continue;
             }
-            final PABlockLocation pLoc = new PABlockLocation(ap.get().getLocation());
+            final PABlockLocation pLoc = new PABlockLocation(arenaPlayer.getPlayer().getLocation());
             if (this.flags.contains(RegionFlag.DEATH) && this.shape.contains(pLoc)) {
-                Arena.pmsg(ap.get(), Language.parse(this.arena, MSG.NOTICE_YOU_DEATH));
+                Arena.pmsg(arenaPlayer.getPlayer(), Language.parse(this.arena, MSG.NOTICE_YOU_DEATH));
                 ArenaGoal goal = this.arena.getGoal();
                 if (goal.getName().endsWith("DeathMatch")) {
-                    if (goal.getLifeMap().containsKey(ap.getName())) {
-                        final int lives = goal.getLifeMap().get(ap.getName()) + 1;
-                        goal.getLifeMap().put(ap.getName(), lives);
-                    } else if (goal.getLifeMap().containsKey(ap.getArenaTeam().getName())) {
-                        final int lives = goal.getLifeMap().get(ap.getArenaTeam().getName()) + 1;
-                        goal.getLifeMap().put(ap.getArenaTeam().getName(), lives);
+                    if (goal.getLifeMap().containsKey(arenaPlayer.getName())) {
+                        final int lives = goal.getLifeMap().get(arenaPlayer.getName()) + 1;
+                        goal.getLifeMap().put(arenaPlayer.getName(), lives);
+                    } else if (goal.getLifeMap().containsKey(arenaPlayer.getArenaTeam().getName())) {
+                        final int lives = goal.getLifeMap().get(arenaPlayer.getArenaTeam().getName()) + 1;
+                        goal.getLifeMap().put(arenaPlayer.getArenaTeam().getName(), lives);
                     }
                 }
 
-                ap.get().setLastDamageCause(
-                        new EntityDamageEvent(ap.get(), DamageCause.CUSTOM,
+                arenaPlayer.getPlayer().setLastDamageCause(
+                        new EntityDamageEvent(arenaPlayer.getPlayer(), DamageCause.CUSTOM,
                                 1003.0));
-                ap.get().damage(1000);
+                arenaPlayer.getPlayer().damage(1000);
             }
             if (this.flags.contains(RegionFlag.WIN) && this.shape.contains(pLoc)) {
                 for (final ArenaTeam team : this.arena.getTeams()) {
                     if (!this.arena.isFreeForAll()
-                            && team.getTeamMembers().contains(ap)) {
+                            && team.getTeamMembers().contains(arenaPlayer)) {
                         // skip winning team
                         continue;
                     }
                     for (final ArenaPlayer ap2 : team.getTeamMembers()) {
                         if (this.arena.isFreeForAll()
-                                && ap2.getName().equals(ap.getName())) {
+                                && ap2.getName().equals(arenaPlayer.getName())) {
                             continue;
                         }
                         if (ap2.getStatus() == Status.FIGHT) {
                             Bukkit.getWorld(this.world).strikeLightningEffect(
-                                    ap2.get().getLocation());
+                                    ap2.getPlayer().getLocation());
                             final EntityDamageEvent event = new EntityDamageEvent(
-                                    ap2.get(), DamageCause.LIGHTNING, 10.0);
+                                    ap2.getPlayer(), DamageCause.LIGHTNING, 10.0);
                             PlayerListener.finallyKillPlayer(this.arena,
-                                    ap2.get(), event);
+                                    ap2.getPlayer(), event);
                         }
                     }
                     return;
@@ -544,17 +544,17 @@ public class ArenaRegion {
             }
             if (this.flags.contains(RegionFlag.LOSE) && this.shape.contains(pLoc)) {
                 if (this.arena.isFreeForAll()) {
-                    if (ap.getStatus() == Status.FIGHT) {
+                    if (arenaPlayer.getStatus() == Status.FIGHT) {
                         Bukkit.getWorld(this.world).strikeLightningEffect(
-                                ap.get().getLocation());
+                                arenaPlayer.getPlayer().getLocation());
                         final EntityDamageEvent event = new EntityDamageEvent(
-                                ap.get(), DamageCause.LIGHTNING, 10.0);
+                                arenaPlayer.getPlayer(), DamageCause.LIGHTNING, 10.0);
                         PlayerListener
-                                .finallyKillPlayer(this.arena, ap.get(), event);
+                                .finallyKillPlayer(this.arena, arenaPlayer.getPlayer(), event);
                     }
                 } else {
                     for (final ArenaTeam team : this.arena.getTeams()) {
-                        if (!team.getTeamMembers().contains(ap)) {
+                        if (!team.getTeamMembers().contains(arenaPlayer)) {
                             // skip winner
                             continue;
                         }
@@ -562,11 +562,11 @@ public class ArenaRegion {
                             if (ap2.getStatus() == Status.FIGHT) {
                                 Bukkit.getWorld(this.world)
                                         .strikeLightningEffect(
-                                                ap2.get().getLocation());
+                                                ap2.getPlayer().getLocation());
                                 final EntityDamageEvent event = new EntityDamageEvent(
-                                        ap2.get(), DamageCause.LIGHTNING,10.0);
+                                        ap2.getPlayer(), DamageCause.LIGHTNING,10.0);
                                 PlayerListener.finallyKillPlayer(this.arena,
-                                        ap2.get(), event);
+                                        ap2.getPlayer(), event);
                             }
                         }
                         return;
@@ -575,28 +575,28 @@ public class ArenaRegion {
             }
             if (this.flags.contains(RegionFlag.NOCAMP)) {
                 if (this.shape.contains(pLoc)) {
-                    final Location loc = this.playerLocations.get(ap.getName());
+                    final Location loc = this.playerLocations.get(arenaPlayer.getName());
                     if (loc == null) {
-                        Arena.pmsg(ap.get(),
+                        Arena.pmsg(arenaPlayer.getPlayer(),
                                 Language.parse(this.arena, MSG.NOTICE_YOU_NOCAMP));
                     } else {
-                        if (loc.distance(ap.get().getLocation()) < 3) {
-                            ap.get().setLastDamageCause(
-                                    new EntityDamageEvent(ap.get(),
+                        if (loc.distance(arenaPlayer.getPlayer().getLocation()) < 3) {
+                            arenaPlayer.getPlayer().setLastDamageCause(
+                                    new EntityDamageEvent(arenaPlayer.getPlayer(),
                                             DamageCause.CUSTOM, this.arena.getArenaConfig().getInt(CFG.DAMAGE_SPAWNCAMP)));
-                            ap.get().damage(
+                            arenaPlayer.getPlayer().damage(
                                     this.arena.getArenaConfig().getInt(
                                             CFG.DAMAGE_SPAWNCAMP));
                         }
                     }
-                    this.playerLocations.put(ap.getName(), ap.get()
+                    this.playerLocations.put(arenaPlayer.getName(), arenaPlayer.getPlayer()
                             .getLocation().getBlock().getLocation());
                 } else {
-                    this.playerLocations.remove(ap.getName());
+                    this.playerLocations.remove(arenaPlayer.getName());
                 }
             }
             if (this.type == RegionType.BATTLE) {
-                if (ap.getStatus() != Status.FIGHT) {
+                if (arenaPlayer.getStatus() != Status.FIGHT) {
                     continue;
                 }
 
@@ -612,21 +612,21 @@ public class ArenaRegion {
                 if (!found) {
                     debug("escape due to '!found' #1");
                     debug("location: {}", pLoc);
-                    Arena.pmsg(ap.get(), Language.parse(this.arena, MSG.NOTICE_YOU_ESCAPED));
+                    Arena.pmsg(arenaPlayer.getPlayer(), Language.parse(this.arena, MSG.NOTICE_YOU_ESCAPED));
                     if (this.arena.getArenaConfig().getBoolean(
                             CFG.GENERAL_LEAVEDEATH)) {
-                        ap.get().setLastDamageCause(
-                                new EntityDamageEvent(ap.get(),
+                        arenaPlayer.getPlayer().setLastDamageCause(
+                                new EntityDamageEvent(arenaPlayer.getPlayer(),
                                         DamageCause.CUSTOM, 1004.0));
-                        // ap.get().setHealth(0);
-                        ap.get().damage(1000);
+                        // ap.getPlayer().setHealth(0);
+                        arenaPlayer.getPlayer().damage(1000);
                     } else {
-                        this.arena.playerLeave(ap.get(), CFG.TP_EXIT, false, false, false);
+                        this.arena.playerLeave(arenaPlayer.getPlayer(), CFG.TP_EXIT, false, false, false);
                     }
                 }
             } else if (this.type == RegionType.WATCH) {
 
-                if (ap.getStatus() != Status.WATCH) {
+                if (arenaPlayer.getStatus() != Status.WATCH) {
                     continue;
                 }
                 Set<ArenaRegion> regions = this.arena.getRegionsByType(RegionType.WATCH);
@@ -642,13 +642,13 @@ public class ArenaRegion {
 
                 if (!found) {
                     debug("escape due to '!found' #2");
-                    Arena.pmsg(ap.get(), Language.parse(this.arena, MSG.NOTICE_YOU_ESCAPED));
+                    Arena.pmsg(arenaPlayer.getPlayer(), Language.parse(this.arena, MSG.NOTICE_YOU_ESCAPED));
                     debug("location: {}", pLoc);
-                    this.arena.playerLeave(ap.get(), CFG.TP_EXIT, false, false, false);
+                    this.arena.playerLeave(arenaPlayer.getPlayer(), CFG.TP_EXIT, false, false, false);
                 }
             } else if (this.type == RegionType.LOUNGE) {
-                if (ap.getStatus() != Status.READY
-                        && ap.getStatus() != Status.LOUNGE) {
+                if (arenaPlayer.getStatus() != Status.READY
+                        && arenaPlayer.getStatus() != Status.LOUNGE) {
                     continue;
                 }
 
@@ -666,9 +666,9 @@ public class ArenaRegion {
 
                 if (!found) {
                     debug("escape due to '!found' #3");
-                    Arena.pmsg(ap.get(), Language.parse(this.arena, MSG.NOTICE_YOU_ESCAPED));
+                    Arena.pmsg(arenaPlayer.getPlayer(), Language.parse(this.arena, MSG.NOTICE_YOU_ESCAPED));
                     debug("location: {}", pLoc);
-                    this.arena.playerLeave(ap.get(), CFG.TP_EXIT, false, false, false);
+                    this.arena.playerLeave(arenaPlayer.getPlayer(), CFG.TP_EXIT, false, false, false);
                 }
             }
         }

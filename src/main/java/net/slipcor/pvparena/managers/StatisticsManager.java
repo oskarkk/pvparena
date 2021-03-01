@@ -4,7 +4,6 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PAStatMap;
-import net.slipcor.pvparena.config.Debugger;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.events.PADeathEvent;
@@ -18,6 +17,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.reverseOrder;
@@ -282,64 +282,7 @@ public final class StatisticsManager {
             return;
         }
 
-        debug(arena, "loading statistics!");
-        boolean foundBroken = false;
-        for (final String playerID : config.getConfigurationSection(arena.getName()).getKeys(false)) {
-
-
-            String playerName = null;
-
-            if (config.getConfigurationSection(arena.getName()).contains(playerID+".name")) {
-                playerName = config.getConfigurationSection(arena.getName()).getString(playerID+".name");
-            }
-
-            debug(arena, "loading stats: " + playerName);
-
-            final ArenaPlayer aPlayer;
-
-            try {
-                if(playerName != null) {
-                    aPlayer = ArenaPlayer.addPlayer(playerName);
-                } else {
-                    continue;
-                }
-
-            } catch (IllegalArgumentException e) {
-                PVPArena.getInstance().getLogger().warning("invalid player ID: " + playerID);
-                continue;
-            }
-
-            for (final Type ttt : Type.values()) {
-                aPlayer.setStatistic(arena.getName(), ttt, 0);
-            }
-
-            final int losses = config.getInt(arena.getName() + '.' + playerID + ".losses", 0);
-            aPlayer.addStatistic(arena.getName(), Type.LOSSES, losses);
-
-            final int wins = config.getInt(arena.getName() + '.' + playerID + ".wins", 0);
-            aPlayer.addStatistic(arena.getName(), Type.WINS, wins);
-
-            final int kills = config.getInt(arena.getName() + '.' + playerID + ".kills", 0);
-            aPlayer.addStatistic(arena.getName(), Type.KILLS, kills);
-
-            final int deaths = config.getInt(arena.getName() + '.' + playerID + ".deaths", 0);
-            aPlayer.addStatistic(arena.getName(), Type.DEATHS, deaths);
-
-            final int damage = config.getInt(arena.getName() + '.' + playerID + ".damage", 0);
-            aPlayer.addStatistic(arena.getName(), Type.DAMAGE, damage);
-
-            final int maxdamage = config.getInt(arena.getName() + '.' + playerID + ".maxdamage", 0);
-            aPlayer.addStatistic(arena.getName(), Type.MAXDAMAGE, maxdamage);
-
-            final int damagetake = config.getInt(arena.getName() + '.' + playerID + ".damagetake", 0);
-            aPlayer.addStatistic(arena.getName(), Type.DAMAGETAKE, damagetake);
-
-            final int maxdamagetake = config.getInt(arena.getName() + '.' + playerID + ".maxdamagetake", 0);
-            aPlayer.addStatistic(arena.getName(), Type.MAXDAMAGETAKE, maxdamagetake);
-        }
-        if (foundBroken) {
-            save();
-        }
+        debug(arena, "loading statistics not implemented yet.");
     }
 
     public static void update(final Arena arena, final ArenaPlayer aPlayer) {
@@ -349,13 +292,7 @@ public final class StatisticsManager {
 
         final PAStatMap map = aPlayer.getStatistics(arena);
 
-        String node = aPlayer.getName();
-
-        try {
-            node = aPlayer.get().getUniqueId().toString();
-        } catch (final Exception ignored) {
-
-        }
+        String node = aPlayer.getPlayer().getUniqueId().toString();
 
         final int losses = map.getStat(Type.LOSSES);
         config.set(arena.getName() + '.' + node + ".losses", losses);

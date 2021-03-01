@@ -53,7 +53,7 @@ public class PAG_Leave extends AbstractArenaCommand {
             }
         }
 
-        if (!arena.hasPlayer(aPlayer.get())) {
+        if (!arena.hasPlayer(aPlayer.getPlayer())) {
             if(PAA_Edit.activeEdits.containsKey(sender.getName())) {
                 new PAA_Edit().commit(arena, sender, args);
             } else {
@@ -61,8 +61,8 @@ public class PAG_Leave extends AbstractArenaCommand {
             }
             return;
         }
-        arena.callLeaveEvent(aPlayer.get());
-        arena.playerLeave(aPlayer.get(), CFG.TP_EXIT, false, false, false);
+        arena.callLeaveEvent(aPlayer.getPlayer());
+        arena.playerLeave(aPlayer.getPlayer(), CFG.TP_EXIT, false, false, false);
     }
 
     @Override

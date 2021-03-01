@@ -92,8 +92,8 @@ public class GoalCheckPoints extends ArenaGoal {
         final Set<String> result = new HashSet<>();
 
         for (final ArenaPlayer p : this.arena.getFighters()) {
-            if (p.get().getLocation().getWorld().getName().equals(loc.getWorld().getName())) {
-                if (p.get().getLocation().distance(loc) > distance) {
+            if (p.getPlayer().getLocation().getWorld().getName().equals(loc.getWorld().getName())) {
+                if (p.getPlayer().getLocation().distance(loc) > distance) {
                     continue;
                 }
 
@@ -203,9 +203,9 @@ public class GoalCheckPoints extends ArenaGoal {
             ap.setTelePass(true);
             int value = cpLives - this.getLifeMap().get(ap.getName());
             if(value == 0) {
-                ap.get().teleport(SpawnManager.getSpawnByExactName(this.arena, "spawn").toLocation());
+                ap.getPlayer().teleport(SpawnManager.getSpawnByExactName(this.arena, "spawn").toLocation());
             } else {
-                ap.get().teleport(SpawnManager.getSpawnByExactName(this.arena, "checkpoint"+value).toLocation());
+                ap.getPlayer().teleport(SpawnManager.getSpawnByExactName(this.arena, "checkpoint"+value).toLocation());
             }
             ap.setTelePass(false);
             return;

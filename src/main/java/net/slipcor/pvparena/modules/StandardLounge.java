@@ -130,9 +130,9 @@ public class StandardLounge extends ArenaModule {
     public void commitJoin(final Player sender, final ArenaTeam team) {
         // standard join --> lounge
         final ArenaPlayer player = ArenaPlayer.parsePlayer(sender.getName());
-        player.setLocation(new PALocation(player.get().getLocation()));
+        player.setLocation(new PALocation(player.getPlayer().getLocation()));
 
-        // ArenaPlayer.prepareInventory(arena, ap.get());
+        // ArenaPlayer.prepareInventory(arena, ap.getPlayer());
         player.setArena(this.arena);
         team.add(player);
 
@@ -180,15 +180,15 @@ public class StandardLounge extends ArenaModule {
 
             final Arena arena = player.getArena();
 
-            player.createState(player.get());
-            ArenaPlayer.backupAndClearInventory(arena, player.get());
+            player.createState(player.getPlayer());
+            ArenaPlayer.backupAndClearInventory(arena, player.getPlayer());
             player.dump();
 
 
             if (player.getArenaTeam() != null && player.getArenaClass() == null) {
                 final String autoClass = arena.getArenaConfig().getDefinedString(CFG.READY_AUTOCLASS);
                 if (autoClass != null && arena.getClass(autoClass) != null) {
-                    arena.chooseClass(player.get(), null, autoClass);
+                    arena.chooseClass(player.getPlayer(), null, autoClass);
                 }
             }
         } else {

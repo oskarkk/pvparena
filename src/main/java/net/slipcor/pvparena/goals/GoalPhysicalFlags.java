@@ -226,7 +226,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal implements Listener {
         if (this.getFlagMap().isEmpty()) {
             return;
         }
-        final String sTeam = this.getHeldFlagTeam(aPlayer.get());
+        final String sTeam = this.getHeldFlagTeam(aPlayer.getPlayer());
         final ArenaTeam flagTeam = this.arena.getTeam(sTeam);
 
         if (flagTeam == null) {
@@ -238,8 +238,8 @@ public class GoalPhysicalFlags extends AbstractFlagGoal implements Listener {
 
                 this.getFlagMap().remove(TOUCHDOWN);
                 if (this.getHeadGearMap() != null && this.getHeadGearMap().get(aPlayer.getName()) != null) {
-                    if (aPlayer.get() != null) {
-                        aPlayer.get().getInventory()
+                    if (aPlayer.getPlayer() != null) {
+                        aPlayer.getPlayer().getInventory()
                                 .setHelmet(this.getHeadGearMap().get(aPlayer.getName()).clone());
                     }
                     this.getHeadGearMap().remove(aPlayer.getName());
@@ -254,8 +254,8 @@ public class GoalPhysicalFlags extends AbstractFlagGoal implements Listener {
                     + ChatColor.YELLOW, flagTeam.getName() + ChatColor.YELLOW));
             this.getFlagMap().remove(flagTeam.getName());
             if (this.getHeadGearMap() != null && this.getHeadGearMap().get(aPlayer.getName()) != null) {
-                if (aPlayer.get() != null) {
-                    aPlayer.get().getInventory()
+                if (aPlayer.getPlayer() != null) {
+                    aPlayer.getPlayer().getInventory()
                             .setHelmet(this.getHeadGearMap().get(aPlayer.getName()).clone());
                 }
                 this.getHeadGearMap().remove(aPlayer.getName());
@@ -312,8 +312,8 @@ public class GoalPhysicalFlags extends AbstractFlagGoal implements Listener {
 
                 this.getFlagMap().remove(TOUCHDOWN);
                 if (this.getHeadGearMap() != null && this.getHeadGearMap().get(aPlayer.getName()) != null) {
-                    if (aPlayer.get() != null) {
-                        aPlayer.get().getInventory().setHelmet(this.getHeadGearMap().get(aPlayer.getName()).clone());
+                    if (aPlayer.getPlayer() != null) {
+                        aPlayer.getPlayer().getInventory().setHelmet(this.getHeadGearMap().get(aPlayer.getName()).clone());
                     }
                     this.getHeadGearMap().remove(aPlayer.getName());
                 }

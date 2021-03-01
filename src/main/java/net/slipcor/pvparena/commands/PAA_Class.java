@@ -81,9 +81,9 @@ public class PAA_Class extends AbstractArenaCommand {
         } else if ("load".equalsIgnoreCase(args[0])) {
             final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(sender.getName());
             if(aPlayer.getArenaClass() == null) {
-                ArenaPlayer.backupAndClearInventory(arena, aPlayer.get());
+                ArenaPlayer.backupAndClearInventory(arena, aPlayer.getPlayer());
             } else {
-                InventoryManager.clearInventory(aPlayer.get());
+                InventoryManager.clearInventory(aPlayer.getPlayer());
             }
             arena.selectClass(aPlayer, args[1]);
         } else if ("remove".equalsIgnoreCase(args[0])) {

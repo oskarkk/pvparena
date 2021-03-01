@@ -85,10 +85,10 @@ public class PAG_Join extends AbstractArenaCommand {
             if (!arena.getArenaConfig().getBoolean(CFG.PERMS_ALWAYSJOININBATTLE) &&
                     !arena.getArenaConfig().getBoolean(CFG.JOIN_ONLYIFHASPLAYED) &&
                     arena.hasAlreadyPlayed(aPlayer.getName())) {
-                debug(arena, aPlayer.get(), "Join_2");
-                arena.msg(aPlayer.get(), Language.parse(arena, MSG.ERROR_ARENA_ALREADY_PART_OF, ArenaManager.getIndirectArenaName(arena)));
+                debug(arena, aPlayer.getPlayer(), "Join_2");
+                arena.msg(aPlayer.getPlayer(), Language.parse(arena, MSG.ERROR_ARENA_ALREADY_PART_OF, ArenaManager.getIndirectArenaName(arena)));
             } else {
-                WorkflowManager.handleJoin(arena, aPlayer.get(), args);
+                WorkflowManager.handleJoin(arena, aPlayer.getPlayer(), args);
             }
         } else {
             final Arena pArena = aPlayer.getArena();

@@ -264,7 +264,7 @@ public class GoalPlayerLives extends ArenaGoal {
     public void parseStart() {
         for (final ArenaTeam team : this.arena.getTeams()) {
             for (final ArenaPlayer ap : team.getTeamMembers()) {
-                this.updateLives(ap.get(), this.arena.getArenaConfig().getInt(CFG.GOAL_PLIVES_LIVES));
+                this.updateLives(ap.getPlayer(), this.arena.getArenaConfig().getInt(CFG.GOAL_PLIVES_LIVES));
             }
         }
     }
