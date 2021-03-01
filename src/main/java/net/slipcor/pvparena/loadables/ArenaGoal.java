@@ -17,11 +17,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.*;
 
@@ -108,6 +111,9 @@ public class ArenaGoal implements IArenaCommandHandler {
     public void checkBreak(BlockBreakEvent event) throws GameplayException {
     }
 
+    public void checkExplode(EntityExplodeEvent event) throws GameplayException {
+    }
+
     public void checkCraft(CraftItemEvent result) throws GameplayException {
     }
 
@@ -121,6 +127,9 @@ public class ArenaGoal implements IArenaCommandHandler {
     }
 
     public void checkPlace(BlockPlaceEvent event) throws GameplayException {
+    }
+
+    public void checkItemTransfer(InventoryMoveItemEvent event) throws GameplayException {
     }
 
     /**
@@ -210,10 +219,10 @@ public class ArenaGoal implements IArenaCommandHandler {
      * hook into an interacting player
      *
      * @param player       the interacting player
-     * @param clickedBlock the block being clicked
+     * @param event        the interact event
      * @return true if the goals handle the event
      */
-    public boolean checkInteract(final Player player, final Block clickedBlock) {
+    public boolean checkInteract(final Player player, final PlayerInteractEvent event) {
         return false;
     }
 
@@ -286,16 +295,6 @@ public class ArenaGoal implements IArenaCommandHandler {
      * @param force true, if we need to force
      */
     public void commitEnd(final boolean force) {
-        throw new IllegalStateException(this.getName());
-    }
-
-    /**
-     * commit player interaction
-     *
-     * @param player       the interacting player
-     * @param clickedBlock the block being interacted with
-     */
-    public void commitInteract(final Player player, final Block clickedBlock) {
         throw new IllegalStateException(this.getName());
     }
 

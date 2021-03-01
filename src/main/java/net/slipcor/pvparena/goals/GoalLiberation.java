@@ -29,6 +29,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -116,11 +117,12 @@ public class GoalLiberation extends ArenaGoal {
      * hook into an interacting player
      *
      * @param player the interacting player
-     * @param block  the block being clicked
+     * @param event  the interact event
      * @return true if event has been handled
      */
     @Override
-    public boolean checkInteract(final Player player, final Block block) {
+    public boolean checkInteract(final Player player, final PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
         if (block == null) {
             return false;
         }

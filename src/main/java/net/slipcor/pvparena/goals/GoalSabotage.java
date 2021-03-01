@@ -26,10 +26,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -48,7 +47,7 @@ import static net.slipcor.pvparena.config.Debugger.debug;
  * @author slipcor
  */
 
-public class GoalSabotage extends ArenaGoal implements Listener {
+public class GoalSabotage extends ArenaGoal {
 
     public GoalSabotage() {
         super("Sabotage");
@@ -100,11 +99,12 @@ public class GoalSabotage extends ArenaGoal implements Listener {
      * hook into an interacting player
      *
      * @param player the interacting player
-     * @param block  the block being clicked
+     * @param event  the interact event
      * @return true if event has been handled
      */
     @Override
-    public boolean checkInteract(final Player player, final Block block) {
+    public boolean checkInteract(final Player player, final PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
         if (block == null) {
             return false;
         }
@@ -116,7 +116,7 @@ public class GoalSabotage extends ArenaGoal implements Listener {
         }
         debug(this.arena, player, "flag click!");
 
-        if (player.getEquipment().getItemInMainHand() == null
+        if (player.getEquipment() == null
                 || player.getEquipment().getItemInMainHand().getType() != Material.FLINT_AND_STEEL) {
             debug(this.arena, player, "block, but no sabotage items");
             return false;
@@ -291,10 +291,6 @@ public class GoalSabotage extends ArenaGoal implements Listener {
     }
 
     @Override
-    public void commitInteract(final Player player, final Block clickedBlock) {
-    }
-
-    @Override
     public boolean commitSetFlag(final Player player, final Block block) {
 
         debug(this.arena, player, "trying to set a tnt");
@@ -310,11 +306,6 @@ public class GoalSabotage extends ArenaGoal implements Listener {
         PAA_Region.activeSelections.remove(player.getName());
         this.flagName = "";
         return true;
-    }
-
-    @Override
-    public void configParse(final YamlConfiguration cfg) {
-        Bukkit.getPluginManager().registerEvents(this, PVPArena.getInstance());
     }
 
     @Override
@@ -485,8 +476,8 @@ public class GoalSabotage extends ArenaGoal implements Listener {
         this.disconnect(ArenaPlayer.parsePlayer(player.getName()));
     }
 
-    @EventHandler
-    public void onTNTExplode(final EntityExplodeEvent event) {
+    @Override
+    public void checkExplode(final EntityExplodeEvent event) {
         if (event.getEntityType() != EntityType.PRIMED_TNT) {
             return;
         }
@@ -501,8 +492,7 @@ public class GoalSabotage extends ArenaGoal implements Listener {
             }
         }
 
-        final PABlockLocation tLoc = new PABlockLocation(event.getEntity()
-                .getLocation());
+        final PABlockLocation tLoc = new PABlockLocation(event.getEntity().getLocation());
 
         for (final String sTeam : this.arena.getTeamNames()) {
             final Set<PABlockLocation> locs = SpawnManager.getBlocksStartingWith(this.arena, sTeam + "tnt");

@@ -6,8 +6,8 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
-import net.slipcor.pvparena.config.Debugger;
 import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.exceptions.GameplayException;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
 import net.slipcor.pvparena.loadables.ArenaRegion;
 import net.slipcor.pvparena.loadables.ArenaRegion.RegionFlag;
@@ -116,6 +116,13 @@ public class EntityListener implements Listener {
         if (!arena.getArenaConfig().getBoolean(CFG.PROTECT_ENABLED)
                 || !(event.getEntity() instanceof TNTPrimed)
                 && !(event.getEntity() instanceof Creeper)) {
+
+            try {
+                arena.getGoal().checkExplode(event);
+            } catch (GameplayException e) {
+                debug(arena, "onEntityExplode cancelled by goal: {}", arena.getGoal().getName());
+            }
+
             ArenaModuleManager.onEntityExplode(arena, event);
             return;
         }

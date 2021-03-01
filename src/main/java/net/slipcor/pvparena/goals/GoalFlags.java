@@ -11,6 +11,7 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.events.PAGoalEvent;
+import net.slipcor.pvparena.exceptions.GameplayException;
 import net.slipcor.pvparena.managers.SpawnManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,11 +19,10 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -41,7 +41,7 @@ import static net.slipcor.pvparena.config.Debugger.debug;
  * @author slipcor
  */
 
-public class GoalFlags extends AbstractFlagGoal implements Listener {
+public class GoalFlags extends AbstractFlagGoal {
     public GoalFlags() {
         super("Flags");
     }
@@ -70,11 +70,13 @@ public class GoalFlags extends AbstractFlagGoal implements Listener {
      * hook into an interacting player
      *
      * @param player the interacting player
-     * @param block  the block being clicked
+     * @param event  the interact event
      * @return true if event has been handled
      */
     @Override
-    public boolean checkInteract(final Player player, final Block block) {
+    public boolean checkInteract(final Player player, final PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+
         if (block == null) {
             return false;
         }
@@ -399,8 +401,8 @@ public class GoalFlags extends AbstractFlagGoal implements Listener {
         this.getLifeMap().clear();
     }
 
-    @EventHandler
-    public void onInventoryClick(final InventoryClickEvent event) {
+    @Override
+    public void checkInventory(InventoryClickEvent event) throws GameplayException {
         if (this.isIrrelevantInventoryClickEvent(event)) {
             return;
         }
@@ -408,6 +410,7 @@ public class GoalFlags extends AbstractFlagGoal implements Listener {
         if (this.hasWoolHead() && event.getSlotType() == InventoryType.SlotType.ARMOR &&
                 this.getFlagType().equals(event.getCurrentItem().getType())) {
             event.setCancelled(true);
+            throw new GameplayException("INVENTORY not allowed");
         }
     }
 

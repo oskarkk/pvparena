@@ -232,6 +232,20 @@ public class ArenaPlayer {
     }
 
     /**
+     * get an ArenaPlayer from a Player
+     *
+     * @param player the player to use
+     * @return an ArenaPlayer instance belonging to that player
+     */
+    public static ArenaPlayer fromPlayer(final Player player) {
+        synchronized (ArenaPlayer.class) {
+            ArenaPlayer aPlayer = new ArenaPlayer(player);
+            totalPlayers.putIfAbsent(player.getUniqueId(), aPlayer);
+            return totalPlayers.get(player.getUniqueId());
+        }
+    }
+
+    /**
      * add an ArenaPlayer (used to load statistics)
      *
      * @param player the player to use

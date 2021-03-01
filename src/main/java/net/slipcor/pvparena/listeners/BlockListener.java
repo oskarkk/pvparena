@@ -50,8 +50,7 @@ import static net.slipcor.pvparena.config.Debugger.debug;
 public class BlockListener implements Listener {
 
     private boolean willBeSkipped(final Event event, final Location loc, final RegionProtection rp) {
-        Arena arena = ArenaManager
-                .getArenaByRegionLocation(new PABlockLocation(loc));
+        Arena arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(loc));
 
         if (arena == null) {
             // no arena at all
@@ -165,7 +164,7 @@ public class BlockListener implements Listener {
         try {
             arena.getGoal().checkBreak(event);
         } catch (GameplayException e) {
-            debug(event.getPlayer(), "onBlockBreak cancelled by goal: " + arena.getGoal().getName());
+            debug(event.getPlayer(), "onBlockBreak cancelled by goal: {}", arena.getGoal().getName());
             return;
         }
 

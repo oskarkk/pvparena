@@ -30,9 +30,6 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
@@ -54,7 +51,7 @@ import static net.slipcor.pvparena.config.Debugger.debug;
  * @author slipcor
  */
 
-public class GoalBlockDestroy extends ArenaGoal implements Listener {
+public class GoalBlockDestroy extends ArenaGoal {
 
     public GoalBlockDestroy() {
         super("BlockDestroy");
@@ -307,11 +304,6 @@ public class GoalBlockDestroy extends ArenaGoal implements Listener {
     }
 
     @Override
-    public void configParse(final YamlConfiguration config) {
-        Bukkit.getPluginManager().registerEvents(this, PVPArena.getInstance());
-    }
-
-    @Override
     public int getLives(ArenaPlayer aPlayer) {
         return this.getLifeMap().getOrDefault(aPlayer.getArenaTeam().getName(), 0);
     }
@@ -468,8 +460,8 @@ public class GoalBlockDestroy extends ArenaGoal implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onBlockBreak(final BlockBreakEvent event) {
+    @Override
+    public void checkBreak(BlockBreakEvent event) {
         final Player player = event.getPlayer();
         final Material blockToBreak = this.arena.getArenaConfig().getMaterial(CFG.GOAL_BLOCKDESTROY_BLOCKTYPE);
         final Material brokenBlock = event.getBlock().getType();
@@ -578,8 +570,8 @@ public class GoalBlockDestroy extends ArenaGoal implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onEntityExplode(final EntityExplodeEvent event) {
+    @Override
+    public void checkExplode(EntityExplodeEvent event) {
         if (this.arena == null) {
             return;
         }

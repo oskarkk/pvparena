@@ -13,6 +13,7 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.events.PAGoalEvent;
+import net.slipcor.pvparena.exceptions.GameplayException;
 import net.slipcor.pvparena.managers.SpawnManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,12 +22,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -48,7 +47,7 @@ import static net.slipcor.pvparena.config.Debugger.debug;
  * @author slipcor
  */
 
-public class GoalPhysicalFlags extends AbstractFlagGoal implements Listener {
+public class GoalPhysicalFlags extends AbstractFlagGoal {
     private Map<String, BlockData> flagDataMap;
 
     public GoalPhysicalFlags() {
@@ -79,11 +78,12 @@ public class GoalPhysicalFlags extends AbstractFlagGoal implements Listener {
      * hook into an interacting player
      *
      * @param player the interacting player
-     * @param block  the block being clicked
+     * @param event  the interact event
      * @return true if event has been handled
      */
     @Override
-    public boolean checkInteract(final Player player, final Block block) {
+    public boolean checkInteract(final Player player, final PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
         if (block == null) {
             return false;
         }
@@ -193,9 +193,6 @@ public class GoalPhysicalFlags extends AbstractFlagGoal implements Listener {
 
         return false;
     }
-
-    @Override
-    public void commitInteract(final Player player, final Block clickedBlock) {}
 
     @Override
     protected void commit(final Arena arena, final String sTeam, final boolean win) {
@@ -386,8 +383,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
-    public void onFlagClaim(final BlockBreakEvent event) {
+    public void checkBreak(final BlockBreakEvent event) {
         final Player player = event.getPlayer();
         Material brokenMaterial = event.getBlock().getType();
         if (!this.arena.hasPlayer(event.getPlayer()) ||
@@ -474,10 +470,11 @@ public class GoalPhysicalFlags extends AbstractFlagGoal implements Listener {
         }
     }
 
-    @EventHandler
-    public void onInventoryClick(final InventoryClickEvent event) {
+    @Override
+    public void checkInventory(InventoryClickEvent event) throws GameplayException {
         if (!this.isIrrelevantInventoryClickEvent(event) && this.getFlagType().equals(event.getCurrentItem().getType())) {
             event.setCancelled(true);
+            throw new GameplayException("INVENTORY not allowed");
         }
     }
 }

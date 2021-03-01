@@ -17,9 +17,9 @@ import net.slipcor.pvparena.exceptions.GameplayException;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
 import net.slipcor.pvparena.managers.InventoryManager;
-import net.slipcor.pvparena.managers.WorkflowManager;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.managers.TeamManager;
+import net.slipcor.pvparena.managers.WorkflowManager;
 import net.slipcor.pvparena.runnables.EndRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,9 +29,6 @@ import org.bukkit.block.Chest;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
@@ -55,7 +52,7 @@ import static net.slipcor.pvparena.config.Debugger.debug;
  * @author slipcor
  */
 
-public class GoalFood extends ArenaGoal implements Listener {
+public class GoalFood extends ArenaGoal {
     public GoalFood() {
         super("Food");
     }
@@ -274,11 +271,6 @@ public class GoalFood extends ArenaGoal implements Listener {
     }
 
     @Override
-    public void configParse(final YamlConfiguration config) {
-        Bukkit.getPluginManager().registerEvents(this, PVPArena.getInstance());
-    }
-
-    @Override
     public void displayInfo(final CommandSender sender) {
         sender.sendMessage("items needed: "
                 + this.arena.getArenaConfig().getInt(CFG.GOAL_FOOD_FMAXITEMS));
@@ -328,25 +320,27 @@ public class GoalFood extends ArenaGoal implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onFurnaceClick(final PlayerInteractEvent event) {
-        if (!event.hasBlock() || event.getClickedBlock().getType() != Material.FURNACE) {
-            return;
+    @Override
+    public boolean checkInteract(Player player, PlayerInteractEvent event) {
+        Block clickedBlock = event.getClickedBlock();
+
+        if (clickedBlock == null || clickedBlock.getType() != Material.FURNACE) {
+            return false;
         }
 
-        final ArenaPlayer player = ArenaPlayer.parsePlayer(event.getPlayer().getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
-        if (player.getArena() == null || !player.getArena().isFightInProgress()) {
-            return;
+        if (aPlayer.getArena() == null || !aPlayer.getArena().isFightInProgress()) {
+            return false;
         }
 
         final Set<PABlock> spawns = SpawnManager.getPABlocksContaining(this.arena, "foodfurnace");
 
         if (spawns.size() < 1) {
-            return;
+            return false;
         }
 
-        final String teamName = player.getArenaTeam().getName();
+        final String teamName = aPlayer.getArenaTeam().getName();
 
         final Set<PABlockLocation> validSpawns = new HashSet<>();
 
@@ -358,40 +352,28 @@ public class GoalFood extends ArenaGoal implements Listener {
         }
 
         if (validSpawns.size() < 1) {
-            return;
+            return false;
         }
 
-        if (!validSpawns.contains(new PABlockLocation(event.getClickedBlock().getLocation()))) {
+        if (!validSpawns.contains(new PABlockLocation(clickedBlock.getLocation()))) {
             this.arena.msg(player.getPlayer(), Language.parse(this.arena, MSG.GOAL_FOOD_NOTYOURFOOD));
-            event.setCancelled(true);
+            return true;
         }
 
+        return false;
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onItemTransfer(final InventoryMoveItemEvent event) {
-
-        if (this.arena == null || !this.arena.isFightInProgress()) {
-            return;
-        }
-
-        final InventoryType type = event.getDestination().getType();
-
-        if (type != InventoryType.CHEST) {
-            return;
-        }
-
-        if (this.chestMap == null || !this.chestMap.containsKey(((Chest) event.getDestination()
-                .getHolder()).getBlock())) {
+    @Override
+    public void checkItemTransfer(InventoryMoveItemEvent event) {
+        if (this.chestMap == null || !this.chestMap.containsKey(((Chest) event.getDestination().getHolder()).getBlock())) {
             return;
         }
 
         final ItemStack stack = event.getItem();
 
-        final ArenaTeam team = this.chestMap.get(((Chest) event.getDestination()
-                .getHolder()).getBlock());
+        final ArenaTeam team = this.chestMap.get(((Chest) event.getDestination().getHolder()).getBlock());
 
-        if (team == null || stack == null || stack.getType() != cookmap.get(this.getFoodMap().get(team))) {
+        if (team == null || stack.getType() != cookmap.get(this.getFoodMap().get(team))) {
             return;
         }
 
@@ -407,15 +389,14 @@ public class GoalFood extends ArenaGoal implements Listener {
         }
 
         // INTO container
-        final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, "score:" +
-                noone.getName() + ':' + team.getName() + ':' + stack.getAmount());
+        final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this,
+                String.format("score:%s:%s:%d", noone.getName(), team.getName(), stack.getAmount()));
         Bukkit.getPluginManager().callEvent(gEvent);
         this.reduceLives(this.arena, team, stack.getAmount());
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onInventoryClick(final InventoryClickEvent event) {
-
+    @Override
+    public void checkInventory(InventoryClickEvent event) throws GameplayException {
         if (this.arena == null || !this.arena.isFightInProgress()) {
             return;
         }
@@ -562,8 +543,7 @@ public class GoalFood extends ArenaGoal implements Listener {
 
         for (final ArenaTeam team : this.arena.getTeams()) {
             double score = this.arena.getArenaConfig().getInt(CFG.GOAL_FOOD_FMAXITEMS)
-                    - (this.getLifeMap().containsKey(team.getName()) ? this.getLifeMap().get(team
-                    .getName()) : 0);
+                    - (this.getLifeMap().getOrDefault(team.getName(), 0));
             if (scores.containsKey(team.getName())) {
                 scores.put(team.getName(), scores.get(team.getName()) + score);
             } else {

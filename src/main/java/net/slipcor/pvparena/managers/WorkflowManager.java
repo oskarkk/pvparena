@@ -90,8 +90,7 @@ public class WorkflowManager {
 
     public static void handleInteract(final Arena arena, final Player player, final PlayerInteractEvent event) {
         ArenaGoal goal = arena.getGoal();
-        if (goal != null && goal.checkInteract(player, event.getClickedBlock())) {
-            goal.commitInteract(player, event.getClickedBlock());
+        if (goal != null && goal.checkInteract(player, event)) {
             event.setCancelled(true);
         }
     }

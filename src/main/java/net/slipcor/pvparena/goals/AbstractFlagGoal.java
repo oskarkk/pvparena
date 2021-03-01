@@ -27,7 +27,6 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
@@ -44,7 +43,7 @@ import java.util.stream.Stream;
 import static net.slipcor.pvparena.config.Debugger.debug;
 
 
-public abstract class AbstractFlagGoal extends ArenaGoal implements Listener {
+public abstract class AbstractFlagGoal extends ArenaGoal {
     protected static final int PRIORITY = 7;
     protected static final String TOUCHDOWN = "touchdown";
     protected Map<String, String> flagMap;
@@ -343,11 +342,6 @@ public abstract class AbstractFlagGoal extends ArenaGoal implements Listener {
     @Override
     public void commitStart() {
         // empty to kill the error ;)
-    }
-
-    @Override
-    public void configParse(final YamlConfiguration config) {
-        Bukkit.getPluginManager().registerEvents(this, PVPArena.getInstance());
     }
 
     protected Map<String, String> getFlagMap() {
