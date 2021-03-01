@@ -282,64 +282,7 @@ public final class StatisticsManager {
             return;
         }
 
-        debug(arena, "loading statistics!");
-        boolean foundBroken = false;
-        for (final String playerID : config.getConfigurationSection(arena.getName()).getKeys(false)) {
-
-
-            String playerName = null;
-
-            if (config.getConfigurationSection(arena.getName()).contains(playerID+".name")) {
-                playerName = config.getConfigurationSection(arena.getName()).getString(playerID+".name");
-            }
-
-            debug(arena, "loading stats: " + playerName);
-
-            final ArenaPlayer aPlayer;
-
-            try {
-                if(playerName != null) {
-                    aPlayer = ArenaPlayer.addPlayer(UUID.fromString(playerID));
-                } else {
-                    continue;
-                }
-
-            } catch (IllegalArgumentException e) {
-                PVPArena.getInstance().getLogger().warning("invalid player ID: " + playerID);
-                continue;
-            }
-
-            for (final Type ttt : Type.values()) {
-                aPlayer.setStatistic(arena.getName(), ttt, 0);
-            }
-
-            final int losses = config.getInt(arena.getName() + '.' + playerID + ".losses", 0);
-            aPlayer.addStatistic(arena.getName(), Type.LOSSES, losses);
-
-            final int wins = config.getInt(arena.getName() + '.' + playerID + ".wins", 0);
-            aPlayer.addStatistic(arena.getName(), Type.WINS, wins);
-
-            final int kills = config.getInt(arena.getName() + '.' + playerID + ".kills", 0);
-            aPlayer.addStatistic(arena.getName(), Type.KILLS, kills);
-
-            final int deaths = config.getInt(arena.getName() + '.' + playerID + ".deaths", 0);
-            aPlayer.addStatistic(arena.getName(), Type.DEATHS, deaths);
-
-            final int damage = config.getInt(arena.getName() + '.' + playerID + ".damage", 0);
-            aPlayer.addStatistic(arena.getName(), Type.DAMAGE, damage);
-
-            final int maxdamage = config.getInt(arena.getName() + '.' + playerID + ".maxdamage", 0);
-            aPlayer.addStatistic(arena.getName(), Type.MAXDAMAGE, maxdamage);
-
-            final int damagetake = config.getInt(arena.getName() + '.' + playerID + ".damagetake", 0);
-            aPlayer.addStatistic(arena.getName(), Type.DAMAGETAKE, damagetake);
-
-            final int maxdamagetake = config.getInt(arena.getName() + '.' + playerID + ".maxdamagetake", 0);
-            aPlayer.addStatistic(arena.getName(), Type.MAXDAMAGETAKE, maxdamagetake);
-        }
-        if (foundBroken) {
-            save();
-        }
+        debug(arena, "loading statistics not implemented yet.");
     }
 
     public static void update(final Arena arena, final ArenaPlayer aPlayer) {
