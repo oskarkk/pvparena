@@ -3,9 +3,9 @@ package net.slipcor.pvparena.loadables;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.loader.JarLoader;
 import net.slipcor.pvparena.loader.Loadable;
-import net.slipcor.pvparena.regions.CuboidRegion;
-import net.slipcor.pvparena.regions.CylindricRegion;
-import net.slipcor.pvparena.regions.SphericRegion;
+import net.slipcor.pvparena.regionshapes.CuboidRegion;
+import net.slipcor.pvparena.regionshapes.CylindricRegion;
+import net.slipcor.pvparena.regionshapes.SphericRegion;
 
 import java.io.File;
 import java.util.Optional;

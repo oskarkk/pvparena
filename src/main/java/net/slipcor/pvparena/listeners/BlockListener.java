@@ -13,7 +13,7 @@ import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.Utils;
 import net.slipcor.pvparena.exceptions.GameplayException;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
-import net.slipcor.pvparena.loadables.ArenaRegion.RegionProtection;
+import net.slipcor.pvparena.regions.RegionProtection;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.runnables.DamageResetRunnable;
 import org.bukkit.Bukkit;
@@ -514,7 +514,6 @@ public class BlockListener implements Listener {
         } else {
             debug(arena, "painting break inside the arena");
         }
-        ArenaModuleManager.onPaintingBreak(arena, event.getEntity(), event
-                .getEntity().getType());
+        ArenaModuleManager.onPaintingBreak(arena, event.getEntity(), event.getEntity().getType());
     }
 }

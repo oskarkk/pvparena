@@ -13,8 +13,8 @@ import net.slipcor.pvparena.events.*;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
-import net.slipcor.pvparena.loadables.ArenaRegion;
-import net.slipcor.pvparena.loadables.ArenaRegion.RegionType;
+import net.slipcor.pvparena.regions.ArenaRegion;
+import net.slipcor.pvparena.regions.RegionType;
 import net.slipcor.pvparena.managers.*;
 import net.slipcor.pvparena.runnables.StartRunnable;
 import org.bukkit.Bukkit;
@@ -222,14 +222,7 @@ public class Arena {
 
     public void addRegion(final ArenaRegion region) {
         this.regions.add(region);
-        debug(this, "loading region: " + region.getRegionName());
-        if (region.getType() == RegionType.JOIN) {
-            if (this.cfg.getBoolean(CFG.JOIN_FORCE)) {
-                region.initTimer();
-            }
-        } else if (region.getType() == RegionType.WATCH || region.getType() == RegionType.LOUNGE) {
-            region.initTimer();
-        }
+        debug(this, "adding region: " + region.getRegionName());
     }
 
     public void broadcast(final String msg) {
@@ -1872,7 +1865,7 @@ public class Arena {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Arena arena = (Arena) o;
-        return name.equals(arena.name);
+        return this.name.equals(arena.name);
     }
 
     @Override

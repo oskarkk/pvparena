@@ -6,6 +6,7 @@ import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.managers.RegionManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -57,6 +58,7 @@ public class PAA_ReloadAll extends AbstractGlobalCommand {
         }
 
         ArenaManager.load_arenas();
+        RegionManager.getInstance().reloadCache();
         if (config.getBoolean("use_shortcuts") || config.getBoolean("only_shortcuts")) {
             ArenaManager.readShortcuts(config.getConfigurationSection("shortcuts"));
         }

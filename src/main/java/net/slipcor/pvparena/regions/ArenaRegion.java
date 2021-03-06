@@ -1,4 +1,4 @@
-package net.slipcor.pvparena.loadables;
+package net.slipcor.pvparena.regions;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
@@ -7,15 +7,15 @@ import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.PAA_Region;
-import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.listeners.PlayerListener;
+import net.slipcor.pvparena.loadables.ArenaGoal;
+import net.slipcor.pvparena.loadables.ArenaRegionShape;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.SpawnManager;
-import net.slipcor.pvparena.runnables.RegionRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,11 +28,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
+import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static net.slipcor.pvparena.config.Debugger.debug;
 
 public class ArenaRegion {
@@ -41,7 +40,6 @@ public class ArenaRegion {
     private Arena arena;
     private String name;
     private RegionType type;
-    private BukkitTask runningTask;
     private final Set<RegionFlag> flags = new HashSet<>();
     private final Set<RegionProtection> protections = new HashSet<>();
     private final Map<String, Location> playerLocations = new HashMap<>();
@@ -54,92 +52,6 @@ public class ArenaRegion {
 
     static {
         NOWOOLS.add(Material.CHEST);
-    }
-
-    /**
-     * RegionType
-     * <p/>
-     * <pre>
-     * CUSTOM => a module added region
-     * WATCH  => the spectator region
-     * LOUNGE => the ready lounge region
-     * BATTLE => the battlefield region
-     * JOIN   => the join region
-     * SPAWN  => the spawn region
-     * BL_INV => blacklist inventory
-     * WL_INV => whitelist inventory
-     * </pre>
-     */
-    public enum RegionType {
-        CUSTOM, WATCH, LOUNGE, BATTLE, JOIN, SPAWN, BL_INV, WL_INV;
-
-        public static RegionType guessFromName(final String regionName) {
-            final String name = regionName.toUpperCase();
-            for (final RegionType rt : values()) {
-                if (name.endsWith(rt.name()) || name.startsWith(rt.name())) {
-                    return rt;
-                }
-            }
-            return CUSTOM;
-        }
-    }
-
-    /**
-     * RegionFlag for tick events
-     * <p/>
-     * <pre>
-     * NOCAMP -   players not moving will be damaged
-     * DEATH -    players being here will die
-     * WIN -      players being here will win
-     * LOSE -     players being here will lose
-     * NODAMAGE - players being here will receive no damage
-     * </pre>
-     */
-    public enum RegionFlag {
-        NOCAMP, DEATH, WIN, LOSE, NODAMAGE
-    }
-
-    /**
-     * RegionProtection
-     * <p/>
-     * <pre>
-     * BREAK - Block break
-     * FIRE - Fire
-     * MOBS - Mob spawning
-     * NATURE - Environment changes (leaves, shrooms, water, lava)
-     * PAINTING - Painting placement/destruction
-     * PISTON - Piston triggering
-     * PLACE - Block placement
-     * TNT - TNT usage
-     * TNTBREAK - TNT block break
-     * DROP - Player dropping items
-     * INVENTORY - Player accessing inventory
-     * PICKUP - Player picking up stuff
-     * CRAFT - Player crafting stuff
-     * TELEPORT - Player teleporting
-     * </pre>
-     */
-    public enum RegionProtection {
-        BREAK, FIRE, MOBS, NATURE, PAINTING, PISTON, PLACE, TNT, TNTBREAK, DROP, INVENTORY, PICKUP, CRAFT, TELEPORT
-    }
-
-    /**
-     * region position for physical orientation
-     * <p/>
-     * <pre>
-     * CENTER = in the battlefield center
-     * NORTH = north end of the battlefield
-     * EAST = east end of the battlefield
-     * SOUTH = south end of the battlefield
-     * WEST = west end of the battlefield
-     * TOP = on top of the battlefield
-     * BOTTOM = under the battlefield
-     * INSIDE = inside the battlefield
-     * OUTSIDE = around the battlefield
-     * </pre>
-     */
-    public enum RegionPosition {
-        CENTER, NORTH, EAST, SOUTH, WEST, TOP, BOTTOM, INSIDE, OUTSIDE
     }
 
     /**
@@ -367,19 +279,6 @@ public class ArenaRegion {
         return this.world;
     }
 
-    public void initTimer() {
-
-        if (this.runningTask != null && !this.runningTask.isCancelled()) {
-            if (!asList(RegionType.JOIN, RegionType.WATCH, RegionType.LOUNGE).contains(this.type)) {
-                this.runningTask.cancel();
-            }
-        }
-
-        final RegionRunnable regionRunner = new RegionRunnable(this);
-        final int timer = this.arena.getArenaConfig().getInt(CFG.TIME_REGIONTIMER);
-        this.runningTask = regionRunner.runTaskTimer(PVPArena.getInstance(), timer, timer);
-    }
-
     public boolean isInNoWoolSet(final Block block) {
         return NOWOOLS.contains(block.getType());
     }
@@ -467,13 +366,6 @@ public class ArenaRegion {
 
             entity.remove();
         }
-        if (this.type == RegionType.JOIN || this.type == RegionType.WATCH) {
-            return;
-        }
-
-        if(this.runningTask != null && !this.runningTask.isCancelled()) {
-            this.runningTask.cancel();
-        }
     }
 
     public void saveToConfig() {
@@ -494,198 +386,104 @@ public class ArenaRegion {
         this.type = type;
     }
 
-    public void tick() {
-        for (final ArenaPlayer arenaPlayer : this.arena.getEveryone()) {
-            if (arenaPlayer.getPlayer() == null || arenaPlayer.isTeleporting()) {
-                continue;
-            }
-            final PABlockLocation pLoc = new PABlockLocation(arenaPlayer.getPlayer().getLocation());
-            if (this.flags.contains(RegionFlag.DEATH) && this.shape.contains(pLoc)) {
-                Arena.pmsg(arenaPlayer.getPlayer(), Language.parse(this.arena, MSG.NOTICE_YOU_DEATH));
-                ArenaGoal goal = this.arena.getGoal();
-                if (goal.getName().endsWith("DeathMatch")) {
-                    if (goal.getLifeMap().containsKey(arenaPlayer.getName())) {
-                        final int lives = goal.getLifeMap().get(arenaPlayer.getName()) + 1;
-                        goal.getLifeMap().put(arenaPlayer.getName(), lives);
-                    } else if (goal.getLifeMap().containsKey(arenaPlayer.getArenaTeam().getName())) {
-                        final int lives = goal.getLifeMap().get(arenaPlayer.getArenaTeam().getName()) + 1;
-                        goal.getLifeMap().put(arenaPlayer.getArenaTeam().getName(), lives);
-                    }
-                }
+    public void handleRegionFlags(ArenaPlayer arenaPlayer, PABlockLocation pLoc) {
+        if (this.flags.contains(RegionFlag.NOCAMP)) {
+            this.handleNoCampRegionFlag(arenaPlayer, pLoc);
 
-                arenaPlayer.getPlayer().setLastDamageCause(
-                        new EntityDamageEvent(arenaPlayer.getPlayer(), DamageCause.CUSTOM,
-                                1003.0));
-                arenaPlayer.getPlayer().damage(1000);
-            }
-            if (this.flags.contains(RegionFlag.WIN) && this.shape.contains(pLoc)) {
-                for (final ArenaTeam team : this.arena.getTeams()) {
-                    if (!this.arena.isFreeForAll()
-                            && team.getTeamMembers().contains(arenaPlayer)) {
-                        // skip winning team
-                        continue;
-                    }
-                    for (final ArenaPlayer ap2 : team.getTeamMembers()) {
-                        if (this.arena.isFreeForAll()
-                                && ap2.getName().equals(arenaPlayer.getName())) {
-                            continue;
-                        }
-                        if (ap2.getStatus() == Status.FIGHT) {
-                            Bukkit.getWorld(this.world).strikeLightningEffect(
-                                    ap2.getPlayer().getLocation());
-                            final EntityDamageEvent event = new EntityDamageEvent(
-                                    ap2.getPlayer(), DamageCause.LIGHTNING, 10.0);
-                            PlayerListener.finallyKillPlayer(this.arena,
-                                    ap2.getPlayer(), event);
-                        }
-                    }
-                    return;
-                }
-            }
-            if (this.flags.contains(RegionFlag.LOSE) && this.shape.contains(pLoc)) {
-                if (this.arena.isFreeForAll()) {
-                    if (arenaPlayer.getStatus() == Status.FIGHT) {
-                        Bukkit.getWorld(this.world).strikeLightningEffect(
-                                arenaPlayer.getPlayer().getLocation());
-                        final EntityDamageEvent event = new EntityDamageEvent(
-                                arenaPlayer.getPlayer(), DamageCause.LIGHTNING, 10.0);
-                        PlayerListener
-                                .finallyKillPlayer(this.arena, arenaPlayer.getPlayer(), event);
-                    }
-                } else {
-                    for (final ArenaTeam team : this.arena.getTeams()) {
-                        if (!team.getTeamMembers().contains(arenaPlayer)) {
-                            // skip winner
-                            continue;
-                        }
-                        for (final ArenaPlayer ap2 : team.getTeamMembers()) {
-                            if (ap2.getStatus() == Status.FIGHT) {
-                                Bukkit.getWorld(this.world)
-                                        .strikeLightningEffect(
-                                                ap2.getPlayer().getLocation());
-                                final EntityDamageEvent event = new EntityDamageEvent(
-                                        ap2.getPlayer(), DamageCause.LIGHTNING,10.0);
-                                PlayerListener.finallyKillPlayer(this.arena,
-                                        ap2.getPlayer(), event);
-                            }
-                        }
-                        return;
-                    }
-                }
-            }
-            if (this.flags.contains(RegionFlag.NOCAMP)) {
-                if (this.shape.contains(pLoc)) {
-                    final Location loc = this.playerLocations.get(arenaPlayer.getName());
-                    if (loc == null) {
-                        Arena.pmsg(arenaPlayer.getPlayer(),
-                                Language.parse(this.arena, MSG.NOTICE_YOU_NOCAMP));
-                    } else {
-                        if (loc.distance(arenaPlayer.getPlayer().getLocation()) < 3) {
-                            arenaPlayer.getPlayer().setLastDamageCause(
-                                    new EntityDamageEvent(arenaPlayer.getPlayer(),
-                                            DamageCause.CUSTOM, this.arena.getArenaConfig().getInt(CFG.DAMAGE_SPAWNCAMP)));
-                            arenaPlayer.getPlayer().damage(
-                                    this.arena.getArenaConfig().getInt(
-                                            CFG.DAMAGE_SPAWNCAMP));
-                        }
-                    }
-                    this.playerLocations.put(arenaPlayer.getName(), arenaPlayer.getPlayer()
-                            .getLocation().getBlock().getLocation());
-                } else {
-                    this.playerLocations.remove(arenaPlayer.getName());
-                }
-            }
-            if (this.type == RegionType.BATTLE) {
-                if (arenaPlayer.getStatus() != Status.FIGHT) {
-                    continue;
-                }
+        } else if(Stream.of(RegionFlag.DEATH, RegionFlag.WIN, RegionFlag.LOSE).anyMatch(this.flags::contains) && this.shape.contains(pLoc)) {
 
-                boolean found = false;
+            if (this.flags.contains(RegionFlag.DEATH)) {
+                debug(arenaPlayer.getPlayer(), "entering DEATH region");
+                this.handleDeathRegionFlag(arenaPlayer);
 
-                for (final ArenaRegion region : this.arena.getRegionsByType(RegionType.BATTLE)) {
-                    if (region.shape.contains(pLoc)) {
-                        found = true;
-                        break;
-                    }
-                }
+            } else if (this.flags.contains(RegionFlag.WIN)) {
+                debug(arenaPlayer.getPlayer(), "entering WIN region");
+                this.handleWinRegionFlag(arenaPlayer);
 
-                if (!found) {
-                    debug("escape due to '!found' #1");
-                    debug("location: {}", pLoc);
-                    Arena.pmsg(arenaPlayer.getPlayer(), Language.parse(this.arena, MSG.NOTICE_YOU_ESCAPED));
-                    if (this.arena.getArenaConfig().getBoolean(
-                            CFG.GENERAL_LEAVEDEATH)) {
-                        arenaPlayer.getPlayer().setLastDamageCause(
-                                new EntityDamageEvent(arenaPlayer.getPlayer(),
-                                        DamageCause.CUSTOM, 1004.0));
-                        // ap.getPlayer().setHealth(0);
-                        arenaPlayer.getPlayer().damage(1000);
-                    } else {
-                        this.arena.playerLeave(arenaPlayer.getPlayer(), CFG.TP_EXIT, false, false, false);
-                    }
-                }
-            } else if (this.type == RegionType.WATCH) {
-
-                if (arenaPlayer.getStatus() != Status.WATCH) {
-                    continue;
-                }
-                Set<ArenaRegion> regions = this.arena.getRegionsByType(RegionType.WATCH);
-
-                boolean found = false;
-
-                for (ArenaRegion region : regions) {
-                    if (region.getShape().contains(pLoc)) {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    debug("escape due to '!found' #2");
-                    Arena.pmsg(arenaPlayer.getPlayer(), Language.parse(this.arena, MSG.NOTICE_YOU_ESCAPED));
-                    debug("location: {}", pLoc);
-                    this.arena.playerLeave(arenaPlayer.getPlayer(), CFG.TP_EXIT, false, false, false);
-                }
-            } else if (this.type == RegionType.LOUNGE) {
-                if (arenaPlayer.getStatus() != Status.READY
-                        && arenaPlayer.getStatus() != Status.LOUNGE) {
-                    continue;
-                }
-
-                debug("LOUNGE TICK");
-                Set<ArenaRegion> regions = this.arena.getRegionsByType(RegionType.LOUNGE);
-
-                boolean found = false;
-
-                for (ArenaRegion region : regions) {
-                    if (region.getShape().contains(pLoc)) {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    debug("escape due to '!found' #3");
-                    Arena.pmsg(arenaPlayer.getPlayer(), Language.parse(this.arena, MSG.NOTICE_YOU_ESCAPED));
-                    debug("location: {}", pLoc);
-                    this.arena.playerLeave(arenaPlayer.getPlayer(), CFG.TP_EXIT, false, false, false);
-                }
+            } else if (this.flags.contains(RegionFlag.LOSE)) {
+                debug(arenaPlayer.getPlayer(), "entering LOSE region");
+                this.handleLoseRegionFlag(arenaPlayer);
             }
         }
-        if (this.arena.getArenaConfig().getBoolean(CFG.JOIN_FORCE)
-                && this.type == RegionType.JOIN && !this.arena.isFightInProgress()
-                && !this.arena.isLocked()) {
-            for (final Player p : Bukkit.getOnlinePlayers()) {
-                final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(p.getName());
-                if (aPlayer.getArena() != null) {
-                    continue;
-                }
-                if (this.shape.contains(new PABlockLocation(p.getLocation()))) {
-                    final PAG_Join cmd = new PAG_Join();
-                    cmd.commit(this.arena, p,
-                            new String[]{this.name.replace("-join", "")});
+    }
+
+    private void handleNoCampRegionFlag(ArenaPlayer arenaPlayer, PABlockLocation pLoc) {
+        if (this.shape.contains(pLoc)) {
+            final Location loc = this.playerLocations.get(arenaPlayer.getName());
+            Player player = arenaPlayer.getPlayer();
+
+            if (loc == null) {
+                Arena.pmsg(player, Language.parse(this.arena, MSG.NOTICE_YOU_NOCAMP));
+            } else {
+                if (loc.distance(player.getLocation()) < 3) {
+                    debug(player, "damaged in NOCAMP region");
+                    int campDamage = this.arena.getArenaConfig().getInt(CFG.DAMAGE_SPAWNCAMP);
+                    player.setLastDamageCause(new EntityDamageEvent(player, DamageCause.CUSTOM, campDamage));
+                    player.damage(campDamage);
                 }
             }
+            this.playerLocations.put(arenaPlayer.getName(), player.getLocation().getBlock().getLocation());
+        } else {
+            this.playerLocations.remove(arenaPlayer.getName());
+        }
+    }
+
+    private void handleLoseRegionFlag(ArenaPlayer arenaPlayer) {
+        if (this.arena.isFreeForAll()) {
+            this.killPlayerIfFighting(arenaPlayer);
+        } else {
+            for (final ArenaTeam team : this.arena.getTeams()) {
+                if (!team.getTeamMembers().contains(arenaPlayer)) {
+                    // skip winner
+                    continue;
+                }
+                for (final ArenaPlayer ap2 : team.getTeamMembers()) {
+                    this.killPlayerIfFighting(ap2);
+                }
+                return;
+            }
+        }
+    }
+
+    private void handleWinRegionFlag(ArenaPlayer arenaPlayer) {
+        for (final ArenaTeam team : this.arena.getTeams()) {
+            if (!this.arena.isFreeForAll() && team.getTeamMembers().contains(arenaPlayer)) {
+                // skip winning team
+                continue;
+            }
+            for (final ArenaPlayer ap2 : team.getTeamMembers()) {
+                if (this.arena.isFreeForAll() && ap2.getName().equals(arenaPlayer.getName())) {
+                    continue;
+                }
+                this.killPlayerIfFighting(ap2);
+            }
+            return;
+        }
+    }
+
+    private void handleDeathRegionFlag(ArenaPlayer arenaPlayer) {
+        Player player = arenaPlayer.getPlayer();
+        Arena.pmsg(player, Language.parse(this.arena, MSG.NOTICE_YOU_DEATH));
+        ArenaGoal goal = this.arena.getGoal();
+        if (goal.getName().endsWith("DeathMatch")) {
+            if (goal.getLifeMap().containsKey(arenaPlayer.getName())) {
+                final int lives = goal.getLifeMap().get(arenaPlayer.getName()) + 1;
+                goal.getLifeMap().put(arenaPlayer.getName(), lives);
+            } else if (goal.getLifeMap().containsKey(arenaPlayer.getArenaTeam().getName())) {
+                final int lives = goal.getLifeMap().get(arenaPlayer.getArenaTeam().getName()) + 1;
+                goal.getLifeMap().put(arenaPlayer.getArenaTeam().getName(), lives);
+            }
+        }
+
+        player.setLastDamageCause(new EntityDamageEvent(player, DamageCause.CUSTOM, 1003.0));
+        player.damage(1000);
+    }
+
+    private void killPlayerIfFighting(ArenaPlayer aPlayer) {
+        if (aPlayer.getStatus() == Status.FIGHT) {
+            Bukkit.getWorld(this.world).strikeLightningEffect(aPlayer.getPlayer().getLocation());
+            final EntityDamageEvent event = new EntityDamageEvent(aPlayer.getPlayer(), DamageCause.LIGHTNING, 10.0);
+            PlayerListener.finallyKillPlayer(this.arena, aPlayer.getPlayer(), event);
         }
     }
 

@@ -8,7 +8,7 @@ import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
-import net.slipcor.pvparena.loadables.ArenaRegion;
+import net.slipcor.pvparena.regions.ArenaRegion;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.ConfigurationManager;
 import net.slipcor.pvparena.managers.WorkflowManager;

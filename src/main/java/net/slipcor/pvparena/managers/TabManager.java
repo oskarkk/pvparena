@@ -8,7 +8,9 @@ import net.slipcor.pvparena.commands.AbstractGlobalCommand;
 import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.loadables.ArenaRegion;
+import net.slipcor.pvparena.regions.RegionFlag;
+import net.slipcor.pvparena.regions.RegionProtection;
+import net.slipcor.pvparena.regions.RegionType;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -243,13 +245,13 @@ public final class TabManager {
                     }
                 }
             } else if ("{RegionProtection}".equals(definition)) {
-                final ArenaRegion.RegionProtection[] protections = ArenaRegion.RegionProtection.values();
+                final RegionProtection[] protections = RegionProtection.values();
                 addEnumMatchesToList(result, key, asList(protections));
             } else if ("{RegionFlag}".equals(definition)) {
-                final ArenaRegion.RegionFlag[] flags = ArenaRegion.RegionFlag.values();
+                final RegionFlag[] flags = RegionFlag.values();
                 addEnumMatchesToList(result, key, asList(flags));
             } else if ("{RegionType}".equals(definition)) {
-                final ArenaRegion.RegionType[] types = ArenaRegion.RegionType.values();
+                final RegionType[] types = RegionType.values();
                 addEnumMatchesToList(result, key, asList(types));
             } else if ("{Boolean}".equals(definition)) {
                 final List<String> values = new ArrayList<>();
@@ -308,13 +310,13 @@ public final class TabManager {
                 }
                 return key;
             } else if ("{RegionProtection}".equals(definition)) {
-                final ArenaRegion.RegionProtection[] protections = ArenaRegion.RegionProtection.values();
+                final RegionProtection[] protections = RegionProtection.values();
                 return getOverrideKey(key, definition, asList(protections));
             } else if ("{RegionFlag}".equals(definition)) {
-                final ArenaRegion.RegionFlag[] flags = ArenaRegion.RegionFlag.values();
+                final RegionFlag[] flags = RegionFlag.values();
                 return getOverrideKey(key, definition, asList(flags));
             } else if ("{RegionType}".equals(definition)) {
-                final ArenaRegion.RegionType[] types = ArenaRegion.RegionType.values();
+                final RegionType[] types = RegionType.values();
                 return getOverrideKey(key, definition, asList(types));
             } else if ("{Boolean}".equals(definition)) {
                 final List<String> values = new ArrayList<>();

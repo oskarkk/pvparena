@@ -6,6 +6,7 @@ import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.managers.RegionManager;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collections;
@@ -42,6 +43,7 @@ public class PAA_Reload extends AbstractArenaCommand {
         final Arena newArena = new Arena(name);
 
         if (ArenaManager.loadArena(newArena)) {
+            RegionManager.getInstance().reloadCache();
             newArena.msg(sender, Language.parse(arena, MSG.RELOAD_DONE));
         }
     }

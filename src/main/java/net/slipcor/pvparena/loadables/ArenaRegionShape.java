@@ -1,6 +1,7 @@
 package net.slipcor.pvparena.loadables;
 
 import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.regions.ArenaRegion;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;

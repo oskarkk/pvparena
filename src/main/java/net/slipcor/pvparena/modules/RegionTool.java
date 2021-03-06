@@ -5,7 +5,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
-import net.slipcor.pvparena.loadables.ArenaRegion;
+import net.slipcor.pvparena.regions.ArenaRegion;
 import net.slipcor.pvparena.managers.ArenaManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

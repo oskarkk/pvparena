@@ -111,6 +111,12 @@ public class Debugger {
         }
     }
 
+    public static void trace(CommandSender sender, String template, Object... args) {
+        if (active && FINER.equals(level)) {
+            formatAndPrint(null, sender, FINER, getTemplatedLine(template, args));
+        }
+    }
+
     public static void load(final PVPArena instance, final CommandSender sender) {
         FileConfiguration config = instance.getConfig();
         boolean isDebugEnabled = config.getBoolean("debug.enable", false);

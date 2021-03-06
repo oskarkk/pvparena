@@ -6,7 +6,7 @@ import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.loadables.ArenaRegion;
+import net.slipcor.pvparena.regions.ArenaRegion;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collections;

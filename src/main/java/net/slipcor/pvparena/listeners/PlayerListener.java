@@ -16,16 +16,12 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.events.PAGoalEvent;
 import net.slipcor.pvparena.exceptions.GameplayException;
-import net.slipcor.pvparena.loadables.ArenaModule;
-import net.slipcor.pvparena.loadables.ArenaModuleManager;
-import net.slipcor.pvparena.loadables.ArenaRegion;
-import net.slipcor.pvparena.loadables.ArenaRegion.RegionProtection;
-import net.slipcor.pvparena.loadables.ArenaRegion.RegionType;
+import net.slipcor.pvparena.loadables.*;
 import net.slipcor.pvparena.managers.*;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import net.slipcor.pvparena.regions.ArenaRegion;
+import net.slipcor.pvparena.regions.RegionProtection;
+import net.slipcor.pvparena.regions.RegionType;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
@@ -832,18 +828,30 @@ public class PlayerListener implements Listener {
         arena.playerLeave(player, CFG.TP_EXIT, false, true, false);
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Location to = event.getTo();
+        Location from = event.getFrom();
+        if(to != null && (from.getBlockX() != to.getBlockX() || from.getBlockY() != to.getBlockY() || from.getBlockZ() != to.getBlockZ())) {
+                PABlockLocation locTo = new PABlockLocation(to);
+                RegionManager.getInstance().checkPlayerLocation(event.getPlayer(), locTo);
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerTeleport(final PlayerTeleportEvent event) {
         final Player player = event.getPlayer();
-        Arena arena = ArenaPlayer.parsePlayer(player.getName()).getArena();
+        ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
+        Arena arena = arenaPlayer.getArena();
+
+        if (event.getTo() == null) {
+
+            PVPArena.getInstance().getLogger().warning("Player teleported to NULL: " + event.getPlayer());
+            return;
+        }
 
         if (arena == null) {
-            if (event.getTo() == null) {
 
-                PVPArena.getInstance().getLogger().warning("Player teleported to NULL: " + event.getPlayer());
-
-                return;
-            }
             arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(
                     event.getTo()));
 
@@ -875,47 +883,42 @@ public class PlayerListener implements Listener {
 
         debug(arena, player, "aimed location: " + event.getTo());
 
-
-        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL && ArenaPlayer.parsePlayer(player.getName()).getStatus() != Status.FIGHT) {
+        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL && arenaPlayer.getStatus() != Status.FIGHT) {
             debug(arena, player, "onPlayerTeleport: ender pearl when not fighting, cancelling!");
             event.setCancelled(true); // cancel and out
             return;
         }
 
-        if (ArenaPlayer.parsePlayer(player.getName()).isTelePass()
-                || player.hasPermission("pvparena.telepass")) {
+        final Set<ArenaRegion> regions = arena.getRegionsByType(RegionType.BATTLE);
 
+        if (regions == null || regions.size() == 0) {
             this.maybeFixInvisibility(arena, player);
-
-            return; // if allowed => OUT
-        }
-        debug(arena, player, "telepass: no!!");
-
-        final Set<ArenaRegion> regions = arena
-                .getRegionsByType(RegionType.BATTLE);
-
-        if (regions == null || regions.size() < 0) {
-            this.maybeFixInvisibility(arena, player);
-
             return;
         }
 
-        for (final ArenaRegion r : regions) {
-            if (r.getShape().contains(new PABlockLocation(event.getTo()))
-                    || r.getShape().contains(new PABlockLocation(event.getFrom()))) {
-                // teleport inside the arena, allow, unless:
-                if (r.getProtections().contains(RegionProtection.TELEPORT)) {
-                    continue;
-                }
-                this.maybeFixInvisibility(arena, player);
+        PABlockLocation toLoc = new PABlockLocation(event.getTo());
 
-                return;
+        if (!arenaPlayer.isTelePass() && !player.hasPermission("pvparena.telepass")) {
+            for (final ArenaRegion r : regions) {
+                if (r.getShape().contains(toLoc) || r.getShape().contains(new PABlockLocation(event.getFrom()))) {
+                    // teleport inside the arena, allow, unless:
+                    if (r.getProtections().contains(RegionProtection.TELEPORT)) {
+                        debug(arena, player, "onPlayerTeleport: protected region, cancelling!");
+                        event.setCancelled(true); // cancel and tell
+                        arena.msg(player, Language.parse(arena, MSG.NOTICE_NO_TELEPORT));
+                        return;
+                    }
+                }
             }
+        } else {
+            debug(arena, player, "onPlayerTeleport: using telepass");
         }
 
-        debug(arena, player, "onPlayerTeleport: no tele pass, cancelling!");
-        event.setCancelled(true); // cancel and tell
-        arena.msg(player, Language.parse(arena, MSG.NOTICE_NO_TELEPORT));
+        if(arenaPlayer.getStatus() == Status.FIGHT) {
+            RegionManager.getInstance().handleFightingPlayerMove(arenaPlayer, toLoc);
+        }
+
+        this.maybeFixInvisibility(arena, player);
     }
 
     private void maybeFixInvisibility(final Arena arena, final Player player) {

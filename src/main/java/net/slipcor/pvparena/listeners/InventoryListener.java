@@ -5,7 +5,7 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.exceptions.GameplayException;
-import net.slipcor.pvparena.loadables.ArenaRegion.RegionProtection;
+import net.slipcor.pvparena.regions.RegionProtection;
 import net.slipcor.pvparena.managers.ArenaManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

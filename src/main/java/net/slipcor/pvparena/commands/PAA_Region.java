@@ -9,10 +9,11 @@ import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
-import net.slipcor.pvparena.loadables.ArenaRegion;
+import net.slipcor.pvparena.managers.RegionManager;
+import net.slipcor.pvparena.regions.ArenaRegion;
 import net.slipcor.pvparena.loadables.ArenaRegionShape;
 import net.slipcor.pvparena.loader.Loadable;
-import net.slipcor.pvparena.regions.CuboidRegion;
+import net.slipcor.pvparena.regionshapes.CuboidRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -102,6 +103,7 @@ public class PAA_Region extends AbstractArenaCommand {
 
             arena.getRegions().remove(region);
             arena.getArenaConfig().save();
+            RegionManager.getInstance().reloadCache();
             return;
         }
         if (args.length < 3) {

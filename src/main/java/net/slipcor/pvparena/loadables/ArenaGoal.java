@@ -357,7 +357,7 @@ public class ArenaGoal implements IArenaCommandHandler {
      *
      * @return the goal life map
      */
-    protected Map<String, Integer> getLifeMap() {
+    public Map<String, Integer> getLifeMap() {
         if (this.lifeMap == null) {
             this.lifeMap = new HashMap<>();
         }

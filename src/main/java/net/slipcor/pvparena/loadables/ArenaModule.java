@@ -8,7 +8,7 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.exceptions.GameplayException;
-import net.slipcor.pvparena.loadables.ArenaRegion.RegionType;
+import net.slipcor.pvparena.regions.RegionType;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;

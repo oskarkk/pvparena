@@ -6,8 +6,9 @@ import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.loadables.ArenaRegion;
-import net.slipcor.pvparena.loadables.ArenaRegion.RegionType;
+import net.slipcor.pvparena.regions.ArenaRegion;
+import net.slipcor.pvparena.regions.RegionType;
+import net.slipcor.pvparena.managers.RegionManager;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collections;
@@ -57,6 +58,8 @@ public class PAA_RegionType extends AbstractArenaCommand {
         region.setType(regionType);
         if (regionType == RegionType.BATTLE) {
             region.protectionSetAll(true);
+        } else if (regionType == RegionType.JOIN) {
+            RegionManager.getInstance().reloadCache();
         }
         region.saveToConfig();
         arena.msg(sender, Language.parse(arena, MSG.REGION_TYPE_SET, regionType.name()));

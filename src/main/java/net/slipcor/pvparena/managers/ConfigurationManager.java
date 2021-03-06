@@ -13,6 +13,7 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.Utils;
 import net.slipcor.pvparena.loadables.*;
+import net.slipcor.pvparena.regions.ArenaRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Chest;

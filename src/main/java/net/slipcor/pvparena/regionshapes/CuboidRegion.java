@@ -1,8 +1,8 @@
-package net.slipcor.pvparena.regions;
+package net.slipcor.pvparena.regionshapes;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.classes.PABlockLocation;
-import net.slipcor.pvparena.loadables.ArenaRegion;
+import net.slipcor.pvparena.regions.ArenaRegion;
 import net.slipcor.pvparena.loadables.ArenaRegionShape;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
