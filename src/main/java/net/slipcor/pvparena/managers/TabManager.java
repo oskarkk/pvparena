@@ -37,7 +37,7 @@ public final class TabManager {
             if (PAA_Edit.activeEdits.containsKey(sender.getName())){
                 arena = PAA_Edit.activeEdits.get(sender.getName());
             } else {
-                arena = ArenaPlayer.parsePlayer(sender.getName()).getArena();
+                arena = ArenaPlayer.fromPlayer(sender.getName()).getArena();
             }
         }
 

@@ -65,7 +65,7 @@ public class WarmupJoin extends ArenaModule {
             throw new GameplayException(Language.parse(this.arena, MSG.ERROR_DISABLED));
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
         if (this.getPlayerSet().contains(aPlayer)) {
             return false;
@@ -83,13 +83,13 @@ public class WarmupJoin extends ArenaModule {
 
     @Override
     public void commitJoin(final Player sender, final ArenaTeam team) {
-        new ArenaWarmupRunnable(this.arena, ArenaPlayer.parsePlayer(sender.getName()), team.getName(), false, this.arena.getArenaConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
+        new ArenaWarmupRunnable(this.arena, ArenaPlayer.fromPlayer(sender.getName()), team.getName(), false, this.arena.getArenaConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
         this.announced = true;
     }
 
     @Override
     public void commitSpectate(final Player sender) {
-        new ArenaWarmupRunnable(this.arena, ArenaPlayer.parsePlayer(sender.getName()), null, true, this.arena.getArenaConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
+        new ArenaWarmupRunnable(this.arena, ArenaPlayer.fromPlayer(sender.getName()), null, true, this.arena.getArenaConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
     }
 
     @Override
@@ -113,6 +113,6 @@ public class WarmupJoin extends ArenaModule {
 
     @Override
     public void parsePlayerLeave(final Player player, final ArenaTeam team) {
-        this.getPlayerSet().remove(ArenaPlayer.parsePlayer(player.getName()));
+        this.getPlayerSet().remove(ArenaPlayer.fromPlayer(player));
     }
 }

@@ -51,6 +51,9 @@ import static net.slipcor.pvparena.config.Debugger.debug;
  */
 
 public class GoalLiberation extends ArenaGoal {
+
+    private static final String BUTTON = "button";
+
     public GoalLiberation() {
         super("Liberation");
     }
@@ -63,20 +66,18 @@ public class GoalLiberation extends ArenaGoal {
         return PVPArena.getInstance().getDescription().getVersion();
     }
 
-    private static final int PRIORITY = 10;
-
     @Override
     public boolean checkCommand(final String string) {
-        return this.arena.getTeams().stream().anyMatch(team -> string.contains(team.getName() + "button"));
+        return this.arena.getTeams().stream().anyMatch(team -> string.contains(team.getName() + BUTTON));
     }
 
     @Override
-    public List<String> getMain() {
+    public List<String> getGoalCommands() {
         final List<String> result = new ArrayList<>();
         if (this.arena != null) {
             for (final ArenaTeam team : this.arena.getTeams()) {
                 final String sTeam = team.getName();
-                result.add(sTeam + "button");
+                result.add(sTeam + BUTTON);
             }
         }
         return result;
@@ -134,38 +135,28 @@ public class GoalLiberation extends ArenaGoal {
         }
         debug(this.arena, player, "button click!");
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
 
-        final ArenaTeam pTeam = aPlayer.getArenaTeam();
-        if (pTeam == null) {
+        final ArenaTeam playerArenaTeam = arenaPlayer.getArenaTeam();
+        if (playerArenaTeam == null) {
             return false;
-        }
-        final Set<ArenaTeam> setTeam = new HashSet<>();
-
-        for (final ArenaTeam team : this.arena.getTeams()) {
-            setTeam.add(team);
         }
 
         Vector vFlag = null;
-        for (final ArenaTeam team : setTeam) {
-            final String aTeam = team.getName();
+        for (final ArenaTeam arenaTeam : this.arena.getNotEmptyTeams()) {
 
-            if (aTeam.equals(pTeam.getName())) {
+            if (arenaTeam.equals(playerArenaTeam)) {
                 debug(this.arena, player, "equals!OUT! ");
                 continue;
             }
-            if (team.getTeamMembers().size() < 1) {
-                debug(this.arena, player, "size!OUT! ");
-                continue; // dont check for inactive teams
-            }
-            debug(this.arena, player, "checking for flag of team " + aTeam);
+            debug(this.arena, player, "checking for flag of team " + arenaTeam);
             Vector vLoc = block.getLocation().toVector();
             debug(this.arena, player, "block: " + vLoc);
-            if (!SpawnManager.getBlocksStartingWith(this.arena, aTeam + "button").isEmpty()) {
+            if (!SpawnManager.getBlocksStartingWith(this.arena, arenaTeam.getName() + BUTTON).isEmpty()) {
                 vFlag = SpawnManager
                         .getBlockNearest(
-                                SpawnManager.getBlocksStartingWith(this.arena, aTeam
-                                        + "button"),
+                                SpawnManager.getBlocksStartingWith(this.arena, arenaTeam.getName()
+                                        + BUTTON),
                                 new PABlockLocation(player.getLocation()))
                         .toLocation().toVector();
             }
@@ -175,7 +166,7 @@ public class GoalLiberation extends ArenaGoal {
 
                 boolean success = false;
 
-                for (final ArenaPlayer jailedPlayer : pTeam.getTeamMembers()) {
+                for (final ArenaPlayer jailedPlayer : playerArenaTeam.getTeamMembers()) {
                     if (jailedPlayer.getStatus() == Status.DEAD) {
                         SpawnManager.respawn(this.arena, jailedPlayer, null);
                         final List<ItemStack> iList = new ArrayList<>();
@@ -198,7 +189,7 @@ public class GoalLiberation extends ArenaGoal {
 
                     this.arena.broadcast(ChatColor.YELLOW + Language
                             .parse(this.arena, MSG.GOAL_LIBERATION_LIBERATED,
-                                    pTeam.getColoredName()
+                                    playerArenaTeam.getColoredName()
                                             + ChatColor.YELLOW));
 
                     final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, "trigger:" + player.getName());
@@ -228,12 +219,14 @@ public class GoalLiberation extends ArenaGoal {
 
     @Override
     public Boolean checkPlayerDeath(Player player) {
-        final int pos = this.getLifeMap().get(player.getName());
+        ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
+        ArenaTeam arenaTeam = arenaPlayer.getArenaTeam();
+        final int pos = this.getTeamLifeMap().get(arenaTeam);
         debug(this.arena, player, "lives before death: " + pos);
         if (pos <= 1) {
-            this.getLifeMap().put(player.getName(), 1);
+            this.getTeamLifeMap().put(arenaTeam, 1);
 
-            final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+            final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
             final ArenaTeam team = aPlayer.getArenaTeam();
             boolean someoneAlive = false;
 
@@ -251,10 +244,10 @@ public class GoalLiberation extends ArenaGoal {
 
     @Override
     public void commitCommand(final CommandSender sender, final String[] args) {
-        if (args[0].contains("button")) {
+        if (args[0].contains(BUTTON)) {
             for (final ArenaTeam team : this.arena.getTeams()) {
                 final String sTeam = team.getName();
-                if (args[0].contains(sTeam + "button")) {
+                if (args[0].contains(sTeam + BUTTON)) {
                     this.flagName = args[0];
                     PAA_Region.activeSelections.put(sender.getName(), this.arena);
 
@@ -277,36 +270,36 @@ public class GoalLiberation extends ArenaGoal {
 
         final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, "");
         Bukkit.getPluginManager().callEvent(gEvent);
-        for (final ArenaTeam team : this.arena.getTeams()) {
-            for (final ArenaPlayer ap : team.getTeamMembers()) {
-                if (ap.getStatus() != Status.FIGHT) {
+        for (final ArenaTeam arenaTeam : this.arena.getTeams()) {
+            for (final ArenaPlayer arenaPlayer : arenaTeam.getTeamMembers()) {
+                if (arenaPlayer.getStatus() != Status.FIGHT) {
                     continue;
                 }
                 if (this.arena.isFreeForAll()) {
                     ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.PLAYER_HAS_WON, ap.getName()),
+                            Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
                             "END");
 
                     ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.PLAYER_HAS_WON, ap.getName()),
+                            Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
                             "WINNER");
 
                     this.arena.broadcast(Language.parse(this.arena, MSG.PLAYER_HAS_WON,
-                            ap.getName()));
+                            arenaPlayer.getName()));
                 } else {
 
                     ArenaModuleManager.announce(
                             this.arena,
                             Language.parse(this.arena, MSG.TEAM_HAS_WON,
-                                    team.getColoredName()), "WINNER");
+                                    arenaTeam.getColoredName()), "WINNER");
 
                     this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON,
-                            team.getColoredName()));
+                            arenaTeam.getColoredName()));
                     break;
                 }
             }
 
-            if (ArenaModuleManager.commitEnd(this.arena, team)) {
+            if (ArenaModuleManager.commitEnd(this.arena, arenaTeam)) {
                 return;
             }
         }
@@ -319,18 +312,21 @@ public class GoalLiberation extends ArenaGoal {
     public void commitPlayerDeath(final Player player, final boolean doesRespawn,
                                   final PlayerDeathEvent event) {
 
-        if (!this.getLifeMap().containsKey(player.getName())) {
+        ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
+        ArenaTeam arenaTeam = arenaPlayer.getArenaTeam();
+
+        if (!this.getTeamLifeMap().containsKey(arenaTeam)) {
             debug(this.arena, player, "cmd: not in life map!");
             return;
         }
         final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, "playerDeath:" + player.getName());
         Bukkit.getPluginManager().callEvent(gEvent);
-        int lives = this.getLifeMap().get(player.getName());
+        int lives = this.getTeamLifeMap().get(arenaTeam);
         debug(this.arena, player, "lives before death: " + lives);
         if (lives <= 1) {
-            this.getLifeMap().put(player.getName(), 1);
+            this.getTeamLifeMap().put(arenaTeam, 1);
 
-            final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+            final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
             aPlayer.setStatus(Status.DEAD);
 
@@ -347,8 +343,6 @@ public class GoalLiberation extends ArenaGoal {
 
             if (someoneAlive) {
 
-                final ArenaTeam respawnTeam = ArenaPlayer.parsePlayer(player.getName())
-                        .getArenaTeam();
                 if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                     this.broadcastSimpleDeathMessage(player, event);
                 }
@@ -373,7 +367,7 @@ public class GoalLiberation extends ArenaGoal {
                     aPlayer.getPlayer().getScoreboard().getObjective("lives").getScore(aPlayer.getName()).setScore(101);
                 }
             } else {
-                this.getLifeMap().remove(player.getName());
+                this.getTeamLifeMap().remove(arenaTeam);
                 final List<ItemStack> returned;
 
                 if (this.arena.getArenaConfig().getBoolean(
@@ -385,12 +379,10 @@ public class GoalLiberation extends ArenaGoal {
                 }
 
                 WorkflowManager.handleRespawn(this.arena,
-                        ArenaPlayer.parsePlayer(player.getName()), returned);
+                        ArenaPlayer.fromPlayer(player), returned);
 
-                ArenaPlayer.parsePlayer(player.getName()).setStatus(Status.LOST);
+                ArenaPlayer.fromPlayer(player).setStatus(Status.LOST);
 
-                final ArenaTeam respawnTeam = ArenaPlayer.parsePlayer(player.getName())
-                        .getArenaTeam();
                 if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                     this.broadcastSimpleDeathMessage(player, event);
                 }
@@ -400,10 +392,8 @@ public class GoalLiberation extends ArenaGoal {
 
         } else {
             lives--;
-            this.getLifeMap().put(player.getName(), lives);
+            this.getTeamLifeMap().put(arenaTeam, lives);
 
-            final ArenaTeam respawnTeam = ArenaPlayer.parsePlayer(player.getName())
-                    .getArenaTeam();
             if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                 this.broadcastDeathMessage(MSG.FIGHT_KILLED_BY_REMAINING, player, event, lives);
             }
@@ -419,7 +409,7 @@ public class GoalLiberation extends ArenaGoal {
             }
 
             WorkflowManager.handleRespawn(this.arena,
-                    ArenaPlayer.parsePlayer(player.getName()), returned);
+                    ArenaPlayer.fromPlayer(player), returned);
 
         }
     }
@@ -450,8 +440,8 @@ public class GoalLiberation extends ArenaGoal {
     }
 
     @Override
-    public int getLives(ArenaPlayer aPlayer) {
-        return this.getLifeMap().getOrDefault(aPlayer.getName(), 0);
+    public int getLives(ArenaPlayer arenaPlayer) {
+        return this.getTeamLifeMap().getOrDefault(arenaPlayer.getArenaTeam(), 0);
     }
 
     @Override
@@ -483,8 +473,9 @@ public class GoalLiberation extends ArenaGoal {
 
     @Override
     public void initiate(final Player player) {
-        this.getLifeMap().put(player.getName(),
-                this.arena.getArenaConfig().getInt(CFG.GOAL_LLIVES_LIVES));
+        ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
+        ArenaTeam arenaTeam = arenaPlayer.getArenaTeam();
+        this.getTeamLifeMap().put(arenaTeam, this.arena.getArenaConfig().getInt(CFG.GOAL_LLIVES_LIVES));
     }
 
     @Override
@@ -494,14 +485,16 @@ public class GoalLiberation extends ArenaGoal {
                     this.getName() + ": player NULL");
             return;
         }
-        this.getLifeMap().remove(player.getName());
+        ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
+        ArenaTeam arenaTeam = arenaPlayer.getArenaTeam();
+        this.getTeamLifeMap().remove(arenaTeam);
     }
 
     @Override
     public void parseStart() {
         for (final ArenaTeam team : this.arena.getTeams()) {
-            for (final ArenaPlayer ap : team.getTeamMembers()) {
-                this.getLifeMap().put(ap.getName(),
+            for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
+                this.getTeamLifeMap().put(arenaPlayer.getArenaTeam(),
                         this.arena.getArenaConfig().getInt(CFG.GOAL_LLIVES_LIVES));
             }
         }
@@ -514,7 +507,7 @@ public class GoalLiberation extends ArenaGoal {
     @Override
     public void reset(final boolean force) {
         this.endRunner = null;
-        this.getLifeMap().clear();
+        this.getTeamLifeMap().clear();
         if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
             this.arena.removeCustomScoreBoardEntry(null, 102);
             this.arena.removeCustomScoreBoardEntry(null, 100);
@@ -538,54 +531,30 @@ public class GoalLiberation extends ArenaGoal {
     }
 
     @Override
-    public void setPlayerLives(final int value) {
-        final Set<String> plrs = new HashSet<>();
-
-        for (final String name : this.getLifeMap().keySet()) {
-            plrs.add(name);
-        }
-
-        for (final String s : plrs) {
-            this.getLifeMap().put(s, value);
-        }
-    }
-
-    @Override
-    public void setPlayerLives(final ArenaPlayer aPlayer, final int value) {
-        this.getLifeMap().put(aPlayer.getName(), value);
-    }
-
-    @Override
     public Map<String, Double> timedEnd(final Map<String, Double> scores) {
 
-        for (final ArenaPlayer ap : this.arena.getFighters()) {
-            double score = this.getLifeMap().containsKey(ap.getName()) ? this.getLifeMap().get(ap.getName())
-                    : 0;
+        for (final ArenaPlayer arenaPlayer : this.arena.getFighters()) {
+            double score = this.getTeamLifeMap().getOrDefault(arenaPlayer.getArenaTeam(), 0);
             if (this.arena.isFreeForAll()) {
 
-                if (scores.containsKey(ap.getName())) {
-                    scores.put(ap.getName(), scores.get(ap.getName()) + score);
+                if (scores.containsKey(arenaPlayer.getName())) {
+                    scores.put(arenaPlayer.getName(), scores.get(arenaPlayer.getName()) + score);
                 } else {
-                    scores.put(ap.getName(), score);
+                    scores.put(arenaPlayer.getName(), score);
                 }
             } else {
-                if (ap.getArenaTeam() == null) {
+                if (arenaPlayer.getArenaTeam() == null) {
                     continue;
                 }
-                if (scores.containsKey(ap.getArenaTeam().getName())) {
-                    scores.put(ap.getArenaTeam().getName(),
-                            scores.get(ap.getName()) + score);
+                if (scores.containsKey(arenaPlayer.getArenaTeam().getName())) {
+                    scores.put(arenaPlayer.getArenaTeam().getName(),
+                            scores.get(arenaPlayer.getName()) + score);
                 } else {
-                    scores.put(ap.getArenaTeam().getName(), score);
+                    scores.put(arenaPlayer.getArenaTeam().getName(), score);
                 }
             }
         }
 
         return scores;
-    }
-
-    @Override
-    public void unload(final Player player) {
-        this.getLifeMap().remove(player.getName());
     }
 }

@@ -1,6 +1,7 @@
 package net.slipcor.pvparena.runnables;
 
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.core.ColorUtils;
 import net.slipcor.pvparena.core.Config;
@@ -10,12 +11,12 @@ import org.bukkit.*;
 import java.util.Map;
 
 public class CircleParticleRunnable implements Runnable {
-    private final Map<Location, String> flagMap;
+    private final Map<Location, ArenaTeam> flagMap;
     private final Arena arena;
     private final double radius;
     private int i = 0;
 
-    public CircleParticleRunnable(Arena arena, Config.CFG config, Map<Location, String> flagMap) {
+    public CircleParticleRunnable(Arena arena, Config.CFG config, Map<Location, ArenaTeam> flagMap) {
         this.arena = arena;
         this.flagMap = flagMap;
         this.radius = arena.getArenaConfig().getInt(config, 3);
@@ -23,7 +24,7 @@ public class CircleParticleRunnable implements Runnable {
 
     private Color getDustColor(Location flagLocation) {
         if(this.flagMap.containsKey(flagLocation)) {
-            ChatColor teamColor = this.arena.getTeam(this.flagMap.get(flagLocation)).getColor();
+            ChatColor teamColor = this.flagMap.get(flagLocation).getColor();
             return ColorUtils.getDyeColorFromChatColor(teamColor).getColor();
         }
         return Color.WHITE;

@@ -122,7 +122,7 @@ public final class ArenaClass {
                         Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), new Runnable(){
                             @Override
                             public void run() {
-                                ArenaPlayer.parsePlayer(player.getName()).getArena().addEntity(
+                                ArenaPlayer.fromPlayer(player).getArena().addEntity(
                                         player, player.getWorld().spawnEntity(player.getLocation(), EntityType.valueOf(eggType)));
                             }
                         }, 20L);
@@ -154,7 +154,7 @@ public final class ArenaClass {
 
                 try {
                     Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), () ->
-                            ArenaPlayer.parsePlayer(player.getName()).getArena().addEntity(
+                            ArenaPlayer.fromPlayer(player).getArena().addEntity(
                                 player, player.getWorld().spawnEntity(player.getLocation(), EntityType.valueOf(eggType))), 20L);
                 } catch(final IllegalPluginAccessException ignored) {
 

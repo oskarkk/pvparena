@@ -92,7 +92,7 @@ public class StandardLounge extends ArenaModule {
             throw new GameplayException(Language.parse(this.arena, MSG.ERROR_DISABLED));
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
         if (aPlayer.getArena() != null) {
             debug(aPlayer.getArena(), player, this.getName());
@@ -129,7 +129,7 @@ public class StandardLounge extends ArenaModule {
     @Override
     public void commitJoin(final Player sender, final ArenaTeam team) {
         // standard join --> lounge
-        final ArenaPlayer player = ArenaPlayer.parsePlayer(sender.getName());
+        final ArenaPlayer player = ArenaPlayer.fromPlayer(sender.getName());
         player.setLocation(new PALocation(player.getPlayer().getLocation()));
 
         // ArenaPlayer.prepareInventory(arena, ap.getPlayer());

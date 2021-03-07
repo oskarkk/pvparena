@@ -590,7 +590,7 @@ public final class SpawnManager {
         if (!arena.hasPlayer(player)) {
             return false;
         }
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         final ArenaTeam team = aPlayer.getArenaTeam();
         if (team == null) {
             return false;

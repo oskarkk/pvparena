@@ -104,7 +104,7 @@ public class ArenaTeam {
     }
 
     public boolean hasPlayer(final Player player) {
-        return this.players.contains(ArenaPlayer.parsePlayer(player.getName()));
+        return this.players.contains(ArenaPlayer.fromPlayer(player));
     }
 
     public boolean isEveryoneReady() {
@@ -123,6 +123,24 @@ public class ArenaTeam {
      */
     public void remove(final ArenaPlayer player) {
         this.players.remove(player);
+    }
+
+    /**
+     * Is a Team without any team member
+     *
+     * @return true if no team member
+     */
+    public boolean isEmpty() {
+        return this.getTeamMembers().isEmpty();
+    }
+
+    /**
+     * Is a Team with at least one team member
+     *
+     * @return true if at least one team member
+     */
+    public boolean isNotEmpty() {
+        return !this.getTeamMembers().isEmpty();
     }
 
     @Override

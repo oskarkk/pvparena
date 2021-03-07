@@ -65,7 +65,7 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
             return;
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(sender.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(sender.getName());
 
         // Player can change arena class only in lounge or with ingameClassSwith parameter set to true
         if(aPlayer.getStatus() != LOUNGE && !arena.getArenaConfig().getBoolean(CFG.USES_INGAMECLASSSWITCH)) {

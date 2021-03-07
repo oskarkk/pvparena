@@ -145,7 +145,7 @@ public class WorkflowManager {
             team = arena.getTeam(args[0]);
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
         ArenaModuleManager.choosePlayerTeam(arena, player, team.getColoredName());
 
@@ -234,7 +234,7 @@ public class WorkflowManager {
             }
             if (arena.getArenaConfig().getBoolean(CFG.PLAYER_REFILLFORKILL)) {
                 InventoryManager.clearInventory(player.getKiller());
-                ArenaPlayer.parsePlayer(player.getKiller().getName()).getArenaClass().equip(player.getKiller());
+                ArenaPlayer.fromPlayer(player.getKiller().getName()).getArenaClass().equip(player.getKiller());
             }
             if (arena.getArenaConfig().getItems(CFG.PLAYER_ITEMSONKILL) != null) {
                 ItemStack[] items = arena.getArenaConfig().getItems(CFG.PLAYER_ITEMSONKILL);
@@ -245,7 +245,7 @@ public class WorkflowManager {
                 }
             }
             if (arena.getArenaConfig().getBoolean(CFG.USES_TELEPORTONKILL)) {
-                SpawnManager.respawn(arena, ArenaPlayer.parsePlayer(player.getKiller().getName()), null);
+                SpawnManager.respawn(arena, ArenaPlayer.fromPlayer(player.getKiller().getName()), null);
             }
         }
 
@@ -266,7 +266,7 @@ public class WorkflowManager {
                     event.setDroppedExp(exp);
                 }
             }
-            final ArenaTeam respawnTeam = ArenaPlayer.parsePlayer(
+            final ArenaTeam respawnTeam = ArenaPlayer.fromPlayer(
                     player.getName()).getArenaTeam();
 
             if (arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
@@ -289,7 +289,7 @@ public class WorkflowManager {
                 event.getDrops().clear();
             }
 
-            handleRespawn(arena, ArenaPlayer.parsePlayer(player.getName()), returned);
+            handleRespawn(arena, ArenaPlayer.fromPlayer(player), returned);
 
 
             arena.getGoal().parsePlayerDeath(player, player.getLastDamageCause());
@@ -307,7 +307,7 @@ public class WorkflowManager {
         ArenaModuleManager.parsePlayerDeath(arena, player,
                 player.getLastDamageCause());
 
-        if (!arena.getArenaConfig().getBoolean(CFG.PLAYER_DROPSINVENTORY) || !ArenaPlayer.parsePlayer(player.getName()).mayDropInventory()) {
+        if (!arena.getArenaConfig().getBoolean(CFG.PLAYER_DROPSINVENTORY) || !ArenaPlayer.fromPlayer(player).mayDropInventory()) {
             event.getDrops().clear();
         }
         if (doesRespawn

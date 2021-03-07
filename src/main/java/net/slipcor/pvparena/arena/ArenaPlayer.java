@@ -122,6 +122,7 @@ public class ArenaPlayer {
         this.player = player;
     }
 
+    @NotNull
     public Player getPlayer() {
         return this.player;
     }
@@ -186,7 +187,7 @@ public class ArenaPlayer {
      * @param player the player to supply
      */
     public static void givePlayerFightItems(final Arena arena, final Player player) {
-        final ArenaPlayer aPlayer = parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = fromPlayer(player);
 
         final ArenaClass playerClass = aPlayer.aClass;
         if (playerClass == null) {
@@ -210,7 +211,7 @@ public class ArenaPlayer {
      * @param name the playername to use
      * @return an ArenaPlayer instance belonging to that player
      */
-    public static ArenaPlayer parsePlayer(final String name) {
+    public static ArenaPlayer fromPlayer(final String name) {
         synchronized (ArenaPlayer.class) {
             Player player = Bukkit.getPlayerExact(name);
 
@@ -222,12 +223,7 @@ public class ArenaPlayer {
                 }
                 player = offlinePlayer.getPlayer();
             }
-
-            if (!totalPlayers.containsKey(player.getUniqueId())) {
-                ArenaPlayer ap = new ArenaPlayer(player);
-                totalPlayers.putIfAbsent(player.getUniqueId(), ap);
-            }
-            return totalPlayers.get(player.getUniqueId());
+            return fromPlayer(player);
         }
     }
 
@@ -246,28 +242,6 @@ public class ArenaPlayer {
     }
 
     /**
-     * add an ArenaPlayer (used to load statistics)
-     *
-     * @param player the player to use
-     * @return an ArenaPlayer instance belonging to that player
-     */
-    public static ArenaPlayer addPlayer(final Player player) {
-        synchronized (ArenaPlayer.class) {
-            ArenaPlayer aPlayer = new ArenaPlayer(player);
-            totalPlayers.putIfAbsent(player.getUniqueId(), aPlayer);
-            return totalPlayers.get(player.getUniqueId());
-        }
-    }
-
-    public static ArenaPlayer addPlayer(UUID uuid) {
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-        if(offlinePlayer.getPlayer() == null) {
-            throw new RuntimeException(String.format("Player with uuid %s not found", uuid));
-        }
-        return addPlayer(offlinePlayer.getPlayer());
-    }
-
-    /**
      * prepare a player's inventory, back it up and clear it
      *
      * @param player the player to save
@@ -275,7 +249,7 @@ public class ArenaPlayer {
     public static void backupAndClearInventory(final Arena arena, final Player player) {
         debug(player, "saving player inventory: {}", player);
 
-        final ArenaPlayer aPlayer = parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = fromPlayer(player);
         aPlayer.savedInventory = player.getInventory().getContents().clone();
         InventoryManager.clearInventory(player);
     }
@@ -288,7 +262,7 @@ public class ArenaPlayer {
 
         debug(player, "resetting inventory");
 
-        final ArenaPlayer aPlayer = parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = fromPlayer(player);
 
         if (arena.getArenaConfig().getYamlConfiguration().get(CFG.ITEMS_TAKEOUTOFGAME.getNode()) != null) {
             final ItemStack[] items =

@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.reverseOrder;
@@ -132,7 +131,7 @@ public final class StatisticsManager {
             debug(arena, defender, "attacker is player: " + attacker.getName());
             if (arena.hasPlayer(attacker)) {
                 debug(arena, defender, "attacker is in the arena, adding damage!");
-                final ArenaPlayer apAttacker = ArenaPlayer.parsePlayer(attacker.getName());
+                final ArenaPlayer apAttacker = ArenaPlayer.fromPlayer(attacker.getName());
                 final int maxdamage = apAttacker.getStatistics(arena).getStat(Type.MAXDAMAGE);
                 apAttacker.getStatistics(arena).incStat(Type.DAMAGE, (int) dmg);
                 if (dmg > maxdamage) {
@@ -140,7 +139,7 @@ public final class StatisticsManager {
                 }
             }
         }
-        final ArenaPlayer apDefender = ArenaPlayer.parsePlayer(defender.getName());
+        final ArenaPlayer apDefender = ArenaPlayer.fromPlayer(defender.getName());
 
         final int maxdamage = apDefender.getStatistics(arena).getStat(Type.MAXDAMAGETAKE);
         apDefender.getStatistics(arena).incStat(Type.DAMAGETAKE, (int) dmg);
@@ -254,10 +253,10 @@ public final class StatisticsManager {
                 final PAKillEvent kEvent = new PAKillEvent(arena, attacker);
                 Bukkit.getPluginManager().callEvent(kEvent);
 
-                ArenaPlayer.parsePlayer(attacker.getName()).addKill();
+                ArenaPlayer.fromPlayer(attacker.getName()).addKill();
             }
         }
-        ArenaPlayer.parsePlayer(defender.getName()).addDeath();
+        ArenaPlayer.fromPlayer(defender.getName()).addDeath();
     }
 
     public static void save() {

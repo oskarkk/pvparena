@@ -41,6 +41,9 @@ import static net.slipcor.pvparena.config.Debugger.debug;
  */
 
 public class GoalPlayerLives extends ArenaGoal {
+
+    public static final String SPAWN = "spawn";
+
     public GoalPlayerLives() {
         super("PlayerLives");
     }
@@ -51,8 +54,6 @@ public class GoalPlayerLives extends ArenaGoal {
     public String version() {
         return PVPArena.getInstance().getDescription().getVersion();
     }
-
-    private static final int PRIORITY = 2;
 
     @Override
     public boolean checkEnd() {
@@ -66,8 +67,8 @@ public class GoalPlayerLives extends ArenaGoal {
             return (count <= 1); // yep. only one team left. go!
         }
 
-        debug(this.arena, "lives: " + StringParser.joinSet(this.getLifeMap().keySet(), "|"));
-        final int count = this.getLifeMap().size();
+        debug(this.arena, "lives: " + StringParser.joinSet(this.getTeamLifeMap().keySet(), "|"));
+        final int count = this.getTeamLifeMap().size();
         return (count <= 1); // yep. only one team left. go!
     }
 
@@ -81,7 +82,7 @@ public class GoalPlayerLives extends ArenaGoal {
 
     @Override
     public Boolean checkPlayerDeath(Player player) {
-        final int pos = this.getLifeMap().get(player.getName());
+        final int pos = this.getTeamLifeMap().get(player);
         debug(this.arena, player, "lives before death: " + pos);
         return pos > 1;
     }
@@ -98,38 +99,38 @@ public class GoalPlayerLives extends ArenaGoal {
         final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, "");
         Bukkit.getPluginManager().callEvent(gEvent);
 
-        for (final ArenaTeam team : this.arena.getTeams()) {
-            for (final ArenaPlayer ap : team.getTeamMembers()) {
-                if (ap.getStatus() != Status.FIGHT) {
+        for (final ArenaTeam arenaTeam : this.arena.getNotEmptyTeams()) {
+            for (final ArenaPlayer arenaPlayer : arenaTeam.getTeamMembers()) {
+                if (arenaPlayer.getStatus() != Status.FIGHT) {
                     continue;
                 }
                 if (this.arena.isFreeForAll()) {
                     ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.PLAYER_HAS_WON, ap.getName()),
+                            Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
                             "END");
                     ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.PLAYER_HAS_WON, ap.getName()),
+                            Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
                             "WINNER");
 
                     this.arena.broadcast(Language.parse(this.arena, MSG.PLAYER_HAS_WON,
-                            ap.getName()));
+                            arenaPlayer.getName()));
                 } else {
                     ArenaModuleManager.announce(
                             this.arena,
                             Language.parse(this.arena, MSG.TEAM_HAS_WON,
-                                    team.getColoredName()), "END");
+                                    arenaTeam.getColoredName()), "END");
                     ArenaModuleManager.announce(
                             this.arena,
                             Language.parse(this.arena, MSG.TEAM_HAS_WON,
-                                    team.getColoredName()), "WINNER");
+                                    arenaTeam.getColoredName()), "WINNER");
 
                     this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON,
-                            team.getColoredName()));
+                            arenaTeam.getColoredName()));
                     break;
                 }
             }
 
-            if (ArenaModuleManager.commitEnd(this.arena, team)) {
+            if (ArenaModuleManager.commitEnd(this.arena, arenaTeam)) {
                 if (this.arena.realEndRunner == null) {
                     this.endRunner = new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(
                             CFG.TIME_ENDCOUNTDOWN));
@@ -145,9 +146,18 @@ public class GoalPlayerLives extends ArenaGoal {
     @Override
     public void commitPlayerDeath(final Player player, final boolean doesRespawn,
                                   final PlayerDeathEvent event) {
-        if (!this.getLifeMap().containsKey(player.getName())) {
-            return;
+
+        ArenaTeam arenaTeam = ArenaPlayer.fromPlayer(player).getArenaTeam();
+        if(this.arena.isFreeForAll()){
+            if (!this.getPlayerLifeMap().containsKey(player)) {
+                return;
+            }
+        } else {
+            if (!this.getTeamLifeMap().containsKey(arenaTeam)) {
+                return;
+            }
         }
+
         if (doesRespawn) {
             final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, "doesRespawn", "playerDeath:" + player.getName());
             Bukkit.getPluginManager().callEvent(gEvent);
@@ -155,11 +165,20 @@ public class GoalPlayerLives extends ArenaGoal {
             final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, "playerDeath:" + player.getName());
             Bukkit.getPluginManager().callEvent(gEvent);
         }
-        int pos = this.getLifeMap().get(player.getName());
-        debug(this.arena, player, "lives before death: " + pos);
-        if (pos <= 1) {
-            this.getLifeMap().remove(player.getName());
-            ArenaPlayer.parsePlayer(player.getName()).setStatus(Status.LOST);
+        final int currentPlayerOrTeamLive;
+        if(this.arena.isFreeForAll()){
+            currentPlayerOrTeamLive = this.getPlayerLifeMap().get(player);
+        } else {
+            currentPlayerOrTeamLive = this.getTeamLifeMap().get(arenaTeam);
+        }
+        debug(this.arena, player, "lives before death: " + currentPlayerOrTeamLive);
+        if (currentPlayerOrTeamLive <= 1) {
+            if(this.arena.isFreeForAll()){
+                this.getPlayerLifeMap().remove(player);
+            } else {
+                this.getTeamLifeMap().remove(arenaTeam);
+            }
+            ArenaPlayer.fromPlayer(player).setStatus(Status.LOST);
             if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
                 debug(this.arena, player, "faking player death");
                 PlayerListener.finallyKillPlayer(this.arena, player, event);
@@ -167,12 +186,16 @@ public class GoalPlayerLives extends ArenaGoal {
             // player died => commit death!
             WorkflowManager.handleEnd(this.arena, false);
         } else {
-            pos--;
-            this.getLifeMap().put(player.getName(), pos);
+            int nextPlayerOrTeamLive = currentPlayerOrTeamLive - 1;
+            if(this.arena.isFreeForAll()){
+                this.getPlayerLifeMap().put(player, nextPlayerOrTeamLive);
+            } else {
+                this.getTeamLifeMap().put(arenaTeam, nextPlayerOrTeamLive);
+            }
 
             if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                 if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_SHOWREMAININGLIVES)) {
-                    this.broadcastDeathMessage(MSG.FIGHT_KILLED_BY_REMAINING, player, event, pos);
+                    this.broadcastDeathMessage(MSG.FIGHT_KILLED_BY_REMAINING, player, event, nextPlayerOrTeamLive);
                 } else {
                     this.broadcastSimpleDeathMessage(player, event);
                 }
@@ -184,11 +207,10 @@ public class GoalPlayerLives extends ArenaGoal {
                 returned = InventoryManager.drop(player);
                 event.getDrops().clear();
             } else {
-                returned = new ArrayList<>();
-                returned.addAll(event.getDrops());
+                returned = new ArrayList<>(event.getDrops());
             }
 
-            WorkflowManager.handleRespawn(this.arena, ArenaPlayer.parsePlayer(player.getName()), returned);
+            WorkflowManager.handleRespawn(this.arena, ArenaPlayer.fromPlayer(player), returned);
 
         }
     }
@@ -200,17 +222,20 @@ public class GoalPlayerLives extends ArenaGoal {
     }
 
     @Override
-    public int getLives(ArenaPlayer aPlayer) {
+    public int getLives(ArenaPlayer arenaPlayer) {
+        // player lives
         if (this.arena.isFreeForAll()) {
-            return this.getLifeMap().getOrDefault(aPlayer.getName(), 0);
+            return this.getPlayerLifeMap().getOrDefault(arenaPlayer.getPlayer(), 0);
         }
 
-        if (this.getLifeMap().containsKey(aPlayer.getArenaTeam().getName())) {
-            return this.getLifeMap().get(aPlayer.getName());
+        // team lives
+        if (this.getTeamLifeMap().containsKey(arenaPlayer.getArenaTeam())) {
+            return this.getTeamLifeMap().getOrDefault(arenaPlayer.getArenaTeam(), 0);
         }
 
-        return aPlayer.getArenaTeam().getTeamMembers().stream()
-                .mapToInt(ap -> this.getLifeMap().getOrDefault(ap.getName(), 0))
+        // sum of all team members lives
+        return arenaPlayer.getArenaTeam().getTeamMembers().stream()
+                .mapToInt(ap -> this.getPlayerLifeMap().getOrDefault(ap.getPlayer(), 0))
                 .sum();
     }
 
@@ -221,22 +246,22 @@ public class GoalPlayerLives extends ArenaGoal {
             if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 for (final ArenaClass aClass : this.arena.getClasses()) {
                     if (string.toLowerCase().startsWith(
-                            aClass.getName().toLowerCase() + "spawn")) {
+                            aClass.getName().toLowerCase() + SPAWN)) {
                         return true;
                     }
                 }
             }
-            return string.toLowerCase().startsWith("spawn");
+            return string.toLowerCase().startsWith(SPAWN);
         }
         for (final String teamName : this.arena.getTeamNames()) {
             if (string.toLowerCase().startsWith(
-                    teamName.toLowerCase() + "spawn")) {
+                    teamName.toLowerCase() + SPAWN)) {
                 return true;
             }
             if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 for (final ArenaClass aClass : this.arena.getClasses()) {
                     if (string.toLowerCase().startsWith(teamName.toLowerCase() +
-                            aClass.getName().toLowerCase() + "spawn")) {
+                            aClass.getName().toLowerCase() + SPAWN)) {
                         return true;
                     }
                 }
@@ -257,7 +282,11 @@ public class GoalPlayerLives extends ArenaGoal {
                     this.getName() + ": player NULL");
             return;
         }
-        this.getLifeMap().remove(player.getName());
+        if(this.arena.isFreeForAll()) {
+            this.getPlayerLifeMap().remove(player);
+        } else {
+            this.getTeamLifeMap().remove(ArenaPlayer.fromPlayer(player).getArenaTeam());
+        }
     }
 
     @Override
@@ -272,7 +301,8 @@ public class GoalPlayerLives extends ArenaGoal {
     @Override
     public void reset(final boolean force) {
         this.endRunner = null;
-        this.getLifeMap().clear();
+        this.getTeamLifeMap().clear();
+        this.getPlayerLifeMap().clear();
     }
 
     @Override
@@ -298,37 +328,18 @@ public class GoalPlayerLives extends ArenaGoal {
     }
 
     @Override
-    public void setPlayerLives(final int value) {
-        final Set<String> plrs = new HashSet<>();
-
-        for (final String name : this.getLifeMap().keySet()) {
-            plrs.add(name);
-        }
-
-        for (final String s : plrs) {
-            this.getLifeMap().put(s, value);
-        }
-    }
-
-    @Override
-    public void setPlayerLives(final ArenaPlayer aPlayer, final int value) {
-        this.getLifeMap().put(aPlayer.getName(), value);
-    }
-
-    @Override
     public Map<String, Double> timedEnd(final Map<String, Double> scores) {
 
         for (final ArenaPlayer ap : this.arena.getFighters()) {
-            double score = this.getLifeMap().containsKey(ap.getName()) ? this.getLifeMap().get(ap.getName())
-                    : 0;
             if (this.arena.isFreeForAll()) {
-
+                double score = this.getPlayerLifeMap().getOrDefault(ap.getPlayer(), 0);
                 if (scores.containsKey(ap.getName())) {
                     scores.put(ap.getName(), scores.get(ap.getName()) + score);
                 } else {
                     scores.put(ap.getName(), score);
                 }
             } else {
+                double score = this.getTeamLifeMap().getOrDefault(ap.getArenaTeam(), 0);
                 if (ap.getArenaTeam() == null) {
                     continue;
                 }
@@ -342,10 +353,5 @@ public class GoalPlayerLives extends ArenaGoal {
         }
 
         return scores;
-    }
-
-    @Override
-    public void unload(final Player player) {
-        this.getLifeMap().remove(player.getName());
     }
 }

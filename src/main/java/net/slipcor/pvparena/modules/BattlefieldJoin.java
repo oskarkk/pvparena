@@ -61,7 +61,7 @@ public class BattlefieldJoin extends ArenaModule {
             throw new GameplayException(Language.parse(this.arena, MSG.ERROR_DISABLED));
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
         if (aPlayer.getArena() != null) {
             debug(aPlayer.getArena(), player, this.getName());
@@ -75,7 +75,7 @@ public class BattlefieldJoin extends ArenaModule {
     @Override
     public void commitJoin(final Player sender, final ArenaTeam team) {
         // standard join --> lounge
-        final ArenaPlayer arenaPlayer = ArenaPlayer.parsePlayer(sender.getName());
+        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(sender.getName());
         arenaPlayer.setLocation(new PALocation(arenaPlayer.getPlayer().getLocation()));
 
         arenaPlayer.setArena(this.arena);

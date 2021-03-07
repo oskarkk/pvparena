@@ -119,7 +119,7 @@ public class ArenaRegion {
             // - player has admin perms
             // - player has wand in hand
             debug(arena, player, "modify&adminperms&wand");
-            final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+            final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 aPlayer.setSelection(event.getClickedBlock().getLocation(), false);
                 arena.msg(player, Language.parse(arena, MSG.REGION_POS1));
@@ -466,12 +466,12 @@ public class ArenaRegion {
         Arena.pmsg(player, Language.parse(this.arena, MSG.NOTICE_YOU_DEATH));
         ArenaGoal goal = this.arena.getGoal();
         if (goal.getName().endsWith("DeathMatch")) {
-            if (goal.getLifeMap().containsKey(arenaPlayer.getName())) {
-                final int lives = goal.getLifeMap().get(arenaPlayer.getName()) + 1;
-                goal.getLifeMap().put(arenaPlayer.getName(), lives);
-            } else if (goal.getLifeMap().containsKey(arenaPlayer.getArenaTeam().getName())) {
-                final int lives = goal.getLifeMap().get(arenaPlayer.getArenaTeam().getName()) + 1;
-                goal.getLifeMap().put(arenaPlayer.getArenaTeam().getName(), lives);
+            if (goal.getPlayerLifeMap().containsKey(arenaPlayer.getPlayer())) {
+                final int lives = goal.getPlayerLifeMap().get(arenaPlayer.getPlayer()) + 1;
+                goal.getPlayerLifeMap().put(arenaPlayer.getPlayer(), lives);
+            } else if (goal.getTeamLifeMap().containsKey(arenaPlayer.getArenaTeam())) {
+                final int lives = goal.getTeamLifeMap().get(arenaPlayer.getArenaTeam()) + 1;
+                goal.getTeamLifeMap().put(arenaPlayer.getArenaTeam(), lives);
             }
         }
 

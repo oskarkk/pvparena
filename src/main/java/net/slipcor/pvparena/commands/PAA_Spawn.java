@@ -57,7 +57,7 @@ public class PAA_Spawn extends AbstractArenaCommand {
         if (args.length < 2) {
             // usage: /pa {arenaname} spawn [spawnname] | set a spawn
 
-            final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(sender.getName());
+            final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(sender.getName());
 
             if (spawns.contains(args[0])) {
                 this.commitSet(arena, sender, new PALocation(aPlayer.getPlayer().getLocation()), args[0]);
