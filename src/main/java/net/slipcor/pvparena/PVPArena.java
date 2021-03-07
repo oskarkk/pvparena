@@ -262,7 +262,7 @@ public class PVPArena extends JavaPlugin {
                 break;
             }
         }
-        final ArenaPlayer player = ArenaPlayer.parsePlayer(sender.getName());
+        final ArenaPlayer player = ArenaPlayer.fromPlayer(sender.getName());
         if (pacmd != null && !(player.getArena() != null && pacmd.hasVersionForArena())) {
             debug(sender, "committing: " + pacmd.getName());
             pacmd.commit(sender, StringParser.shiftArrayBy(args, 1));
@@ -281,8 +281,8 @@ public class PVPArena extends JavaPlugin {
 
         if (tempArena == null) {
             if (sender instanceof Player
-                    && ArenaPlayer.parsePlayer(sender.getName()).getArena() != null) {
-                tempArena = ArenaPlayer.parsePlayer(sender.getName())
+                    && ArenaPlayer.fromPlayer(sender.getName()).getArena() != null) {
+                tempArena = ArenaPlayer.fromPlayer(sender.getName())
                         .getArena();
             } else if (PAA_Setup.activeSetups.containsKey(sender.getName())) {
                 tempArena = PAA_Setup.activeSetups.get(sender.getName());

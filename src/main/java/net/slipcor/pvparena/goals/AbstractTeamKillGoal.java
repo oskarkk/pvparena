@@ -25,7 +25,7 @@ import java.util.Set;
 import static net.slipcor.pvparena.config.Debugger.debug;
 
 public abstract class AbstractTeamKillGoal extends ArenaGoal {
-    public AbstractTeamKillGoal(String name) {
+    protected AbstractTeamKillGoal(String name) {
         super(name);
     }
 
@@ -94,8 +94,8 @@ public abstract class AbstractTeamKillGoal extends ArenaGoal {
     }
 
     @Override
-    public int getLives(ArenaPlayer aPlayer) {
-        return this.getScore(aPlayer.getArenaTeam());
+    public int getLives(ArenaPlayer arenaPlayer) {
+        return this.getScore(arenaPlayer.getArenaTeam());
     }
 
     @Override
@@ -119,7 +119,7 @@ public abstract class AbstractTeamKillGoal extends ArenaGoal {
 
     @Override
     public void initiate(final Player player) {
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         this.updateLives(aPlayer.getArenaTeam(), this.getTeamLivesCfg());
     }
 
@@ -130,7 +130,7 @@ public abstract class AbstractTeamKillGoal extends ArenaGoal {
 
     @Override
     public void reset(final boolean force) {
-        this.getLifeMap().clear();
+        this.getTeamLifeMap().clear();
     }
 
     @Override

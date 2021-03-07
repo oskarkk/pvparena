@@ -75,7 +75,7 @@ public class GoalSabotage extends ArenaGoal {
     }
 
     @Override
-    public List<String> getMain() {
+    public List<String> getGoalCommands() {
         final List<String> result = new ArrayList<>();
         if (this.arena != null) {
             for (final ArenaTeam team : this.arena.getTeams()) {
@@ -122,7 +122,7 @@ public class GoalSabotage extends ArenaGoal {
             return false;
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player.getName());
 
         final ArenaTeam pTeam = aPlayer.getArenaTeam();
         if (pTeam == null) {
@@ -392,7 +392,7 @@ public class GoalSabotage extends ArenaGoal {
 
     @Override
     public void initiate(final Player player) {
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player.getName());
         final ArenaTeam team = aPlayer.getArenaTeam();
         this.takeFlag(team.getName(), false,
                 SpawnManager.getBlockByExactName(this.arena, team.getName() + "tnt"));
@@ -408,7 +408,7 @@ public class GoalSabotage extends ArenaGoal {
         final String teamName = this.getHeldFlagTeam(player);
         final ArenaTeam team = this.arena.getTeam(teamName);
         if (teamName != null && team != null) {
-            final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+            final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player.getName());
             this.getFlagMap().remove(teamName);
             this.distributeFlag(aPlayer, team);
         }
@@ -473,7 +473,7 @@ public class GoalSabotage extends ArenaGoal {
 
     @Override
     public void unload(final Player player) {
-        this.disconnect(ArenaPlayer.parsePlayer(player.getName()));
+        this.disconnect(ArenaPlayer.fromPlayer(player.getName()));
     }
 
     @Override

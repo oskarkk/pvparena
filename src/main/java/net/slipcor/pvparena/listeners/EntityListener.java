@@ -137,7 +137,7 @@ public class EntityListener implements Listener {
         if ((!(entity instanceof Player))) {
             return; // no player
         }
-        final Arena arena = ArenaPlayer.parsePlayer(entity.getName())
+        final Arena arena = ArenaPlayer.fromPlayer(entity.getName())
                 .getArena();
         if (arena == null) {
             return;
@@ -149,7 +149,7 @@ public class EntityListener implements Listener {
             return;
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         final ArenaTeam team = aPlayer.getArenaTeam();
 
         if (team == null) {
@@ -188,7 +188,7 @@ public class EntityListener implements Listener {
             debug("=> {}", eDamager);
         }
 
-        if (eDamager instanceof Player && ArenaPlayer.parsePlayer(eDamager.getName()).getStatus() == Status.LOST) {
+        if (eDamager instanceof Player && ArenaPlayer.fromPlayer(eDamager.getName()).getStatus() == Status.LOST) {
             event.setCancelled(true);
             return;
         }
@@ -214,7 +214,7 @@ public class EntityListener implements Listener {
             return;
         }
 
-        final Arena arena = ArenaPlayer.parsePlayer(eDamagee.getName())
+        final Arena arena = ArenaPlayer.fromPlayer(eDamagee.getName())
                 .getArena();
         if (arena == null) {
             // defender no arena player => out
@@ -241,8 +241,8 @@ public class EntityListener implements Listener {
 
         boolean defTeam = false;
         boolean attTeam = false;
-        final ArenaPlayer apDefender = ArenaPlayer.parsePlayer(defender.getName());
-        final ArenaPlayer apAttacker = ArenaPlayer.parsePlayer(attacker.getName());
+        final ArenaPlayer apDefender = ArenaPlayer.fromPlayer(defender.getName());
+        final ArenaPlayer apAttacker = ArenaPlayer.fromPlayer(attacker.getName());
 
         for (ArenaTeam team : arena.getTeams()) {
             defTeam = defTeam || team.getTeamMembers().contains(
@@ -327,15 +327,15 @@ public class EntityListener implements Listener {
         final Entity eDamagee = event.getHitEntity();
 
 
-        if (eDamager instanceof Player && ArenaPlayer.parsePlayer(((Player) eDamager).getName()).getStatus() == Status.LOST) {
+        if (eDamager instanceof Player && ArenaPlayer.fromPlayer(((Player) eDamager).getName()).getStatus() == Status.LOST) {
             return;
         }
 
         if(eDamager instanceof Player && eDamagee instanceof Player) {
             final Player attacker = (Player) eDamager;
             final Player defender = (Player) eDamagee;
-            final ArenaPlayer apDefender = ArenaPlayer.parsePlayer(defender.getName());
-            final ArenaPlayer apAttacker = ArenaPlayer.parsePlayer(attacker.getName());
+            final ArenaPlayer apDefender = ArenaPlayer.fromPlayer(defender.getName());
+            final ArenaPlayer apAttacker = ArenaPlayer.fromPlayer(attacker.getName());
             final Arena arena = apDefender.getArena();
 
             if (arena == null || apAttacker.getArena() == null || apDefender.getStatus() == Status.LOST || !arena.isFightInProgress()) {
@@ -358,12 +358,12 @@ public class EntityListener implements Listener {
             return;
         }
 
-        if (ArenaPlayer.parsePlayer(entity.getName()).getStatus() == Status.LOST) {
+        if (ArenaPlayer.fromPlayer(entity.getName()).getStatus() == Status.LOST) {
             event.setCancelled(true);
             return;
         }
 
-        final Arena arena = ArenaPlayer.parsePlayer(entity.getName())
+        final Arena arena = ArenaPlayer.fromPlayer(entity.getName())
                 .getArena();
         if (arena == null) {
             // defender no arena player => out
@@ -372,7 +372,7 @@ public class EntityListener implements Listener {
 
         final Player defender = (Player) entity;
 
-        final ArenaPlayer apDefender = ArenaPlayer.parsePlayer(defender.getName());
+        final ArenaPlayer apDefender = ArenaPlayer.fromPlayer(defender.getName());
 
         if (arena.realEndRunner != null
                 || (!apDefender.getStatus().equals(Status.NULL) && !apDefender
@@ -396,7 +396,7 @@ public class EntityListener implements Listener {
             if (arena.hasEntity(event.getEntity())) {
 
                 Player player = arena.getEntityOwner(event.getEntity());
-                ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+                ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
                 if (event.getEntity().equals(player)) {
                     event.setCancelled(true);
@@ -430,7 +430,7 @@ public class EntityListener implements Listener {
             Tameable t = (Tameable) event.getEntity();
 
             if (t.isTamed()) {
-                ArenaPlayer ap = ArenaPlayer.parsePlayer(t.getOwner().getName());
+                ArenaPlayer ap = ArenaPlayer.fromPlayer(t.getOwner().getName());
                 if (ap.getArena() != null) {
                     event.setCancelled(true);
                 }
@@ -457,7 +457,7 @@ public class EntityListener implements Listener {
         ArenaPlayer shooter;
 
         try {
-            shooter = ArenaPlayer.parsePlayer(((Player) event.getEntity()
+            shooter = ArenaPlayer.fromPlayer(((Player) event.getEntity()
                     .getShooter()).getName());
         } catch (Exception e) {
             return;
@@ -481,7 +481,7 @@ public class EntityListener implements Listener {
                 debug("skipping non-player {}", e.getName());
                 continue;
             }
-            final ArenaPlayer damagee = ArenaPlayer.parsePlayer(e.getName());
+            final ArenaPlayer damagee = ArenaPlayer.fromPlayer(e.getName());
 
             if (damagee.getArena() == null || shooter.getArena() == null ||
                     (damagee.getArena() != shooter.getArena()) ||

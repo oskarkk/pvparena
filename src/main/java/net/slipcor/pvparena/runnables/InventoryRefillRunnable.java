@@ -35,7 +35,7 @@ public class InventoryRefillRunnable implements Runnable {
     private final boolean refill;
 
     public InventoryRefillRunnable(final Arena arena, final Player player, final List<ItemStack> itemList) {
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         if (arena == null && aPlayer.getArena() == null) {
             this.player = null;
             this.arena = null;
@@ -77,7 +77,7 @@ public class InventoryRefillRunnable implements Runnable {
 
     @Override
     public void run() {
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(this.player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(this.player.getName());
         debug(this.arena, "refilling " + this.player.getName());
         if (aPlayer.getStatus() == Status.FIGHT) {
             if (aPlayer.hasCustomClass() && !this.arena.getArenaConfig().getBoolean(CFG.PLAYER_REFILLCUSTOMINVENTORY) || !this.arena.getArenaConfig().getBoolean(CFG.PLAYER_REFILLINVENTORY)) {

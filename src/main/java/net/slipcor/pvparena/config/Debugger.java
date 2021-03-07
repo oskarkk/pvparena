@@ -59,7 +59,7 @@ public class Debugger {
     public static void debug(CommandSender sender, String string) {
         if (active) {
             if (sender instanceof Player) {
-                ArenaPlayer ap = ArenaPlayer.parsePlayer(sender.getName());
+                ArenaPlayer ap = ArenaPlayer.fromPlayer(sender.getName());
                 if (ap.getArena() != null) {
                     formatAndPrint(ap.getArena(), ap.getPlayer(), FINE, string);
                     return;

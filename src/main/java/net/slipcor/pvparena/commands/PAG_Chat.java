@@ -44,7 +44,7 @@ public class PAG_Chat extends AbstractArenaCommand {
             return;
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(sender.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(sender.getName());
 
         if (args.length < 1) {
             // toggle

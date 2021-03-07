@@ -109,7 +109,7 @@ public class PAA_Region extends AbstractArenaCommand {
         if (args.length < 3) {
             // usage: /pa {arenaname} region [regionname] {regionshape} | save selected region
 
-            final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(sender.getName());
+            final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(sender.getName());
 
             if (!aPlayer.didValidSelection()) {
                 arena.msg(sender, Language.parse(arena, MSG.REGION_SELECT, arena.getName()));

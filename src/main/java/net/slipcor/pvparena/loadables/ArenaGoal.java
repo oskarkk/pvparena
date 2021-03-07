@@ -25,6 +25,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -43,16 +44,17 @@ import static java.util.Optional.ofNullable;
 public class ArenaGoal implements IArenaCommandHandler {
     protected String name;
     protected Arena arena;
-    protected Map<String, Integer> lifeMap;
+    protected Map<ArenaTeam, Integer> teamLifeMap = new HashMap<>();
+    protected Map<Player, Integer> playerLifeMap = new HashMap<>();
 
 
     /**
      * create an arena type instance
      *
-     * @param sName the arena type name
+     * @param goalName the arena type name
      */
-    public ArenaGoal(final String sName) {
-        this.name = sName;
+    public ArenaGoal(final String goalName) {
+        this.name = goalName;
     }
 
     public String getName() {
@@ -77,18 +79,45 @@ public class ArenaGoal implements IArenaCommandHandler {
     }
 
     @Override
-    public List<String> getMain() {
+    public final List<String> getMain() {
         return Collections.emptyList();
     }
 
-    @Override
-    public List<String> getShort() {
-        return Collections.emptyList();
+    /**
+     * Get Main commands for the goal
+     *
+     * @return list of commands for the goal
+     */
+    public List<String> getGoalCommands() {
+        return getMain();
     }
 
     @Override
-    public CommandTree<String> getSubs(final Arena arena) {
+    public final List<String> getShort() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Get Main shortcuts commands for the goal
+     *
+     * @return list of shortcuts commands for the goal
+     */
+    public List<String> getGoalShortCommands() {
+        return getShort();
+    }
+
+    @Override
+    public final CommandTree<String> getSubs(final Arena arena) {
         return new CommandTree<>(null);
+    }
+
+    /**
+     * Get sub-commands for the goal
+     *
+     * @return list of sub-commands for the goal
+     */
+    public CommandTree<String> getGoalSubCommands(final Arena arena) {
+        return getSubs(arena);
     }
 
     @Override
@@ -353,26 +382,38 @@ public class ArenaGoal implements IArenaCommandHandler {
     }
 
     /**
+     * Getter for the goal team life map
+     *
+     * @return the goal team life map
+     */
+    @NotNull
+    public Map<ArenaTeam, Integer> getTeamLifeMap() {
+        return this.teamLifeMap;
+    }
+
+    /**
      * Getter for the goal life map
      *
      * @return the goal life map
      */
-    public Map<String, Integer> getLifeMap() {
-        if (this.lifeMap == null) {
-            this.lifeMap = new HashMap<>();
-        }
-        return this.lifeMap;
+    @NotNull
+    public Map<Player, Integer> getPlayerLifeMap() {
+        return this.playerLifeMap;
     }
 
     /**
      * Get a player's remaining lives
      *
-     * @param player the player to check
+     * @param arenaPlayer the player to check
      * @return the PACheck instance for more information, eventually an ERROR
      * containing the lives
      */
-    public int getLives(ArenaPlayer player) {
-        return 0;
+    public int getLives(ArenaPlayer arenaPlayer) {
+        if(this.arena.isFreeForAll()){
+            return this.getPlayerLifeMap().getOrDefault(arenaPlayer.getPlayer(), 0);
+        } else {
+            return this.getTeamLifeMap().getOrDefault(arenaPlayer.getArenaTeam(), 0);
+        }
     }
 
     /**
@@ -479,18 +520,20 @@ public class ArenaGoal implements IArenaCommandHandler {
     /**
      * set all player lives
      *
-     * @param value the value being set
+     * @param lives the value being set
      */
-    public void setPlayerLives(final int value) {
+    public void setPlayersLives(final int lives) {
+        this.playerLifeMap.entrySet()
+                .forEach(playerIntegerEntry -> playerIntegerEntry.setValue(lives));
     }
-
     /**
      * set a specific player's lives
      *
      * @param player the player to update
-     * @param value  the value being set
+     * @param lives  the value being set
      */
-    public void setPlayerLives(final ArenaPlayer player, final int value) {
+    public void setPlayerLives(final Player player, final int lives) {
+        this.playerLifeMap.put(player, lives);
     }
 
     /**
@@ -509,21 +552,24 @@ public class ArenaGoal implements IArenaCommandHandler {
      * @param player the player to unload
      */
     public void unload(final Player player) {
+        if(player != null) {
+            this.getPlayerLifeMap().remove(player);
+        }
     }
 
     protected void updateLives(final ArenaTeam team, final int value) {
         if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_ADDLIVESPERPLAYER)) {
-            this.getLifeMap().put(team.getName(), team.getTeamMembers().size() * value);
+            this.getTeamLifeMap().put(team, team.getTeamMembers().size() * value);
         } else {
-            this.getLifeMap().put(team.getName(), value);
+            this.getTeamLifeMap().put(team, value);
         }
     }
 
     protected void updateLives(final Player player, final int value) {
         if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_ADDLIVESPERPLAYER)) {
-            this.getLifeMap().put(player.getName(), this.arena.getFighters().size() * value);
+            this.getPlayerLifeMap().put(player, this.arena.getFighters().size() * value);
         } else {
-            this.getLifeMap().put(player.getName(), value);
+            this.getPlayerLifeMap().put(player, value);
         }
     }
 
@@ -532,7 +578,7 @@ public class ArenaGoal implements IArenaCommandHandler {
     }
 
     protected void broadcastDeathMessage(Language.MSG deathMessage, Player player, PlayerDeathEvent event, Integer remainingLives) {
-        final ArenaTeam respawnTeam = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
+        final ArenaTeam respawnTeam = ArenaPlayer.fromPlayer(player).getArenaTeam();
 
         EntityDamageEvent.DamageCause damageCause = ofNullable(event.getEntity().getLastDamageCause())
                 .map(EntityDamageEvent::getCause)

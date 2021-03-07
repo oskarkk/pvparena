@@ -53,6 +53,9 @@ import static net.slipcor.pvparena.config.Debugger.debug;
 
 public class GoalBlockDestroy extends ArenaGoal {
 
+    private static final String BLOCK_TYPE = "blocktype";
+    private static final String BLOCK = "block";
+
     public GoalBlockDestroy() {
         super("BlockDestroy");
     }
@@ -64,8 +67,6 @@ public class GoalBlockDestroy extends ArenaGoal {
         return PVPArena.getInstance().getDescription().getVersion();
     }
 
-    private static final int PRIORITY = 9;
-
     @Override
     public boolean allowsJoinInBattle() {
         return this.arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE);
@@ -73,28 +74,28 @@ public class GoalBlockDestroy extends ArenaGoal {
 
     @Override
     public boolean checkCommand(final String string) {
-        if ("blocktype".equalsIgnoreCase(string)) {
+        if (BLOCK_TYPE.equalsIgnoreCase(string)) {
             return true;
         }
 
-        return this.arena.getTeams().stream().anyMatch(team -> string.contains(team.getName() + "block"));
+        return this.arena.getTeams().stream().anyMatch(team -> string.contains(team.getName() + BLOCK));
     }
 
     @Override
-    public List<String> getMain() {
+    public List<String> getGoalCommands() {
         List<String> result = new ArrayList<>();
         if (this.arena != null) {
-            result.add("blocktype");
+            result.add(BLOCK_TYPE);
             for (final ArenaTeam team : this.arena.getTeams()) {
                 final String sTeam = team.getName();
-                result.add(sTeam + "block");
+                result.add(sTeam + BLOCK);
             }
         }
         return result;
     }
 
     @Override
-    public CommandTree<String> getSubs(final Arena arena) {
+    public CommandTree<String> getGoalSubCommands(final Arena arena) {
         final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"{Material}"});
         return result;
@@ -119,7 +120,7 @@ public class GoalBlockDestroy extends ArenaGoal {
         if (team != null) {
             return team;
         }
-        return this.checkForMissingTeamCustom(list, "block");
+        return this.checkForMissingTeamCustom(list, BLOCK);
     }
 
     @Override
@@ -136,70 +137,31 @@ public class GoalBlockDestroy extends ArenaGoal {
         return PVPArena.hasAdminPerms(player) || PVPArena.hasCreatePerms(player, this.arena);
     }
 
-    private void commit(final Arena arena, final String sTeam) {
-        debug(arena, "[BD] checking end: " + sTeam);
+    private void commit(final Arena arena, final ArenaTeam arenaTeam) {
+        debug(arena, "[BD] checking end: " + arenaTeam);
         debug(arena, "win: " + false);
 
-        for (final ArenaTeam team : arena.getTeams()) {
-            if (!team.getName().equals(sTeam)) {
+        for (final ArenaTeam currentArenaTeam : arena.getTeams()) {
+            if (!currentArenaTeam.equals(arenaTeam)) {
                 /*
 				team is sTeam and win
 				team is not sTeam and not win
 				*/
                 continue;
             }
-            for (final ArenaPlayer ap : team.getTeamMembers()) {
+            for (final ArenaPlayer ap : currentArenaTeam.getTeamMembers()) {
                 if (ap.getStatus() == Status.FIGHT || ap.getStatus() == Status.DEAD) {
                     ap.addLosses();
-					/*
-					arena.removePlayer(ap.getPlayer(), CFG.TP_LOSE.toString(),
-							true, false);*/
-
                     ap.setStatus(Status.LOST);
-
-                    //ap.setTelePass(false);
                 }
             }
         }
-		/*
-		if (!win && getLifeMap().size() > 1) {
-			return; // if not a win trigger AND more than one team left. out!
-		}
-		
-		for (ArenaTeam team : arena.getTeams()) {
-			for (ArenaPlayer ap : team.getTeamMembers()) {
-				if (!ap.getStatus().equals(Status.FIGHT)) {
-					continue;
-				}
-				winteam = team.getName();
-				break;
-			}
-		}
-
-		if (arena.getTeam(winteam) != null) {
-
-			ArenaModuleManager
-					.announce(
-							arena,
-							Language.parse(arena, MSG.TEAM_HAS_WON,
-									arena.getTeam(winteam).getColor()
-											+ winteam + ChatColor.YELLOW),
-							"WINNER");
-			arena.broadcast(Language.parse(arena, MSG.TEAM_HAS_WON,
-					arena.getTeam(winteam).getColor() + winteam
-							+ ChatColor.YELLOW));
-		}
-
-		getLifeMap().clear();
-		new EndRunnable(arena, arena.getArenaConfig().getInt(
-				CFG.TIME_ENDCOUNTDOWN));
-				*/
         WorkflowManager.handleEnd(arena, false);
     }
 
     @Override
     public void commitCommand(final CommandSender sender, final String[] args) {
-        if ("blocktype".equalsIgnoreCase(args[0])) {
+        if (BLOCK_TYPE.equalsIgnoreCase(args[0])) {
             if (args.length < 2) {
                 this.arena.msg(
                         sender,
@@ -222,10 +184,10 @@ public class GoalBlockDestroy extends ArenaGoal {
             this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_BLOCKDESTROY_TYPESET,
                     CFG.GOAL_BLOCKDESTROY_BLOCKTYPE.toString()));
 
-        } else if (args[0].contains("block")) {
+        } else if (args[0].contains(BLOCK)) {
             for (final ArenaTeam team : this.arena.getTeams()) {
                 final String sTeam = team.getName();
-                if (args[0].contains(sTeam + "block")) {
+                if (args[0].contains(sTeam + BLOCK)) {
                     this.blockTeamName = args[0];
                     PAA_Region.activeSelections.put(sender.getName(), this.arena);
 
@@ -300,12 +262,12 @@ public class GoalBlockDestroy extends ArenaGoal {
 
     @Override
     public void commitStart() {
-
+        // implement to not throw exception
     }
 
     @Override
-    public int getLives(ArenaPlayer aPlayer) {
-        return this.getLifeMap().getOrDefault(aPlayer.getArenaTeam().getName(), 0);
+    public int getLives(ArenaPlayer arenaPlayer) {
+        return this.getTeamLifeMap().getOrDefault(arenaPlayer.getArenaTeam(), 0);
     }
 
     @Override
@@ -319,7 +281,7 @@ public class GoalBlockDestroy extends ArenaGoal {
     @Override
     public boolean hasSpawn(final String string) {
         for (final String teamName : this.arena.getTeamNames()) {
-            if (string.toLowerCase().equals(teamName.toLowerCase() + "block")) {
+            if (string.equalsIgnoreCase(teamName + BLOCK)) {
                 return true;
             }
             if (string.toLowerCase().startsWith(
@@ -341,58 +303,58 @@ public class GoalBlockDestroy extends ArenaGoal {
 
     @Override
     public void initiate(final Player player) {
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
-        final ArenaTeam team = aPlayer.getArenaTeam();
-        if (!this.getLifeMap().containsKey(team.getName())) {
-            this.getLifeMap().put(aPlayer.getArenaTeam().getName(), this.arena.getArenaConfig()
+        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
+        final ArenaTeam arenaTeam = arenaPlayer.getArenaTeam();
+        if (!this.getTeamLifeMap().containsKey(arenaTeam)) {
+            this.getTeamLifeMap().put(arenaPlayer.getArenaTeam(), this.arena.getArenaConfig()
                     .getInt(CFG.GOAL_BLOCKDESTROY_LIVES));
 
-            final Set<PABlockLocation> blocks = SpawnManager.getBlocksContaining(this.arena, "block");
+            final Set<PABlockLocation> blocks = SpawnManager.getBlocksContaining(this.arena, BLOCK);
 
             for (final PABlockLocation block : blocks) {
-                this.takeBlock(team.getColor(), block);
+                this.takeBlock(arenaTeam.getColor(), block);
             }
         }
     }
 
     @Override
     public void parseStart() {
-        this.getLifeMap().clear();
-        for (final ArenaTeam team : this.arena.getTeams()) {
-            if (!team.getTeamMembers().isEmpty()) {
-                debug(this.arena, "adding team " + team.getName());
+        this.getTeamLifeMap().clear();
+        for (final ArenaTeam arenaTeam : this.arena.getTeams()) {
+            if (!arenaTeam.getTeamMembers().isEmpty()) {
+                debug(this.arena, "adding team " + arenaTeam.getName());
                 // team is active
-                this.getLifeMap().put(
-                        team.getName(),
+                this.getTeamLifeMap().put(
+                        arenaTeam,
                         this.arena.getArenaConfig().getInt(
                                 CFG.GOAL_BLOCKDESTROY_LIVES, 1));
             }
-            final Set<PABlockLocation> blocks = SpawnManager.getBlocksContaining(this.arena, "block");
+            final Set<PABlockLocation> blocks = SpawnManager.getBlocksContaining(this.arena, BLOCK);
 
             for (final PABlockLocation block : blocks) {
-                this.takeBlock(team.getColor(), block);
+                this.takeBlock(arenaTeam.getColor(), block);
             }
         }
     }
 
-    private void reduceLivesCheckEndAndCommit(final Arena arena, final String team) {
+    private void reduceLivesCheckEndAndCommit(final Arena arena, final ArenaTeam team) {
 
         debug(arena, "reducing lives of team " + team);
-        if (!this.getLifeMap().containsKey(team)) {
+        if (!this.getTeamLifeMap().containsKey(team)) {
             return;
         }
-        final int count = this.getLifeMap().get(team) - 1;
+        final int count = this.getTeamLifeMap().get(team) - 1;
         if (count > 0) {
-            this.getLifeMap().put(team, count);
+            this.getTeamLifeMap().put(team, count);
         } else {
-            this.getLifeMap().remove(team);
+            this.getTeamLifeMap().remove(team);
             this.commit(arena, team);
         }
     }
 
     @Override
     public void reset(final boolean force) {
-        this.getLifeMap().clear();
+        this.getTeamLifeMap().clear();
     }
 
     @Override
@@ -439,13 +401,12 @@ public class GoalBlockDestroy extends ArenaGoal {
     @Override
     public Map<String, Double> timedEnd(final Map<String, Double> scores) {
 
-        for (final ArenaTeam team : this.arena.getTeams()) {
-            double score = this.getLifeMap().containsKey(team.getName()) ? this.getLifeMap()
-                    .get(team.getName()) : 0;
-            if (scores.containsKey(team.getName())) {
-                scores.put(team.getName(), scores.get(team.getName()) + score);
+        for (final ArenaTeam arenaTeam : this.arena.getTeams()) {
+            double score = this.getTeamLifeMap().getOrDefault(arenaTeam, 0);
+            if (scores.containsKey(arenaTeam.getName())) {
+                scores.put(arenaTeam.getName(), scores.get(arenaTeam.getName()) + score);
             } else {
-                scores.put(team.getName(), score);
+                scores.put(arenaTeam.getName(), score);
             }
         }
 
@@ -454,9 +415,9 @@ public class GoalBlockDestroy extends ArenaGoal {
 
     @Override
     public void unload(final Player player) {
-        this.disconnect(ArenaPlayer.parsePlayer(player.getName()));
+        this.disconnect(ArenaPlayer.fromPlayer(player));
         if (this.allowsJoinInBattle()) {
-            this.arena.hasNotPlayed(ArenaPlayer.parsePlayer(player.getName()));
+            this.arena.hasNotPlayed(ArenaPlayer.fromPlayer(player));
         }
     }
 
@@ -481,31 +442,29 @@ public class GoalBlockDestroy extends ArenaGoal {
 
         debug(this.arena, player, "block destroy!");
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
 
-        final ArenaTeam pTeam = aPlayer.getArenaTeam();
+        final ArenaTeam pTeam = arenaPlayer.getArenaTeam();
         if (pTeam == null) {
             return;
         }
 
         Vector vBlock = null;
-        for (final ArenaTeam team : this.arena.getTeams()) {
-            final String blockTeam = team.getName();
+        for (final ArenaTeam arenaTeam : this.arena.getTeams()) {
 
-            if (team.getTeamMembers().size() < 1
-                    && !"touchdown".equals(team.getName())) {
+            if (arenaTeam.isEmpty() && !"touchdown".equals(arenaTeam.getName())) {
                 debug(this.arena, player, "size!OUT! ");
                 continue; // dont check for inactive teams
             }
 
-            debug(this.arena, player, "checking for block of team " + blockTeam);
+            debug(this.arena, player, "checking for block of team " + arenaTeam);
             Vector vLoc = block.getLocation().toVector();
             debug(this.arena, player, "block: " + vLoc);
-            if (!SpawnManager.getBlocksStartingWith(this.arena, blockTeam + "block").isEmpty()) {
+            if (!SpawnManager.getBlocksStartingWith(this.arena, arenaTeam.getName() + BLOCK).isEmpty()) {
                 vBlock = SpawnManager
                         .getBlockNearest(
-                                SpawnManager.getBlocksStartingWith(this.arena, blockTeam
-                                        + "block"),
+                                SpawnManager.getBlocksStartingWith(this.arena, arenaTeam.getName()
+                                        + BLOCK),
                                 new PABlockLocation(player.getLocation()))
                         .toLocation().toVector();
             }
@@ -513,7 +472,7 @@ public class GoalBlockDestroy extends ArenaGoal {
 
                 // ///////
 
-                if (blockTeam.equals(pTeam.getName())) {
+                if (arenaTeam.equals(pTeam)) {
                     debug(this.arena, player, "is own team! cancel and OUT! ");
                     event.setCancelled(true);
                     break;
@@ -525,19 +484,18 @@ public class GoalBlockDestroy extends ArenaGoal {
                 try {
                     this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_BLOCKDESTROY_SCORE,
                             this.arena.getTeam(sTeam).colorizePlayer(player)
-                                    + ChatColor.YELLOW, this.arena
-                                    .getTeam(blockTeam).getColoredName()
+                                    + ChatColor.YELLOW, arenaTeam.getColoredName()
                                     + ChatColor.YELLOW, String
-                                    .valueOf(this.getLifeMap().get(blockTeam) - 1)));
+                                    .valueOf(this.getTeamLifeMap().get(arenaTeam) - 1)));
                 } catch (final Exception e) {
                     Bukkit.getLogger().severe(
-                            "[PVP Arena] team unknown/no lives: " + blockTeam);
+                            "[PVP Arena] team unknown/no lives: " + arenaTeam);
                     e.printStackTrace();
                 }
 
 
                 gEvent = new PAGoalEvent(this.arena, this,
-                        "score:" + player.getName() + ':' + aPlayer.getArenaTeam().getName() + ":1");
+                        "score:" + player.getName() + ':' + arenaPlayer.getArenaTeam().getName() + ":1");
                 Bukkit.getPluginManager().callEvent(gEvent);
                 class RunLater implements Runnable {
                     final ChatColor localColor;
@@ -554,16 +512,16 @@ public class GoalBlockDestroy extends ArenaGoal {
                     }
                 }
 
-                if (this.getLifeMap().containsKey(blockTeam)
-                        && this.getLifeMap().get(blockTeam) > SpawnManager.getBlocksStartingWith(this.arena, blockTeam + "block").size()) {
+                if (this.getTeamLifeMap().containsKey(arenaTeam)
+                        && this.getTeamLifeMap().get(arenaTeam) > SpawnManager.getBlocksStartingWith(this.arena, arenaTeam.getName() + BLOCK).size()) {
 
                     Bukkit.getScheduler().runTaskLater(
                             PVPArena.getInstance(),
                             new RunLater(
-                                    this.arena.getTeam(blockTeam).getColor(),
+                                    arenaTeam.getColor(),
                                     new PABlockLocation(event.getBlock().getLocation())), 5L);
                 }
-                this.reduceLivesCheckEndAndCommit(this.arena, blockTeam);
+                this.reduceLivesCheckEndAndCommit(this.arena, arenaTeam);
 
                 return;
             }
@@ -589,29 +547,29 @@ public class GoalBlockDestroy extends ArenaGoal {
             return;
         }
 
-        final Set<PABlock> blocks = SpawnManager.getPABlocksContaining(this.arena, "block");
+        final Set<PABlock> blocks = SpawnManager.getPABlocksContaining(this.arena, BLOCK);
 
         //final Set<PABlockLocation>
 
         for (final Block b : event.blockList()) {
             final PABlockLocation loc = new PABlockLocation(b.getLocation());
-            for (final PABlock pb : blocks) {
-                if (pb.getLocation().getDistanceSquared(loc) < 1) {
-                    final String blockTeam = pb.getName().split("block")[0];
+            for (final PABlock paBlock : blocks) {
+                if (paBlock.getLocation().getDistanceSquared(loc) < 1) {
+                    final ArenaTeam blockTeam = this.arena
+                            .getTeam(paBlock.getName().split(BLOCK)[0]);
 
                     try {
                         this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_BLOCKDESTROY_SCORE,
                                 Language.parse(this.arena, MSG.DEATHCAUSE_BLOCK_EXPLOSION)
-                                        + ChatColor.YELLOW, this.arena
-                                        .getTeam(blockTeam).getColoredName()
+                                        + ChatColor.YELLOW, blockTeam.getColoredName()
                                         + ChatColor.YELLOW, String
-                                        .valueOf(this.getLifeMap().get(blockTeam) - 1)));
+                                        .valueOf(this.getTeamLifeMap().get(blockTeam) - 1)));
                     } catch (final Exception e) {
                         Bukkit.getLogger().severe(
                                 "[PVP Arena] team unknown/no lives: " + blockTeam);
                         e.printStackTrace();
                     }
-                    this.takeBlock(this.arena.getTeam(blockTeam).getColor(), pb.getLocation());
+                    this.takeBlock(blockTeam.getColor(), paBlock.getLocation());
 
                     reduceLivesCheckEndAndCommit(this.arena, blockTeam);
                     break;

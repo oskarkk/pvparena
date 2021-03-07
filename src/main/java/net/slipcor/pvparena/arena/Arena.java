@@ -3,12 +3,9 @@ package net.slipcor.pvparena.arena;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.classes.*;
-import net.slipcor.pvparena.core.ArrowHack;
-import net.slipcor.pvparena.core.Config;
+import net.slipcor.pvparena.core.*;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
-import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.events.*;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModule;
@@ -304,10 +301,10 @@ public class Arena {
                 return;
             }
             if (this.startRunner != null) {
-                ArenaPlayer.parsePlayer(player.getName()).setStatus(Status.READY);
+                ArenaPlayer.fromPlayer(player).setStatus(Status.READY);
             }
         }
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         if (aPlayer.getArena() == null) {
             PVPArena.getInstance().getLogger().warning(
                     "failed to set class " + className + " to player "
@@ -624,6 +621,17 @@ public class Arena {
      *
      * @return the arena teams
      */
+    public Set<ArenaTeam> getNotEmptyTeams() {
+        return this.teams.stream()
+                .filter(ArenaTeam::isNotEmpty)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * hand over all teams
+     *
+     * @return the arena teams
+     */
     public Set<String> getTeamNames() {
         final Set<String> result = new HashSet<>();
         for (final ArenaTeam team : this.teams) {
@@ -746,7 +754,7 @@ public class Arena {
                 return true;
             }
         }
-        return this.equals(ArenaPlayer.parsePlayer(player.getName()).getArena());
+        return this.equals(ArenaPlayer.fromPlayer(player).getArena());
     }
 
     public void increasePlayerCount() {
@@ -811,7 +819,7 @@ public class Arena {
         ArenaPlayer aPlayer = null;
         ArenaTeam team = null;
         if (damager instanceof Player) {
-            aPlayer = ArenaPlayer.parsePlayer(damager.getName());
+            aPlayer = ArenaPlayer.fromPlayer(damager.getName());
             team = aPlayer.getArenaTeam();
         }
 
@@ -907,7 +915,7 @@ public class Arena {
             this.playedPlayers.remove(player.getName());
         }
         debug(this, player, "fully removing player from arena");
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         if (!silent) {
 
             final ArenaTeam team = aPlayer.getArenaTeam();
@@ -1060,7 +1068,7 @@ public class Arena {
      * @param player the player to remove
      */
     public void callLeaveEvent(final Player player) {
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         final PALeaveEvent event = new PALeaveEvent(this, player, aPlayer.getStatus() == Status.FIGHT);
         Bukkit.getPluginManager().callEvent(event);
     }
@@ -1114,7 +1122,7 @@ public class Arena {
         debug(this, player, msg);
         this.resetPlayer(player, tploc, soft, force);
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         if (!soft && aPlayer.getArenaTeam() != null) {
             aPlayer.getArenaTeam().remove(aPlayer);
         }
@@ -1249,7 +1257,7 @@ public class Arena {
                     return;
                 }
 
-                final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+                final ArenaPlayer ap = ArenaPlayer.fromPlayer(player);
                 if (ap.hasBackupScoreboard()) {
                     debug(this, "ScoreBoards: restoring " + ap.getPlayer());
 
@@ -1288,7 +1296,7 @@ public class Arena {
                     return;
                 }
             }
-            final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+            final ArenaPlayer ap = ArenaPlayer.fromPlayer(player);
             if (ap.hasBackupScoreboard()) {
                 try {
                     Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), () -> {
@@ -1443,7 +1451,7 @@ public class Arena {
         } catch (final Exception e) {
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         if (aPlayer.getState() != null) {
             aPlayer.getState().unload(soft);
         }
@@ -1578,7 +1586,7 @@ public class Arena {
             player.setExp(0);
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         final ArenaTeam team = aPlayer.getArenaTeam();
 
         if (team == null) {
@@ -1993,7 +2001,7 @@ public class Arena {
      * @return true if joining successful
      */
     public boolean tryJoin(final Player player, final ArenaTeam team) {
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
         debug(this, player, "trying to join player " + player.getName());
 
@@ -2163,7 +2171,7 @@ public class Arena {
     private void updateScoreboard(final Player player) {
         if (this.getArenaConfig().getBoolean(CFG.USES_SCOREBOARD)) {
             Scoreboard currentScoreboard = this.getSpecialScoreboard();
-            final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+            final ArenaPlayer ap = ArenaPlayer.fromPlayer(player);
 
             // if player is a spectator, special case. Just update and do not add to the scores
             if (ap.getArenaTeam() != null) {

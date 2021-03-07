@@ -64,7 +64,7 @@ public final class InventoryManager {
         final List<Material> exclude;
         final List<ItemStack> keep;
 
-        final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer ap = ArenaPlayer.fromPlayer(player);
 
         boolean keepAll = false;
 

@@ -49,7 +49,7 @@ public class StandardSpectate extends ArenaModule {
 
     @Override
     public boolean handleSpectate(Player player) throws GameplayException {
-        final ArenaPlayer arenaPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
         if (arenaPlayer.getArena() != null) {
             throw new GameplayException(Language.parse(MSG.ERROR_ARENA_ALREADY_PART_OF, arenaPlayer.getArena().getName()));
         }
@@ -60,7 +60,7 @@ public class StandardSpectate extends ArenaModule {
     @Override
     public void commitSpectate(final Player player) {
         // standard join --> lounge
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         aPlayer.setLocation(new PALocation(player.getLocation()));
 
         aPlayer.setArena(this.arena);

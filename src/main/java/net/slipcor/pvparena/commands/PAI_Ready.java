@@ -43,7 +43,7 @@ public class PAI_Ready extends AbstractArenaCommand {
             return;
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(sender.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(sender.getName());
 
         if (!arena.hasPlayer(aPlayer.getPlayer())) {
 

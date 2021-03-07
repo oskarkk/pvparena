@@ -64,7 +64,7 @@ public final class PlayerState {
         this.potionEffects = player.getActivePotionEffects();
         this.collides = player.isCollidable();
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         final Arena arena = aPlayer.getArena();
 
         aPlayer.setFlyState(player.isFlying());
@@ -92,7 +92,7 @@ public final class PlayerState {
         cfg.set("state.explevel", this.explevel);
         cfg.set("state.saturation", this.saturation);
         cfg.set("state.displayname", this.displayname);
-        cfg.set("state.flying", ArenaPlayer.parsePlayer(this.name).getFlyState());
+        cfg.set("state.flying", ArenaPlayer.fromPlayer(this.name).getFlyState());
         cfg.set("state.collides", this.collides);
     }
 
@@ -135,7 +135,7 @@ public final class PlayerState {
         PlayerState.removeEffects(player);
 
         if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
-            final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
+            final ArenaTeam team = ArenaPlayer.fromPlayer(player).getArenaTeam();
             String n;
             if (team == null) {
                 n = player.getName();
@@ -152,7 +152,7 @@ public final class PlayerState {
         final Player player = Bukkit.getPlayerExact(this.name);
 
         if (player == null) {
-            final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(this.name);
+            final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(this.name);
             aPlayer.getArena().getGoal().disconnect(aPlayer);
             return;
         }
@@ -161,7 +161,7 @@ public final class PlayerState {
         player.setFireTicks(this.fireticks);
         player.setFoodLevel(this.foodlevel);
 
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         player.setFoodLevel(this.foodlevel);
         if (aPlayer.getArena().getArenaConfig().getGameMode(CFG.GENERAL_GAMEMODE) != null) {
             player.setGameMode(this.gamemode);
@@ -297,7 +297,7 @@ public final class PlayerState {
         pState.explevel = cfg.getInt("state.explevel", 0);
         pState.saturation = (float) cfg.getDouble("state.saturation", 0);
         pState.displayname = cfg.getString("state.displayname", pName);
-        ArenaPlayer.parsePlayer(pName).setFlyState(cfg.getBoolean("state.flying", false));
+        ArenaPlayer.fromPlayer(pName).setFlyState(cfg.getBoolean("state.flying", false));
         pState.collides = cfg.getBoolean("state.collides", false);
 
         return pState;

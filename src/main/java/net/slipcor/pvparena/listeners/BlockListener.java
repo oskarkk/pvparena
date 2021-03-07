@@ -86,7 +86,7 @@ public class BlockListener implements Listener {
         if (event instanceof PlayerEvent) {
             final PlayerEvent e = (PlayerEvent) event;
 
-            final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(e.getPlayer().getName());
+            final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(e.getPlayer().getName());
 
             if (aPlayer.getArena() != null && aPlayer.getArena() != arena) {
                 return false; // players in arenas should be caught by their arenas
@@ -108,10 +108,10 @@ public class BlockListener implements Listener {
             return;
         }
 
-        if (ArenaPlayer.parsePlayer(event.getPlayer().getName()).getStatus() == Status.LOST
-                || ArenaPlayer.parsePlayer(event.getPlayer().getName()).getStatus() == Status.WATCH
-                || ArenaPlayer.parsePlayer(event.getPlayer().getName()).getStatus() == Status.LOUNGE
-                || ArenaPlayer.parsePlayer(event.getPlayer().getName()).getStatus() == Status.READY) {
+        if (ArenaPlayer.fromPlayer(event.getPlayer().getName()).getStatus() == Status.LOST
+                || ArenaPlayer.fromPlayer(event.getPlayer().getName()).getStatus() == Status.WATCH
+                || ArenaPlayer.fromPlayer(event.getPlayer().getName()).getStatus() == Status.LOUNGE
+                || ArenaPlayer.fromPlayer(event.getPlayer().getName()).getStatus() == Status.READY) {
             event.setCancelled(true);
             return;
         }
@@ -404,7 +404,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        final ArenaPlayer arenaPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
         if (asList(Status.LOST, Status.WATCH, Status.LOUNGE, Status.READY).contains(arenaPlayer.getStatus())) {
             event.setCancelled(true);
             return;

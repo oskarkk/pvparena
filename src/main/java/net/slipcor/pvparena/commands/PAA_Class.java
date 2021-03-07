@@ -59,7 +59,7 @@ public class PAA_Class extends AbstractArenaCommand {
             final Player player = (Player) sender;
             PVPArena.getInstance().getLogger().info("Exiting edit mode: " + player.getName());
 
-            final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+            final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
             ArenaPlayer.reloadInventory(arena, player, false);
 
@@ -79,7 +79,7 @@ public class PAA_Class extends AbstractArenaCommand {
             arena.addClass(args[1], player.getInventory().getStorageContents(), player.getInventory().getItemInOffHand(), player.getInventory().getArmorContents());
             Arena.pmsg(player, Language.parse(arena, MSG.CLASS_SAVED, args[1]));
         } else if ("load".equalsIgnoreCase(args[0])) {
-            final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(sender.getName());
+            final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(sender.getName());
             if(aPlayer.getArenaClass() == null) {
                 ArenaPlayer.backupAndClearInventory(arena, aPlayer.getPlayer());
             } else {

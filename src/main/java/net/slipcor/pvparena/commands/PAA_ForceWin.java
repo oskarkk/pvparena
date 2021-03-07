@@ -61,7 +61,7 @@ public class PAA_ForceWin extends AbstractArenaCommand {
             }
         } else {
             // existing player name
-            ArenaPlayer aplayer = ArenaPlayer.parsePlayer(args[0]);
+            ArenaPlayer aplayer = ArenaPlayer.fromPlayer(args[0]);
             if (!arena.equals(aplayer.getArena())) {
                 arena.msg(sender, Language.parse(MSG.ERROR_PLAYER_NOTFOUND, args[0]));
                 return;

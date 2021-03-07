@@ -44,7 +44,7 @@ public class GoalTeamLives extends AbstractTeamKillGoal {
 
     @Override
     protected int getScore(ArenaTeam team) {
-        return this.getLifeMap().getOrDefault(team.getName(), 0);
+        return this.getTeamLifeMap().getOrDefault(team, 0);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class GoalTeamLives extends AbstractTeamKillGoal {
 
     @Override
     public Boolean checkPlayerDeath(Player player) {
-        final ArenaTeam respawnTeam = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
+        final ArenaTeam respawnTeam = ArenaPlayer.fromPlayer(player).getArenaTeam();
 
         if (this.getTeamLives(respawnTeam) != null) {
             return true;
@@ -73,7 +73,7 @@ public class GoalTeamLives extends AbstractTeamKillGoal {
         }
         Bukkit.getPluginManager().callEvent(gEvent);
 
-        final ArenaTeam respawnTeam = ArenaPlayer.parsePlayer(respawnPlayer.getName()).getArenaTeam();
+        final ArenaTeam respawnTeam = ArenaPlayer.fromPlayer(respawnPlayer.getName()).getArenaTeam();
         this.reduceLives(this.arena, respawnTeam);
 
         if (this.getTeamLives(respawnTeam) != null) {
@@ -97,21 +97,21 @@ public class GoalTeamLives extends AbstractTeamKillGoal {
             }
 
             WorkflowManager.handleRespawn(this.arena,
-                    ArenaPlayer.parsePlayer(respawnPlayer.getName()), returned);
+                    ArenaPlayer.fromPlayer(respawnPlayer.getName()), returned);
 
         } else if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
             debug(this.arena, respawnPlayer, "faking player death");
-            ArenaPlayer.parsePlayer(respawnPlayer.getName()).setStatus(Status.LOST);
+            ArenaPlayer.fromPlayer(respawnPlayer.getName()).setStatus(Status.LOST);
             PlayerListener.finallyKillPlayer(this.arena, respawnPlayer, event);
         }
     }
 
-    private void reduceLives(final Arena arena, final ArenaTeam team) {
-        final int iLives = this.getTeamLives(team);
+    private void reduceLives(final Arena arena, final ArenaTeam arenaTeam) {
+        final int iLives = this.getTeamLives(arenaTeam);
 
         if (iLives <= 1) {
-            this.getLifeMap().remove(team.getName());
-            for (final ArenaPlayer ap : team.getTeamMembers()) {
+            this.getTeamLifeMap().remove(arenaTeam);
+            for (final ArenaPlayer ap : arenaTeam.getTeamMembers()) {
                 if (ap.getStatus() == Status.FIGHT) {
                     ap.setStatus(Status.LOST);
                 }
@@ -120,10 +120,10 @@ public class GoalTeamLives extends AbstractTeamKillGoal {
             return;
         }
 
-        this.getLifeMap().put(team.getName(), iLives - 1);
+        this.getTeamLifeMap().put(arenaTeam, iLives - 1);
     }
 
     private Integer getTeamLives(ArenaTeam respawnTeam) {
-        return this.getLifeMap().get(respawnTeam.getName());
+        return this.getTeamLifeMap().get(respawnTeam);
     }
 }

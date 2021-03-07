@@ -143,7 +143,7 @@ public abstract class ArenaRunnable extends BukkitRunnable {
         }
 
         if (Bukkit.getPlayer(this.sPlayer) != null) {
-            final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(this.sPlayer);
+            final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(this.sPlayer);
             if (aPlayer.getArena() == null) {
                 Arena.pmsg(Bukkit.getPlayer(this.sPlayer), message);
             } else {

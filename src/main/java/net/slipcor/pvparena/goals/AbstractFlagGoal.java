@@ -32,6 +32,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,13 +45,14 @@ import static net.slipcor.pvparena.config.Debugger.debug;
 
 
 public abstract class AbstractFlagGoal extends ArenaGoal {
-    protected static final int PRIORITY = 7;
-    protected static final String TOUCHDOWN = "touchdown";
-    protected Map<String, String> flagMap;
-    protected Map<String, ItemStack> headGearMap;
-    protected String flagName = "";
 
-    public AbstractFlagGoal(String sName) {
+    protected static final String TOUCHDOWN = "touchdown";
+    protected Map<ArenaTeam, String> flagMap = new HashMap<>();
+    protected Map<ArenaPlayer, ItemStack> headGearMap = new HashMap<>();
+    protected String flagName = "";
+    protected ArenaTeam touchdownTeam;
+
+    protected AbstractFlagGoal(String sName) {
         super(sName);
     }
 
@@ -77,7 +79,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
     }
 
     @Override
-    public List<String> getMain() {
+    public List<String> getGoalCommands() {
         final List<String> result = Stream.of("flagtype", "flageffect", TOUCHDOWN).collect(Collectors.toList());
         if (this.arena != null) {
             for (final ArenaTeam team : this.arena.getTeams()) {
@@ -89,7 +91,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
     }
 
     @Override
-    public CommandTree<String> getSubs(final Arena arena) {
+    public CommandTree<String> getGoalSubCommands(final Arena arena) {
         final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"{Material}"});
         return result;
@@ -344,30 +346,23 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
         // empty to kill the error ;)
     }
 
-    protected Map<String, String> getFlagMap() {
-        if (this.flagMap == null) {
-            this.flagMap = new HashMap<>();
-        }
+    @NotNull
+    protected Map<ArenaTeam, String> getFlagMap() {
         return this.flagMap;
     }
 
-    protected Material getFlagOverrideTeamMaterial(final Arena arena, final String team) {
-        if (arena.getArenaConfig().getUnsafe("flagColors." + team) == null) {
-            if (TOUCHDOWN.equals(team)) {
+    protected Material getFlagOverrideTeamMaterial(final Arena arena, final ArenaTeam team) {
+        if (arena.getArenaConfig().getUnsafe("flagColors." + team.getName()) == null) {
+            if (this.touchdownTeam.equals(team)) {
                 return ColorUtils.getWoolMaterialFromChatColor(ChatColor.BLACK);
             }
-            return ColorUtils.getWoolMaterialFromChatColor(arena.getTeam(team).getColor());
+            return ColorUtils.getWoolMaterialFromChatColor(team.getColor());
         }
         return ColorUtils.getWoolMaterialFromDyeColor(
                 (String) arena.getArenaConfig().getUnsafe("flagColors." + team));
     }
 
-    @Override
-    public int getLives(ArenaPlayer aPlayer) {
-        return this.getLifeMap().getOrDefault(aPlayer.getArenaTeam().getName(), 0);
-    }
-
-    protected Map<String, ItemStack> getHeadGearMap() {
+    protected Map<ArenaPlayer, ItemStack> getHeadGearMap() {
         if (this.headGearMap == null) {
             this.headGearMap = new HashMap<>();
         }
@@ -380,16 +375,16 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
      * @param player the player to check
      * @return a team name
      */
-    protected String getHeldFlagTeam(final Player player) {
+    protected ArenaTeam getHeldFlagTeam(final Player player) {
         if (this.getFlagMap().isEmpty()) {
             return null;
         }
 
         debug(player, "getting held FLAG of player {}", player);
-        for (final String sTeam : this.getFlagMap().keySet()) {
-            debug(player, "team {} is in {}s hands", sTeam, this.getFlagMap().get(sTeam));
-            if (player.getName().equals(this.getFlagMap().get(sTeam))) {
-                return sTeam;
+        for (final ArenaTeam arenaTeam : this.getFlagMap().keySet()) {
+            debug(player, "team {} is in {}s hands", arenaTeam, this.getFlagMap().get(arenaTeam));
+            if (player.getName().equals(this.getFlagMap().get(arenaTeam))) {
+                return arenaTeam;
             }
         }
         return null;
@@ -398,7 +393,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
     @Override
     public boolean hasSpawn(final String string) {
         for (final String teamName : this.arena.getTeamNames()) {
-            if (string.toLowerCase().equals(teamName.toLowerCase() + "flag")) {
+            if (string.equalsIgnoreCase(teamName + "flag")) {
                 return true;
             }
             if (string.toLowerCase().startsWith(teamName.toLowerCase() + "spawn")) {
@@ -468,47 +463,46 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
         }
     }
 
-    protected void commit(final Arena arena, final String sTeam, final boolean win) {
+    protected void commit(final Arena arena, final ArenaTeam arenaTeam, final boolean win) {
         if (arena.realEndRunner == null) {
-            debug(arena, "[CTF] committing end: " + sTeam);
+            debug(arena, "[CTF] committing end: " + arenaTeam);
             debug(arena, "win: " + win);
 
-            String winteam = sTeam;
-
+            ArenaTeam winTeam = null;
             for (final ArenaTeam team : arena.getTeams()) {
-                if (team.getName().equals(sTeam) == win) {
+                if (team.equals(arenaTeam) == win) {
                     continue;
                 }
-                for (final ArenaPlayer ap : team.getTeamMembers()) {
-                    ap.addLosses();
-                    ap.setStatus(Status.LOST);
+                for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
+                    arenaPlayer.addLosses();
+                    arenaPlayer.setStatus(Status.LOST);
                 }
             }
             for (final ArenaTeam team : arena.getTeams()) {
-                for (final ArenaPlayer ap : team.getTeamMembers()) {
-                    if (ap.getStatus() != Status.FIGHT) {
+                for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
+                    if (arenaPlayer.getStatus() != Status.FIGHT) {
                         continue;
                     }
-                    winteam = team.getName();
+                    winTeam = team;
                     break;
                 }
             }
 
-            if (arena.getTeam(winteam) != null) {
+            if (winTeam != null) {
 
                 ArenaModuleManager
                         .announce(
                                 arena,
                                 Language.parse(arena, MSG.TEAM_HAS_WON,
-                                        arena.getTeam(winteam).getColor()
-                                                + winteam + ChatColor.YELLOW),
+                                        winTeam.getColor()
+                                                + winTeam.getName() + ChatColor.YELLOW),
                                 "WINNER");
                 arena.broadcast(Language.parse(arena, MSG.TEAM_HAS_WON,
-                        arena.getTeam(winteam).getColor() + winteam
+                        winTeam.getColor() + winTeam.getName()
                                 + ChatColor.YELLOW));
             }
 
-            this.getLifeMap().clear();
+            this.getTeamLifeMap().clear();
             new EndRunnable(arena, arena.getArenaConfig().getInt(CFG.TIME_ENDCOUNTDOWN));
         } else {
             debug(arena, "[CTF] already ending");
@@ -520,7 +514,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
     public Map<String, Double> timedEnd(final Map<String, Double> scores) {
 
         for (final ArenaTeam team : this.arena.getTeams()) {
-            double score = this.getLifeMap().getOrDefault(team.getName(), 0);
+            double score = this.getTeamLifeMap().getOrDefault(team, 0);
             if (scores.containsKey(team.getName())) {
                 scores.put(team.getName(), scores.get(team.getName()) + score);
             } else {
@@ -533,15 +527,15 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
 
     @Override
     public void unload(final Player player) {
-        this.disconnect(ArenaPlayer.parsePlayer(player.getName()));
+        this.disconnect(ArenaPlayer.fromPlayer(player.getName()));
         if (this.allowsJoinInBattle()) {
-            this.arena.hasNotPlayed(ArenaPlayer.parsePlayer(player.getName()));
+            this.arena.hasNotPlayed(ArenaPlayer.fromPlayer(player.getName()));
         }
     }
 
     protected boolean isIrrelevantInventoryClickEvent(InventoryClickEvent event) {
         final Player player = (Player) event.getWhoClicked();
-        final Arena arena = ArenaPlayer.parsePlayer(player.getName()).getArena();
+        final Arena arena = ArenaPlayer.fromPlayer(player.getName()).getArena();
 
         if (arena == null || !arena.getName().equals(this.arena.getName())) {
             return true;
@@ -552,39 +546,37 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
         }
 
         if (event.getInventory().getType() == InventoryType.CRAFTING && event.getRawSlot() != 5) {
-             return true;
+            return true;
         }
 
         return event.getCurrentItem() == null || !InventoryType.PLAYER.equals(event.getInventory().getType());
     }
 
-    protected void reduceLivesCheckEndAndCommit(final Arena arena, final String team) {
+    protected void checkAndCommitTouchdown(final Arena arena, final ArenaTeam team) {
         debug(arena, "reducing lives of team " + team);
-        if (this.getLifeMap().get(team) == null) {
-            if (team.contains(":")) {
-                final String realTeam = team.split(":")[1];
-                final int iLives = this.getLifeMap().get(realTeam) - 1;
-                if (iLives > 0) {
-                    this.getLifeMap().put(realTeam, iLives);
-                } else {
-                    this.getLifeMap().remove(realTeam);
-                    this.commit(arena, realTeam, true);
-                }
-            }
+        final int iLives = this.getTeamLifeMap().get(team) - 1;
+        if (iLives > 0) {
+            this.getTeamLifeMap().put(team, iLives);
         } else {
-            if (this.getLifeMap().get(team) != null) {
-                final int iLives = this.getLifeMap().get(team) - 1;
-                if (iLives > 0) {
-                    this.getLifeMap().put(team, iLives);
-                } else {
-                    this.getLifeMap().remove(team);
-                    this.commit(arena, team, false);
-                }
+            this.getTeamLifeMap().remove(team);
+            this.commit(arena, team, true);
+        }
+    }
+
+    protected void reduceLivesCheckEndAndCommit(final Arena arena, final ArenaTeam team) {
+        debug(arena, "reducing lives of team " + team);
+        if (this.getTeamLifeMap().get(team) != null) {
+            final int iLives = this.getTeamLifeMap().get(team) - 1;
+            if (iLives > 0) {
+                this.getTeamLifeMap().put(team, iLives);
+            } else {
+                this.getTeamLifeMap().remove(team);
+                this.commit(arena, team, false);
             }
         }
     }
 
-    protected PABlockLocation getTeamFlagLoc(String teamName) {
-        return SpawnManager.getBlockByExactName(this.arena, teamName + "flag");
+    protected PABlockLocation getTeamFlagLoc(ArenaTeam arenaTeam) {
+        return SpawnManager.getBlockByExactName(this.arena, arenaTeam.getName() + "flag");
     }
 }

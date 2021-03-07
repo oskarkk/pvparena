@@ -50,7 +50,7 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
 
     @Override
     protected int getScore(ArenaTeam team) {
-        return this.getTeamLivesCfg() - (this.getLifeMap().getOrDefault(team.getName(), 0));
+        return this.getTeamLivesCfg() - (this.getTeamLifeMap().getOrDefault(team, 0));
     }
 
     @Override
@@ -80,7 +80,7 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
         }
 
 
-        final ArenaTeam respawnTeam = ArenaPlayer.parsePlayer(respawnPlayer.getName()).getArenaTeam();
+        final ArenaTeam respawnTeam = ArenaPlayer.fromPlayer(respawnPlayer.getName()).getArenaTeam();
 
         this.drop(respawnPlayer, respawnTeam);
 
@@ -97,7 +97,7 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
             returned = new ArrayList<>(event.getDrops());
         }
 
-        WorkflowManager.handleRespawn(this.arena, ArenaPlayer.parsePlayer(respawnPlayer.getName()), returned);
+        WorkflowManager.handleRespawn(this.arena, ArenaPlayer.fromPlayer(respawnPlayer.getName()), returned);
     }
 
     private void drop(final Player player, final ArenaTeam team) {
@@ -118,7 +118,7 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
 
         final Material check = this.arena.getArenaConfig().getMaterial(CFG.GOAL_TDC_ITEM);
 
-        final ArenaPlayer player = ArenaPlayer.parsePlayer(event.getEntity().getName());
+        final ArenaPlayer player = ArenaPlayer.fromPlayer(event.getEntity().getName());
 
         if (item.getType().equals(check) && item.hasItemMeta()) {
             for (final ArenaTeam team : this.arena.getTeams()) {
@@ -150,14 +150,14 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
      * @return true if the player should not respawn but be removed
      */
     private boolean reduceLives(final Arena arena, final ArenaTeam team) {
-        final int iLives = this.getLifeMap().get(team.getName());
+        final int iLives = this.getTeamLifeMap().get(team);
 
         if (iLives <= 1) {
             for (final ArenaTeam otherTeam : arena.getTeams()) {
                 if (otherTeam.equals(team)) {
                     continue;
                 }
-                this.getLifeMap().remove(otherTeam.getName());
+                this.getTeamLifeMap().remove(otherTeam);
                 for (final ArenaPlayer ap : otherTeam.getTeamMembers()) {
                     if (ap.getStatus() == Status.FIGHT) {
                         ap.setStatus(Status.LOST);
@@ -169,7 +169,7 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
         }
         arena.broadcast(Language.parse(arena, MSG.GOAL_TEAMDEATHCONFIRM_REMAINING, String.valueOf(iLives - 1), team.getColoredName()));
 
-        this.getLifeMap().put(team.getName(), iLives - 1);
+        this.getTeamLifeMap().put(team, iLives - 1);
         arena.updateScoreboards();
         return false;
     }
@@ -177,7 +177,7 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
     @Override
     public void unload(final Player player) {
         if (this.allowsJoinInBattle()) {
-            this.arena.hasNotPlayed(ArenaPlayer.parsePlayer(player.getName()));
+            this.arena.hasNotPlayed(ArenaPlayer.fromPlayer(player));
         }
     }
 }
