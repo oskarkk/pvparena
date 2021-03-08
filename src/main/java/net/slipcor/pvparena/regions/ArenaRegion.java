@@ -393,15 +393,15 @@ public class ArenaRegion {
         } else if(Stream.of(RegionFlag.DEATH, RegionFlag.WIN, RegionFlag.LOSE).anyMatch(this.flags::contains) && this.shape.contains(pLoc)) {
 
             if (this.flags.contains(RegionFlag.DEATH)) {
-                debug(arenaPlayer.getPlayer(), "entering DEATH region");
+                debug(arenaPlayer, "entering DEATH region");
                 this.handleDeathRegionFlag(arenaPlayer);
 
             } else if (this.flags.contains(RegionFlag.WIN)) {
-                debug(arenaPlayer.getPlayer(), "entering WIN region");
+                debug(arenaPlayer, "entering WIN region");
                 this.handleWinRegionFlag(arenaPlayer);
 
             } else if (this.flags.contains(RegionFlag.LOSE)) {
-                debug(arenaPlayer.getPlayer(), "entering LOSE region");
+                debug(arenaPlayer, "entering LOSE region");
                 this.handleLoseRegionFlag(arenaPlayer);
             }
         }

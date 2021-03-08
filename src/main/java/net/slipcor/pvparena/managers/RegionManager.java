@@ -95,7 +95,7 @@ public final class RegionManager {
         boolean isInRegion = regions.isEmpty() || regions.stream().anyMatch(rg -> rg.getShape().contains(pLoc));
 
         if (!isInRegion) {
-            debug(arenaPlayer.getPlayer(), "escaping LOUNGE, loc : {}", pLoc);
+            debug(arenaPlayer, "escaping LOUNGE, loc : {}", pLoc);
             Arena.pmsg(arenaPlayer.getPlayer(), Language.parse(arena, Language.MSG.NOTICE_YOU_ESCAPED));
             arena.playerLeave(arenaPlayer.getPlayer(), Config.CFG.TP_EXIT, false, false, false);
         }
@@ -108,7 +108,7 @@ public final class RegionManager {
         boolean isInRegion = regions.isEmpty() || regions.stream().anyMatch(rg -> rg.getShape().contains(pLoc));
 
         if (!isInRegion) {
-            debug(arenaPlayer.getPlayer(), "escaping WATCH, loc : {}", pLoc);
+            debug(arenaPlayer, "escaping WATCH, loc : {}", pLoc);
             Arena.pmsg(arenaPlayer.getPlayer(), Language.parse(arena, Language.MSG.NOTICE_YOU_ESCAPED));
             arena.playerLeave(arenaPlayer.getPlayer(), Config.CFG.TP_EXIT, false, false, false);
         }

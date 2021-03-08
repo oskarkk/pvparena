@@ -59,13 +59,27 @@ public class Debugger {
     public static void debug(CommandSender sender, String string) {
         if (active) {
             if (sender instanceof Player) {
-                ArenaPlayer ap = ArenaPlayer.fromPlayer(sender.getName());
-                if (ap.getArena() != null) {
-                    formatAndPrint(ap.getArena(), ap.getPlayer(), FINE, string);
-                    return;
-                }
+                ArenaPlayer ap = ArenaPlayer.fromPlayer((Player) sender);
+                debug(ap, string);
+            } else {
+                print(FINE, string);
             }
-            print(FINE, string);
+        }
+    }
+
+    public static void debug(ArenaPlayer aPlayer, String template, Object... args) {
+        if (active) {
+            debug(aPlayer, getTemplatedLine(template, args));
+        }
+    }
+
+    public static void debug(ArenaPlayer aPlayer, String string) {
+        if (active) {
+            if (aPlayer.getArena() != null) {
+                formatAndPrint(aPlayer.getArena(), aPlayer.getPlayer(), FINE, string);
+            } else {
+                formatAndPrint(null, aPlayer.getPlayer(), FINE, string);
+            }
         }
     }
 

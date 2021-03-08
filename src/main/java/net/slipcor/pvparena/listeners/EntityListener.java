@@ -463,11 +463,11 @@ public class EntityListener implements Listener {
             return;
         }
 
-        debug(shooter.getPlayer(), "legit player");
+        debug(shooter, "legit player");
 
         if (shooter.getArena() == null
                 || !shooter.getStatus().equals(Status.FIGHT)) {
-            debug(shooter.getPlayer(), "something is null!");
+            debug(shooter, "something is null!");
             return;
         }
 

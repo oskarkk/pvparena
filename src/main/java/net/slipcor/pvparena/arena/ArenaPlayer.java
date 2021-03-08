@@ -363,7 +363,7 @@ public class ArenaPlayer {
     }
 
     private void clearDump() {
-        debug(this.getPlayer(), "clearing dump of {}", this.player.getName());
+        debug(this, "clearing dump of {}", this.player.getName());
         this.debugPrint();
         final File file = new File(PVPArena.getInstance().getDataFolder().getPath()
                 + "/dumps/" + this.player.getName() + ".yml");
@@ -393,30 +393,30 @@ public class ArenaPlayer {
 
     public void debugPrint() {
         if (this.status == null || this.location == null) {
-            debug(this.getPlayer(), "DEBUG PRINT OUT:");
-            debug(this.getPlayer(), this.player.getName());
-            debug(this.getPlayer(), String.valueOf(this.status));
-            debug(this.getPlayer(), String.valueOf(this.location));
-            debug(this.getPlayer(), String.valueOf(this.selection[0]));
-            debug(this.getPlayer(), String.valueOf(this.selection[1]));
+            debug(this, "DEBUG PRINT OUT:");
+            debug(this, this.player.getName());
+            debug(this, String.valueOf(this.status));
+            debug(this, String.valueOf(this.location));
+            debug(this, String.valueOf(this.selection[0]));
+            debug(this, String.valueOf(this.selection[1]));
             return;
         }
-        debug(this.getPlayer(), "------------------");
-        debug(this.getPlayer(), "Player: {}", this.player.getName());
-        debug(this.getPlayer(), "telepass: {} | mayDropInv: {} | chatting: {}", this.telePass, this.mayDropInventory, this.publicChatting);
-        debug(this.getPlayer(), "arena: {}", (this.arena == null ? "null" : this.arena.getName()));
-        debug(this.getPlayer(), "aClass: {}", (this.aClass == null ? "null" : this.aClass.getName()));
-        debug(this.getPlayer(), "location: {}", this.location);
-        debug(this.getPlayer(), "status: {}", this.status.name());
-        debug(this.getPlayer(), "tempPermissions:");
+        debug(this, "------------------");
+        debug(this, "Player: {}", this.player.getName());
+        debug(this, "telepass: {} | mayDropInv: {} | chatting: {}", this.telePass, this.mayDropInventory, this.publicChatting);
+        debug(this, "arena: {}", (this.arena == null ? "null" : this.arena.getName()));
+        debug(this, "aClass: {}", (this.aClass == null ? "null" : this.aClass.getName()));
+        debug(this, "location: {}", this.location);
+        debug(this, "status: {}", this.status.name());
+        debug(this, "tempPermissions:");
         for (final PermissionAttachment pa : this.tempPermissions) {
-            debug(this.getPlayer(), "> {}", pa);
+            debug(this, "> {}", pa);
         }
-        debug(this.getPlayer(), "------------------");
+        debug(this, "------------------");
     }
 
     public void dump() {
-        debug(this.getPlayer(), "dumping...");
+        debug(this, "dumping...");
         this.debugPrint();
         final File file = new File(PVPArena.getInstance().getDataFolder().getPath()
                 + "/dumps/" + this.player.getName() + ".yml");
@@ -486,9 +486,9 @@ public class ArenaPlayer {
     }
 
     public PALocation getSavedLocation() {
-        debug(this.getPlayer(), "reading loc!");
+        debug(this, "reading loc!");
         if (this.location != null) {
-            debug(this.getPlayer(), ": {}", this.location);
+            debug(this, ": {}", this.location);
         }
         return this.location;
     }
@@ -585,12 +585,12 @@ public class ArenaPlayer {
     }
 
     public void readDump() {
-        debug(this.getPlayer(), "reading dump: {}", this.player.getName());
+        debug(this, "reading dump: {}", this.player.getName());
         this.debugPrint();
         final File file = new File(PVPArena.getInstance().getDataFolder().getPath()
                 + "/dumps/" + this.player.getName() + ".yml");
         if (!file.exists()) {
-            debug(this.getPlayer(), "no dump!");
+            debug(this, "no dump!");
             return;
         }
 
@@ -615,7 +615,7 @@ public class ArenaPlayer {
             }
 
             if (Bukkit.getPlayer(this.player.getName()) == null) {
-                debug(this.getPlayer(), "player offline, OUT!");
+                debug(this, "player offline, OUT!");
                 return;
             }
             this.state = PlayerState.undump(cfg, this.player.getName());
@@ -629,7 +629,7 @@ public class ArenaPlayer {
      * save and reset a player instance
      */
     public void reset() {
-        debug(this.getPlayer(), "destroying arena player {}", this.player.getName());
+        debug(this, "destroying arena player {}", this.player.getName());
         this.debugPrint();
         final YamlConfiguration cfg = new YamlConfiguration();
         try {
@@ -679,7 +679,7 @@ public class ArenaPlayer {
         }
 
         if (this.getPlayer() == null) {
-            debug(this.getPlayer(), "reset() ; out! null");
+            debug(this, "reset() ; out! null");
             return;
         }
 
@@ -805,7 +805,7 @@ public class ArenaPlayer {
     }
 
     public void setStatus(final Status status) {
-        debug(this.getPlayer(),"{}>{}", this.player.getName(), status.name());
+        debug(this,"{}>{}", this.player.getName(), status.name());
         this.status = status;
     }
 

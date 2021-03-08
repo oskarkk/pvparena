@@ -44,7 +44,7 @@ public class ArenaTeam {
      */
     public void add(final ArenaPlayer arenaPlayer) {
         this.players.add(arenaPlayer);
-        debug(arenaPlayer.getPlayer(), "Added player " + arenaPlayer.getName() + " to team " + this.name);
+        debug(arenaPlayer, "Added player {} to team {}", arenaPlayer.getName(), this.name);
         arenaPlayer.getArena().increasePlayerCount();
     }
 
