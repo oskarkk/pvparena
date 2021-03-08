@@ -262,14 +262,18 @@ public class PVPArena extends JavaPlugin {
                 break;
             }
         }
-        final ArenaPlayer player = ArenaPlayer.fromPlayer(sender.getName());
-        if (pacmd != null && !(player.getArena() != null && pacmd.hasVersionForArena())) {
+
+        Arena playerArena = null;
+        if(sender instanceof Player) {
+            playerArena = ArenaPlayer.fromPlayer(sender.getName()).getArena();
+        }
+        if (pacmd != null && (playerArena == null || !pacmd.hasVersionForArena())) {
             debug(sender, "committing: " + pacmd.getName());
             pacmd.commit(sender, StringParser.shiftArrayBy(args, 1));
             return true;
         }
 
-        Arena tempArena = "l".equalsIgnoreCase(args[0])?player.getArena():ArenaManager.getIndirectArenaByName(sender, args[0]);
+        Arena tempArena = "l".equalsIgnoreCase(args[0]) ? playerArena : ArenaManager.getIndirectArenaByName(sender, args[0]);
 
         final String name = args[0];
 
