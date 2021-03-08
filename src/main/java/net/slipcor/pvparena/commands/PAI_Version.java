@@ -46,7 +46,7 @@ public class PAI_Version extends AbstractGlobalCommand {
             }
         }
         if (args.length < 2 || args[1].toLowerCase().startsWith("mod")) {
-            Arena.pmsg(sender, String.format("%s7-----------------------------------", ChatColor.GRAY));
+            Arena.pmsg(sender, String.format("%s-----------------------------------", ChatColor.GRAY));
             Arena.pmsg(sender, String.format("%sMods:", ChatColor.GREEN));
             for (final Loadable<?> am : PVPArena.getInstance().getAmm().getAllLoadables()) {
                 Arena.pmsg(sender, String.format("%s%s - %s", ChatColor.GREEN, am.getName(), am.getVersion()));
