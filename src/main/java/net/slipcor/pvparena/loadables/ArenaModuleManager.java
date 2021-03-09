@@ -118,9 +118,9 @@ public class ArenaModuleManager {
         }
     }
 
-    public static void initiate(final Arena arena, final Player sender) {
+    public static void initiate(final Arena arena, final Player player) {
         for (final ArenaModule mod : arena.getMods()) {
-            mod.initiate(sender);
+            mod.initiate(player);
         }
     }
 
@@ -225,10 +225,10 @@ public class ArenaModuleManager {
         return result;
     }
 
-    public static void parseJoin(final Arena arena, final Player sender,
+    public static void parseJoin(final Arena arena, final Player player,
                                  final ArenaTeam team) {
         for (final ArenaModule mod : arena.getMods()) {
-            mod.parseJoin(sender, team);
+            mod.parseJoin(player, team);
         }
     }
 

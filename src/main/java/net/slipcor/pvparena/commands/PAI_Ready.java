@@ -12,6 +12,7 @@ import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.regions.ArenaRegion;
 import net.slipcor.pvparena.managers.TeamManager;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,7 +44,12 @@ public class PAI_Ready extends AbstractArenaCommand {
             return;
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(sender.getName());
+        if (!(sender instanceof Player)) {
+            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+            return;
+        }
+
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer((Player) sender);
 
         if (!arena.hasPlayer(aPlayer.getPlayer())) {
 

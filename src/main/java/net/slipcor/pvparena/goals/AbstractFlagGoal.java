@@ -527,15 +527,15 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
 
     @Override
     public void unload(final Player player) {
-        this.disconnect(ArenaPlayer.fromPlayer(player.getName()));
+        this.disconnect(ArenaPlayer.fromPlayer(player));
         if (this.allowsJoinInBattle()) {
-            this.arena.hasNotPlayed(ArenaPlayer.fromPlayer(player.getName()));
+            this.arena.hasNotPlayed(ArenaPlayer.fromPlayer(player));
         }
     }
 
     protected boolean isIrrelevantInventoryClickEvent(InventoryClickEvent event) {
         final Player player = (Player) event.getWhoClicked();
-        final Arena arena = ArenaPlayer.fromPlayer(player.getName()).getArena();
+        final Arena arena = ArenaPlayer.fromPlayer(player).getArena();
 
         if (arena == null || !arena.getName().equals(this.arena.getName())) {
             return true;

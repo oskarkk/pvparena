@@ -73,9 +73,9 @@ public class BattlefieldJoin extends ArenaModule {
     }
 
     @Override
-    public void commitJoin(final Player sender, final ArenaTeam team) {
+    public void commitJoin(final Player player, final ArenaTeam team) {
         // standard join --> lounge
-        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(sender.getName());
+        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
         arenaPlayer.setLocation(new PALocation(arenaPlayer.getPlayer().getLocation()));
 
         arenaPlayer.setArena(this.arena);
@@ -131,7 +131,7 @@ public class BattlefieldJoin extends ArenaModule {
 
             @Override
             public void run() {
-                Boolean check = WorkflowManager.handleStart(BattlefieldJoin.this.arena, sender, true);
+                Boolean check = WorkflowManager.handleStart(BattlefieldJoin.this.arena, player, true);
                 if (check == null || !check) {
                     Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), this, 10L);
                 }

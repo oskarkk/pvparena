@@ -194,7 +194,7 @@ public class GoalCheckPoints extends ArenaGoal {
             return;
         }
 
-        ArenaPlayer ap = ArenaPlayer.fromPlayer(sender.getName());
+        ArenaPlayer ap = ArenaPlayer.fromPlayer((Player) sender);
         int cpLives = this.arena.getArenaConfig().getInt(CFG.GOAL_CHECKPOINTS_LIVES);
 
         if (args.length < 2 && this.arena.getFighters().contains(ap)) {

@@ -95,7 +95,7 @@ public class GoalFlags extends AbstractFlagGoal {
 
         Vector vLoc;
         Vector vFlag = null;
-        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player.getName());
+        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
 
         if (this.getFlagMap().containsValue(player.getName())) {
             debug(this.arena, player, "player " + player.getName() + " has got a flag");
@@ -312,7 +312,7 @@ public class GoalFlags extends AbstractFlagGoal {
 
     @Override
     public void initiate(final Player player) {
-        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         final ArenaTeam team = aPlayer.getArenaTeam();
         if (!this.getTeamLifeMap().containsKey(team)) {
             this.getTeamLifeMap().put(aPlayer.getArenaTeam(), this.arena.getArenaConfig()
@@ -332,7 +332,7 @@ public class GoalFlags extends AbstractFlagGoal {
             return;
         }
         final ArenaTeam flagTeam = this.getHeldFlagTeam(player);
-        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player.getName());
+        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
 
         if (flagTeam == null) {
             this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer

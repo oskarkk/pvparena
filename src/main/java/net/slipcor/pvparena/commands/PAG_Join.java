@@ -79,7 +79,7 @@ public class PAG_Join extends AbstractArenaCommand {
             return;
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(sender.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer((Player) sender);
 
         if (aPlayer.getArena() == null) {
             if (!arena.getArenaConfig().getBoolean(CFG.PERMS_ALWAYSJOININBATTLE) &&

@@ -284,10 +284,8 @@ public class PVPArena extends JavaPlugin {
         String[] newArgs = args;
 
         if (tempArena == null) {
-            if (sender instanceof Player
-                    && ArenaPlayer.fromPlayer(sender.getName()).getArena() != null) {
-                tempArena = ArenaPlayer.fromPlayer(sender.getName())
-                        .getArena();
+            if (playerArena != null) {
+                tempArena = playerArena;
             } else if (PAA_Setup.activeSetups.containsKey(sender.getName())) {
                 tempArena = PAA_Setup.activeSetups.get(sender.getName());
             } else if (PAA_Edit.activeEdits.containsKey(sender.getName())) {

@@ -189,10 +189,10 @@ public abstract class ArenaModule implements IArenaCommandHandler {
     /**
      * commit an arena join
      *
-     * @param sender the joining player
+     * @param player the joining player
      * @param team   the chosen team
      */
-    public void commitJoin(final Player sender, final ArenaTeam team) {
+    public void commitJoin(final Player player, final ArenaTeam team) {
         throw new IllegalStateException(this.name);
     }
 
@@ -248,9 +248,9 @@ public abstract class ArenaModule implements IArenaCommandHandler {
      * hook into initiating a player when he joins directly into the battlefield
      * (contrary to standardlounge and spectating)
      *
-     * @param sender the joining player
+     * @param player the joining player
      */
-    public void initiate(final Player sender) {
+    public void initiate(final Player player) {
     }
 
     public boolean isMissingBattleRegion(final Arena arena) {
@@ -389,11 +389,10 @@ public abstract class ArenaModule implements IArenaCommandHandler {
 
     /**
      * hook into a player joining the arena
-     *
-     * @param sender the joining player
+     *  @param player the joining player
      * @param team   the chosen team
      */
-    public void parseJoin(final CommandSender sender, final ArenaTeam team) {
+    public void parseJoin(final Player player, final ArenaTeam team) {
     }
 
     /**

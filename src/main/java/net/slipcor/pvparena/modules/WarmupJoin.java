@@ -82,14 +82,14 @@ public class WarmupJoin extends ArenaModule {
     }
 
     @Override
-    public void commitJoin(final Player sender, final ArenaTeam team) {
-        new ArenaWarmupRunnable(this.arena, ArenaPlayer.fromPlayer(sender.getName()), team.getName(), false, this.arena.getArenaConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
+    public void commitJoin(final Player player, final ArenaTeam team) {
+        new ArenaWarmupRunnable(this.arena, ArenaPlayer.fromPlayer(player), team.getName(), false, this.arena.getArenaConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
         this.announced = true;
     }
 
     @Override
-    public void commitSpectate(final Player sender) {
-        new ArenaWarmupRunnable(this.arena, ArenaPlayer.fromPlayer(sender.getName()), null, true, this.arena.getArenaConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
+    public void commitSpectate(final Player player) {
+        new ArenaWarmupRunnable(this.arena, ArenaPlayer.fromPlayer(player), null, true, this.arena.getArenaConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
     }
 
     @Override

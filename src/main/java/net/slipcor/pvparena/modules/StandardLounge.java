@@ -13,7 +13,6 @@ import net.slipcor.pvparena.exceptions.GameplayException;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.managers.ArenaManager;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Iterator;
@@ -127,39 +126,39 @@ public class StandardLounge extends ArenaModule {
     }
 
     @Override
-    public void commitJoin(final Player sender, final ArenaTeam team) {
+    public void commitJoin(final Player player, final ArenaTeam team) {
         // standard join --> lounge
-        final ArenaPlayer player = ArenaPlayer.fromPlayer(sender.getName());
-        player.setLocation(new PALocation(player.getPlayer().getLocation()));
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
+        aPlayer.setLocation(new PALocation(aPlayer.getPlayer().getLocation()));
 
         // ArenaPlayer.prepareInventory(arena, ap.getPlayer());
-        player.setArena(this.arena);
-        team.add(player);
+        aPlayer.setArena(this.arena);
+        team.add(aPlayer);
 
         if (this.arena.isFreeForAll()) {
-            this.arena.tpPlayerToCoordNameForJoin(player, "lounge", true);
+            this.arena.tpPlayerToCoordNameForJoin(aPlayer, "lounge", true);
         } else {
-            this.arena.tpPlayerToCoordNameForJoin(player, team.getName() + "lounge", true);
+            this.arena.tpPlayerToCoordNameForJoin(aPlayer, team.getName() + "lounge", true);
         }
 
-        player.setStatus(Status.LOUNGE);
-        this.arena.msg(sender, Language.parse(this.arena, CFG.MSG_LOUNGE));
+        aPlayer.setStatus(Status.LOUNGE);
+        this.arena.msg(player, Language.parse(this.arena, CFG.MSG_LOUNGE));
         if (this.arena.isFreeForAll()) {
-            this.arena.msg(sender,
+            this.arena.msg(player,
                     Language.parse(this.arena, CFG.MSG_YOUJOINED,
                     Integer.toString(team.getTeamMembers().size()),
                     Integer.toString(this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS))
             ));
             this.arena.broadcastExcept(
-                    sender,
+                    player,
                     Language.parse(this.arena, CFG.MSG_PLAYERJOINED,
-                            sender.getName(),
+                            player.getName(),
                             Integer.toString(team.getTeamMembers().size()),
                             Integer.toString(this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS))
                     ));
         } else {
 
-            this.arena.msg(sender,
+            this.arena.msg(player,
                     Language.parse(this.arena, CFG.MSG_YOUJOINEDTEAM,
                             team.getColoredName() + ChatColor.COLOR_CHAR + 'r',
                             Integer.toString(team.getTeamMembers().size()),
@@ -167,37 +166,37 @@ public class StandardLounge extends ArenaModule {
             ));
 
             this.arena.broadcastExcept(
-                    sender,
+                    player,
                     Language.parse(this.arena, CFG.MSG_PLAYERJOINEDTEAM,
-                            sender.getName(),
+                            player.getName(),
                             team.getColoredName() + ChatColor.COLOR_CHAR + 'r',
                             Integer.toString(team.getTeamMembers().size()),
                             Integer.toString(this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS))
             ));
         }
 
-        if (player.getState() == null) {
+        if (aPlayer.getState() == null) {
 
-            final Arena arena = player.getArena();
+            final Arena arena = aPlayer.getArena();
 
-            player.createState(player.getPlayer());
-            ArenaPlayer.backupAndClearInventory(arena, player.getPlayer());
-            player.dump();
+            aPlayer.createState(aPlayer.getPlayer());
+            ArenaPlayer.backupAndClearInventory(arena, aPlayer.getPlayer());
+            aPlayer.dump();
 
 
-            if (player.getArenaTeam() != null && player.getArenaClass() == null) {
+            if (aPlayer.getArenaTeam() != null && aPlayer.getArenaClass() == null) {
                 final String autoClass = arena.getArenaConfig().getDefinedString(CFG.READY_AUTOCLASS);
                 if (autoClass != null && arena.getClass(autoClass) != null) {
-                    arena.chooseClass(player.getPlayer(), null, autoClass);
+                    arena.chooseClass(aPlayer.getPlayer(), null, autoClass);
                 }
             }
         } else {
-            PVPArena.getInstance().getLogger().warning("Player has a state while joining: " + player.getName());
+            PVPArena.getInstance().getLogger().warning("Player has a state while joining: " + aPlayer.getName());
         }
     }
 
     @Override
-    public void parseJoin(final CommandSender player, final ArenaTeam team) {
+    public void parseJoin(final Player player, final ArenaTeam team) {
         if (this.arena.startRunner != null) {
             this.arena.countDown();
         }

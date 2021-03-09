@@ -278,7 +278,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
 
     @Override
     public void initiate(final Player player) {
-        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         final ArenaTeam team = aPlayer.getArenaTeam();
         if (!this.getTeamLifeMap().containsKey(team)) {
             this.getTeamLifeMap().put(aPlayer.getArenaTeam(), this.arena.getArenaConfig().getInt(CFG.GOAL_PFLAGS_LIVES));
@@ -294,7 +294,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
             return;
         }
         final ArenaTeam flagTeam = this.getHeldFlagTeam(player);
-        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player.getName());
+        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
 
         if (flagTeam == null) {
                 this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer
@@ -392,7 +392,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
 
         debug(this.arena, player, "flag destroy!");
 
-        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player.getName());
+        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
         if (this.getFlagMap().containsValue(player.getName())) {
             debug(this.arena, player, "already carries a flag!");
