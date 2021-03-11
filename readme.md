@@ -2,8 +2,8 @@
 
 <p align="center">
     <b>
-        IF YOU'RE UPGRADING FROM 1.14.x VERSION OR BELOW, PLEASE READ 
-        <a href="doc/update-version.md">UPGRADE DOCUMENTATION</a>
+        THIS VERSION IS CURRENTLY IN HEAVY DEVELOPMENT. DON'T USE IT FOR PRODUCTION!<br>
+        NO SUPPORT WILL BE PROVIDED
     </b>
 </p>
 
