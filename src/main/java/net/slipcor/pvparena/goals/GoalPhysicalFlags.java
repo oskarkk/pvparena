@@ -210,19 +210,19 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
 
         if (flagTeam == null) {
 
-                this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer
-                        .getArenaTeam().getColorCodeString()
-                        + arenaPlayer.getName()
-                        + ChatColor.YELLOW));
+            this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer
+                    .getArenaTeam().getColorCodeString()
+                    + arenaPlayer.getName()
+                    + ChatColor.YELLOW));
 
-                this.getFlagMap().remove(this.touchdownTeam);
-                if (this.getHeadGearMap().get(arenaPlayer) != null) {
-                        arenaPlayer.getPlayer().getInventory()
-                                .setHelmet(this.getHeadGearMap().get(arenaPlayer).clone());
-                    this.getHeadGearMap().remove(arenaPlayer);
-                }
+            this.getFlagMap().remove(this.touchdownTeam);
+            if (this.getHeadGearMap().get(arenaPlayer) != null) {
+                arenaPlayer.getPlayer().getInventory()
+                        .setHelmet(this.getHeadGearMap().get(arenaPlayer).clone());
+                this.getHeadGearMap().remove(arenaPlayer);
+            }
 
-                this.releaseFlag(this.touchdownTeam);
+            this.releaseFlag(this.touchdownTeam);
         } else {
             this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPED, arenaPlayer
                     .getArenaTeam().getColorCodeString()
@@ -230,8 +230,8 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
                     + ChatColor.YELLOW, flagTeam.getName() + ChatColor.YELLOW));
             this.getFlagMap().remove(flagTeam);
             if (this.getHeadGearMap().get(arenaPlayer) != null) {
-                    arenaPlayer.getPlayer().getInventory()
-                            .setHelmet(this.getHeadGearMap().get(arenaPlayer).clone());
+                arenaPlayer.getPlayer().getInventory()
+                        .setHelmet(this.getHeadGearMap().get(arenaPlayer).clone());
                 this.getHeadGearMap().remove(arenaPlayer);
             }
 
@@ -277,18 +277,18 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
         final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
 
         if (flagTeam == null) {
-                this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer
-                        .getArenaTeam().getColorCodeString()
-                        + arenaPlayer.getName()
-                        + ChatColor.YELLOW));
+            this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer
+                    .getArenaTeam().getColorCodeString()
+                    + arenaPlayer.getName()
+                    + ChatColor.YELLOW));
 
-                this.getFlagMap().remove(this.touchdownTeam);
-                if (this.getHeadGearMap().get(arenaPlayer) != null) {
-                        arenaPlayer.getPlayer().getInventory().setHelmet(this.getHeadGearMap().get(arenaPlayer).clone());
-                    this.getHeadGearMap().remove(arenaPlayer);
-                }
+            this.getFlagMap().remove(this.touchdownTeam);
+            if (this.getHeadGearMap().get(arenaPlayer) != null) {
+                arenaPlayer.getPlayer().getInventory().setHelmet(this.getHeadGearMap().get(arenaPlayer).clone());
+                this.getHeadGearMap().remove(arenaPlayer);
+            }
 
-                this.releaseFlag(this.touchdownTeam);
+            this.releaseFlag(this.touchdownTeam);
         } else {
             this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPED, arenaPlayer
                             .getArenaTeam().colorizePlayer(player) + ChatColor.YELLOW,

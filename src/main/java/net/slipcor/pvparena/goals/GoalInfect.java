@@ -93,26 +93,12 @@ public class GoalInfect extends ArenaGoal {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        if (!this.arena.isFreeForAll()) {
-            return null; // teams are handled somewhere else
-        }
+    public Set<String> checkForMissingSpawns(final Set<String> spawnNames) {
 
-        boolean infected = false;
+        Set<String> errors = this.checkForMissingFFACustom(spawnNames, INFECTED);
+        errors.addAll(this.checkForMissingFFASpawn(spawnNames));
 
-        int count = 0;
-        for (final String s : list) {
-            if (s.startsWith(INFECTED)) {
-                infected = true;
-            }
-            if (s.startsWith(SPAWN)) {
-                count++;
-            }
-        }
-        if (!infected) {
-            return INFECTED;
-        }
-        return count > 3 ? null : "need more spawns! (" + count + "/4)";
+        return errors;
     }
 
     @Override

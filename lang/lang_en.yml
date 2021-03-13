@@ -134,7 +134,7 @@ nulang:
     errorloungefree: Error! Arena is not of type free. Use '[teamname]lounge'
     log:
       matnotfound: 'Unrecognized material: %1%'
-    missingspawn: 'Spawn missing: &f%1%'
+    missingspawn: 'Missing spawns: &f%1%'
     noarenas: No arenas found!
     valueneg: 'Negative values: &c%1%&r'
     nofight: There is no fight in progress.

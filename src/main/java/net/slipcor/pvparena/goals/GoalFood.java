@@ -123,12 +123,10 @@ public class GoalFood extends ArenaGoal {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        final String error = this.checkForMissingTeamSpawn(list);
-        if (error != null) {
-            return error;
-        }
-        return this.checkForMissingTeamCustom(list, FOODCHEST);
+    public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
+        final Set<String> errors = this.checkForMissingTeamSpawn(spawnsNames);
+        errors.addAll(this.checkForMissingTeamCustom(spawnsNames, FOODCHEST));
+        return errors;
     }
 
     @Override

@@ -63,8 +63,6 @@ public class GoalSabotage extends ArenaGoal {
         return PVPArena.getInstance().getDescription().getVersion();
     }
 
-    private static final int PRIORITY = 7;
-
     @Override
     public boolean allowsJoinInBattle() {
         return this.arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE);
@@ -88,12 +86,10 @@ public class GoalSabotage extends ArenaGoal {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        final String team = this.checkForMissingTeamSpawn(list);
-        if (team != null) {
-            return team;
-        }
-        return this.checkForMissingTeamCustom(list, "tnt");
+    public Set<String> checkForMissingSpawns(final Set<String> list) {
+        Set<String> errors = this.checkForMissingTeamSpawn(list);
+        errors.addAll(this.checkForMissingTeamCustom(list, "tnt"));
+        return errors;
     }
 
     /**

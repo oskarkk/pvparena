@@ -103,12 +103,11 @@ public class GoalPlayerKillReward extends ArenaGoal {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        if (!this.arena.isFreeForAll()) {
-            return this.checkForMissingTeamSpawn(list);
+    public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
+        if (this.arena.isFreeForAll()) {
+            return this.checkForMissingFFASpawn(spawnsNames);
         }
-
-        return this.checkForMissingSpawn(list);
+        return this.checkForMissingTeamSpawn(spawnsNames);
     }
 
     @Override

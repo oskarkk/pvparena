@@ -9,12 +9,9 @@ import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PAClaimBar;
 import net.slipcor.pvparena.commands.PAA_Region;
-import net.slipcor.pvparena.core.ColorUtils;
+import net.slipcor.pvparena.core.*;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
-import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.core.Utils;
 import net.slipcor.pvparena.events.PAGoalEvent;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
@@ -114,22 +111,13 @@ public class GoalDomination extends ArenaGoal {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
+    public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
 
-        final String team = this.checkForMissingTeamSpawn(list);
-        if (team != null) {
-            return team;
+        final Set<String> missingTeamSpawn = this.checkForMissingTeamSpawn(spawnsNames);
+        if (spawnsNames.stream().noneMatch(spawnName -> spawnName.startsWith("flag"))) {
+            missingTeamSpawn.add("flag1");
         }
-        int count = 0;
-        for (final String s : list) {
-            if (s.startsWith("flag")) {
-                count++;
-            }
-        }
-        if (count < 1) {
-            return "flags: " + count + " / 1";
-        }
-        return null;
+        return missingTeamSpawn;
     }
 
     /**

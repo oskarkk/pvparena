@@ -65,24 +65,23 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
             return;
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer((Player) sender);
+        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer((Player) sender);
 
         // Player can change arena class only in lounge or with ingameClassSwith parameter set to true
-        if(aPlayer.getStatus() != LOUNGE && !arena.getArenaConfig().getBoolean(CFG.USES_INGAMECLASSSWITCH)) {
+        if(arenaPlayer.getStatus() != LOUNGE && !arena.getArenaConfig().getBoolean(CFG.USES_INGAMECLASSSWITCH)) {
             return;
         }
 
-        final ArenaClass aClass = arena.getClass(args[0]);
-
-        if (aClass == null) {
+        final ArenaClass arenaClass = arena.getClass(args[0]);
+        if (arenaClass == null) {
             sender.sendMessage(Language.parse(arena, MSG.ERROR_CLASS_NOT_FOUND, args[0]));
             return;
         }
 
         if (arena.getArenaConfig().getBoolean(CFG.PERMS_EXPLICITCLASS)
-                && !sender.hasPermission("pvparena.class." + aClass.getName())) {
+                && !sender.hasPermission("pvparena.class." + arenaClass.getName())) {
             arena.msg(sender,
-                    Language.parse(arena, MSG.ERROR_NOPERM_CLASS, aClass.getName()));
+                    Language.parse(arena, MSG.ERROR_NOPERM_CLASS, arenaClass.getName()));
             return;
         }
 
@@ -97,10 +96,10 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
         for (PAClassSign sign : arena.getSigns()) {
             try {
                 Sign s = (Sign) sign.getLocation().toLocation().getBlock().getState();
-                if (aPlayer.getArenaClass().getName().equals(s.getLine(0))) {
+                if (arenaPlayer.getArenaClass().getName().equals(s.getLine(0))) {
                     oldSign = sign;
                 }
-                if (aClass.getName().equals(s.getLine(0))) {
+                if (arenaClass.getName().equals(s.getLine(0))) {
                     if (!sign.add((Player) sender)) {
                         error = true;
                     }
@@ -115,23 +114,23 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
                 oldSign.add((Player) sender);
             }
             arena.msg(sender,
-                    Language.parse(arena, MSG.ERROR_CLASS_FULL, aClass.getName()));
+                    Language.parse(arena, MSG.ERROR_CLASS_FULL, arenaClass.getName()));
             return;
         }
 
         if (!arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSWITCH_AFTER_RESPAWN) || !arena.isFightInProgress()) {
-            InventoryManager.clearInventory(aPlayer.getPlayer());
-            aPlayer.setArenaClass(aClass);
-            if (aPlayer.getArenaClass() != null) {
-                ArenaPlayer.givePlayerFightItems(arena, aPlayer.getPlayer());
+            InventoryManager.clearInventory(arenaPlayer.getPlayer());
+            arenaPlayer.setArenaClass(arenaClass);
+            if (arenaPlayer.getArenaClass() != null) {
+                ArenaPlayer.givePlayerFightItems(arena, arenaPlayer.getPlayer());
 
                 arena.msg(sender,
-                        Language.parse(arena, MSG.CLASS_SELECTED, aClass.getName()));
+                        Language.parse(arena, MSG.CLASS_SELECTED, arenaClass.getName()));
             }
-        } else if (aPlayer.getArenaClass() != null) {
+        } else if (arenaPlayer.getArenaClass() != null) {
             arena.msg(sender,
-                    Language.parse(arena, MSG.CLASS_SELECTED_RESPAWN, aClass.getName()));
-            aPlayer.setNextArenaClass(aClass);
+                    Language.parse(arena, MSG.CLASS_SELECTED_RESPAWN, arenaClass.getName()));
+            arenaPlayer.setNextArenaClass(arenaClass);
         }
     }
 
