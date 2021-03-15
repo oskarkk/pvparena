@@ -5,7 +5,6 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
-import net.slipcor.pvparena.commands.PAA_Region;
 import net.slipcor.pvparena.core.ColorUtils;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -14,7 +13,6 @@ import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.events.PAGoalEvent;
 import net.slipcor.pvparena.exceptions.GameplayException;
-import net.slipcor.pvparena.managers.SpawnManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -201,24 +199,6 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
     protected void commit(final Arena arena, final ArenaTeam arenaTeam, final boolean win) {
         super.commit(arena, arenaTeam, win);
         this.getFlagDataMap().clear();
-    }
-
-    @Override
-    public boolean commitSetFlag(final Player player, final Block block) {
-
-        debug(this.arena, player, "trying to set a flag");
-
-        // command : /pa redflag1
-        // location: red1flag:
-
-        SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), this.flagName);
-
-        this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_FLAGS_SET, this.flagName));
-
-        PAA_Region.activeSelections.remove(player.getName());
-        this.flagName = "";
-
-        return true;
     }
 
     @Override

@@ -14,6 +14,7 @@ import net.slipcor.pvparena.core.ColorUtils;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.core.StringUtils;
 import net.slipcor.pvparena.events.PAGoalEvent;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
@@ -60,7 +61,7 @@ public class GoalBlockDestroy extends ArenaGoal {
         super("BlockDestroy");
     }
 
-    private String blockTeamName = "";
+    private String blockTeamName;
 
     @Override
     public String version() {
@@ -126,7 +127,7 @@ public class GoalBlockDestroy extends ArenaGoal {
     @Override
     public boolean checkSetBlock(final Player player, final Block block) {
 
-        if (!PAA_Region.activeSelections.containsKey(player.getName())) {
+        if (StringUtils.isBlank(this.blockTeamName) || !PAA_Region.activeSelections.containsKey(player.getName())) {
             return false;
         }
 
@@ -248,14 +249,11 @@ public class GoalBlockDestroy extends ArenaGoal {
         // command : /pa redblock1
         // location: red1block:
 
-        SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()),
-                this.blockTeamName);
-
-        this.arena.msg(player,
-                Language.parse(this.arena, MSG.GOAL_BLOCKDESTROY_SET, this.blockTeamName));
+        SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), this.blockTeamName);
+        this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_BLOCKDESTROY_SET, this.blockTeamName));
 
         PAA_Region.activeSelections.remove(player.getName());
-        this.blockTeamName = "";
+        this.blockTeamName = null;
 
         return true;
     }

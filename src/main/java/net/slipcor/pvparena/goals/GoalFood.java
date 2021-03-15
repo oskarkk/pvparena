@@ -12,6 +12,7 @@ import net.slipcor.pvparena.commands.PAA_Region;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.core.StringUtils;
 import net.slipcor.pvparena.events.PAGoalEvent;
 import net.slipcor.pvparena.exceptions.GameplayException;
 import net.slipcor.pvparena.loadables.ArenaGoal;
@@ -57,6 +58,8 @@ public class GoalFood extends ArenaGoal {
 
     private static final String FOODCHEST = "foodchest";
     private static final String FOODFURNACE = "foodfurnace";
+
+    private String flagName;
 
     public GoalFood() {
         super("Food");
@@ -140,15 +143,13 @@ public class GoalFood extends ArenaGoal {
             return false;
         }
 
-        if (this.flagName == null || block == null
-                || block.getType() != Material.CHEST && block.getType() != Material.FURNACE) {
+        if (StringUtils.isBlank(this.flagName) || block == null ||
+                (block.getType() != Material.CHEST && block.getType() != Material.FURNACE)) {
             return false;
         }
 
         return PVPArena.hasAdminPerms(player) || PVPArena.hasCreatePerms(player, this.arena);
     }
-
-    private String flagName;
 
     @Override
     public void commitCommand(final CommandSender sender, final String[] args) {
@@ -159,8 +160,7 @@ public class GoalFood extends ArenaGoal {
                     this.flagName = args[0];
                     PAA_Region.activeSelections.put(sender.getName(), this.arena);
 
-                    this.arena.msg(sender,
-                            Language.parse(this.arena, MSG.GOAL_FOOD_TOSET, this.flagName));
+                    this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_FOOD_TOSET, this.flagName));
                 }
             }
         } else if (args[0].contains(FOODFURNACE)) {
@@ -170,8 +170,7 @@ public class GoalFood extends ArenaGoal {
                     this.flagName = args[0];
                     PAA_Region.activeSelections.put(sender.getName(), this.arena);
 
-                    this.arena.msg(sender,
-                            Language.parse(this.arena, MSG.GOAL_FOODFURNACE_TOSET, this.flagName));
+                    this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_FOODFURNACE_TOSET, this.flagName));
                 }
             }
         }
@@ -249,8 +248,7 @@ public class GoalFood extends ArenaGoal {
         // command : /pa redflag1
         // location: red1flag:
 
-        SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()),
-                this.flagName);
+        SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), this.flagName);
 
 
         if (this.flagName.contains("furnace")) {
@@ -268,7 +266,7 @@ public class GoalFood extends ArenaGoal {
         }
 
         PAA_Region.activeSelections.remove(player.getName());
-        this.flagName = "";
+        this.flagName = null;
 
         return true;
     }

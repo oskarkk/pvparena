@@ -13,6 +13,7 @@ import net.slipcor.pvparena.core.ColorUtils;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.core.StringUtils;
 import net.slipcor.pvparena.events.PAGoalEvent;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
@@ -49,7 +50,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
     protected static final String TOUCHDOWN = "touchdown";
     protected Map<ArenaTeam, String> flagMap = new HashMap<>();
     protected Map<ArenaPlayer, ItemStack> headGearMap = new HashMap<>();
-    protected String flagName = "";
+    protected String flagName;
     protected ArenaTeam touchdownTeam;
 
     protected AbstractFlagGoal(String sName) {
@@ -164,7 +165,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
     @Override
     public boolean checkSetBlock(final Player player, final Block block) {
 
-        if (!PAA_Region.activeSelections.containsKey(player.getName())) {
+        if (StringUtils.isBlank(this.flagName) || !PAA_Region.activeSelections.containsKey(player.getName())) {
             return false;
         }
 
@@ -328,7 +329,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
         // command : /pa redflag1
         // location: red1flag:
 
-        if(this.flagName == null || this.flagName.isEmpty()) {
+        if(StringUtils.isBlank(this.flagName)) {
             this.arena.msg(player, Language.parse(this.arena, MSG.ERROR_ERROR, "Flag you are trying to set has no name."));
         } else {
             SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), this.flagName);
@@ -336,7 +337,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
         }
 
         PAA_Region.activeSelections.remove(player.getName());
-        this.flagName = "";
+        this.flagName = null;
 
         return true;
     }

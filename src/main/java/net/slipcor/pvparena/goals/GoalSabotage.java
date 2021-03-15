@@ -11,6 +11,7 @@ import net.slipcor.pvparena.commands.PAA_Region;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.core.StringUtils;
 import net.slipcor.pvparena.events.PAGoalEvent;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
@@ -53,7 +54,7 @@ public class GoalSabotage extends ArenaGoal {
         super("Sabotage");
     }
 
-    private String flagName = "";
+    private String flagName;
     private Map<String, String> teamFlags;
     private Map<ArenaTeam, TNTPrimed> teamTNTs;
 
@@ -171,7 +172,7 @@ public class GoalSabotage extends ArenaGoal {
     @Override
     public boolean checkSetBlock(final Player player, final Block block) {
 
-        if (!PAA_Region.activeSelections.containsKey(player.getName())) {
+        if (StringUtils.isBlank(this.flagName) || !PAA_Region.activeSelections.containsKey(player.getName())) {
             return false;
         }
         if (block == null || block.getType() != Material.TNT) {
@@ -298,13 +299,11 @@ public class GoalSabotage extends ArenaGoal {
         // command : /pa redtnt1
         // location: red1tnt:
 
-        SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()),
-                this.flagName);
-
+        SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), this.flagName);
         this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_SABOTAGE_SETTNT, this.flagName));
 
         PAA_Region.activeSelections.remove(player.getName());
-        this.flagName = "";
+        this.flagName = null;
         return true;
     }
 

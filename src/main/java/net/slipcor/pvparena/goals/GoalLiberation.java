@@ -10,6 +10,7 @@ import net.slipcor.pvparena.commands.PAA_Region;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.core.StringUtils;
 import net.slipcor.pvparena.events.PAGoalEvent;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
@@ -59,7 +60,7 @@ public class GoalLiberation extends ArenaGoal {
     }
 
     private EndRunnable endRunner;
-    private String flagName = "";
+    private String flagName;
 
     @Override
     public String version() {
@@ -206,7 +207,7 @@ public class GoalLiberation extends ArenaGoal {
     @Override
     public boolean checkSetBlock(final Player player, final Block block) {
 
-        if (!PAA_Region.activeSelections.containsKey(player.getName())) {
+        if (StringUtils.isBlank(this.flagName) || !PAA_Region.activeSelections.containsKey(player.getName())) {
             return false;
         }
 
@@ -251,8 +252,7 @@ public class GoalLiberation extends ArenaGoal {
                     this.flagName = args[0];
                     PAA_Region.activeSelections.put(sender.getName(), this.arena);
 
-                    this.arena.msg(sender,
-                            Language.parse(this.arena, MSG.GOAL_LIBERATION_TOSET, this.flagName));
+                    this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_LIBERATION_TOSET, this.flagName));
                 }
             }
         }
@@ -422,13 +422,11 @@ public class GoalLiberation extends ArenaGoal {
         // command : /pa redbutton1
         // location: redbutton1:
 
-        SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()),
-                this.flagName);
-
+        SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), this.flagName);
         this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_LIBERATION_SET, this.flagName));
 
         PAA_Region.activeSelections.remove(player.getName());
-        this.flagName = "";
+        this.flagName = null;
 
         return true;
     }
