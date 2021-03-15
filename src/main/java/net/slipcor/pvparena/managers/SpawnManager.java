@@ -9,6 +9,7 @@ import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.classes.PASpawn;
+import net.slipcor.pvparena.config.SpawnOffset;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.StringParser;
@@ -419,15 +420,13 @@ public final class SpawnManager {
     }
 
     public static PALocation getSpawnByExactName(final Arena arena, final String name) {
-        for (final PASpawn spawn : arena.getSpawns()) {
-            if (spawn.getName().equals(name)) {
-                return spawn.getLocation().add(
-                        PVPArena.getInstance().getConfig().getDouble("x-offset", 0.5),
-                        PVPArena.getInstance().getConfig().getDouble("y-offset", 0.5),
-                        PVPArena.getInstance().getConfig().getDouble("z-offset", 0.5));
-            }
-        }
-        return null;
+        SpawnOffset spawnOffset = PVPArena.getInstance().getSpawnOffset();
+
+        return arena.getSpawns().stream()
+                .filter(spawn -> spawn.getName().equals(name))
+                .findAny()
+                .map(spawn -> spawn.getLocation().add(spawnOffset.getX(), spawnOffset.getY(), spawnOffset.getZ()))
+                .orElse(null);
     }
 
     public static PABlockLocation getRegionCenter(final Arena arena) {
@@ -502,10 +501,8 @@ public final class SpawnManager {
                 final PALocation temp = aPlayer.getSavedLocation();
 
                 Location bLoc = newLoc.toLocation();
-                bLoc = bLoc.add(
-                        PVPArena.getInstance().getConfig().getDouble("x-offset", 0.5),
-                        PVPArena.getInstance().getConfig().getDouble("y-offset", 0.5),
-                        PVPArena.getInstance().getConfig().getDouble("z-offset", 0.5));
+                SpawnOffset spawnOffset = PVPArena.getInstance().getSpawnOffset();
+                bLoc = bLoc.add(spawnOffset.getX(), spawnOffset.getY(), spawnOffset.getZ());
 
                 while (bLoc.getBlock().getType() != Material.AIR
                         && bLoc.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR

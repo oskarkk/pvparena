@@ -305,9 +305,6 @@ nulang:
   log:
     plugindisabled: Deshabilitado (version %1%)
     pluginenabled: Habilitado (version %1%)
-    trickerdisabled: Plugin Seguimiento(Tracking) desabilitado. ¿Nos volveremos a ver?
-    trackingenabled: 'Plugin Segumieinto(Tracking) Habilitado. Establece el Segumiento(Tracking):
-      "False" dentro de la configuración principal para deshabilitarlo.'
     updatedisabled: Actualizaciones deshabilitadas. Por favor mira dev.bukkit.org para Actualizaciones.
     updateenabled: Comprobando Actualizaciones...
     warning: '%1%'

@@ -5,6 +5,7 @@ import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.commands.*;
 import net.slipcor.pvparena.config.Debugger;
+import net.slipcor.pvparena.config.SpawnOffset;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Language;
@@ -25,11 +26,13 @@ import net.slipcor.pvparena.managers.TabManager;
 import net.slipcor.pvparena.updater.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,7 +63,9 @@ public class PVPArena extends JavaPlugin {
     private final List<AbstractArenaCommand> arenaCommands = new ArrayList<>();
     private final List<AbstractGlobalCommand> globalCommands = new ArrayList<>();
 
+    private Material wandItem;
     private UpdateChecker updateChecker;
+    private SpawnOffset spawnOffset;
     private boolean shuttingDown;
 
     public static PVPArena getInstance() {
@@ -104,6 +109,16 @@ public class PVPArena extends JavaPlugin {
 
     public UpdateChecker getUpdateChecker() {
         return this.updateChecker;
+    }
+
+    @NotNull
+    public Material getWandItem() {
+        return this.wandItem;
+    }
+
+    @NotNull
+    public SpawnOffset getSpawnOffset() {
+        return this.spawnOffset;
     }
 
     /**
@@ -393,15 +408,6 @@ public class PVPArena extends JavaPlugin {
             this.saveConfig();
         }
 
-        if (this.getConfig().contains("update.type") || this.getConfig().contains("update.mode")) {
-            this.getConfig().set("update.plugin", this.getConfig().getString("update.mode", "announce"));
-            this.getConfig().set("update.modules", this.getConfig().getBoolean("update.modules", true) ? "download" : "announce");
-            this.getConfig().set("update.type", null);
-            this.getConfig().set("update.mode", null);
-
-            this.saveConfig();
-        }
-
         this.getDataFolder().mkdir();
         new File(this.getDataFolder().getPath() + "/arenas").mkdir();
         new File(this.getDataFolder().getPath() + "/goals").mkdir();
@@ -433,14 +439,38 @@ public class PVPArena extends JavaPlugin {
 
         StatisticsManager.initialize();
 
-        this.getServer().getPluginManager()
-                .registerEvents(new BlockListener(), this);
-        this.getServer().getPluginManager().registerEvents(new EntityListener(),
-                this);
-        this.getServer().getPluginManager().registerEvents(new PlayerListener(),
-                this);
-        this.getServer().getPluginManager().registerEvents(new InventoryListener(),
-                this);
+        this.getServer().getPluginManager().registerEvents(new BlockListener(), this);
+        this.getServer().getPluginManager().registerEvents(new EntityListener(), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        this.getServer().getPluginManager().registerEvents(new InventoryListener(), this);
+
+        Debugger.load(this, Bukkit.getConsoleSender());
+        ArenaClass.addGlobalClasses();
+        ArenaManager.load_arenas();
+
+        this.loadConfigValues();
+
+        this.updateChecker = new UpdateChecker(this.getFile());
+
+        Language.logInfo(MSG.LOG_PLUGIN_ENABLED, this.getDescription().getFullName());
+    }
+
+    @Override
+    public void reloadConfig() {
+        super.reloadConfig();
+        this.loadConfigValues();
+    }
+
+    private void loadConfigValues() {
+        try {
+            String wandStr = this.getConfig().getString("wandItem");
+            this.wandItem = Material.valueOf(wandStr);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            this.getLogger().warning("Wand item is not correctly defined in your general config. Using STICK instead.");
+            this.wandItem = Material.STICK;
+        }
+
+        this.spawnOffset = new SpawnOffset(this.getConfig().getConfigurationSection("spawnOffset"));
 
         if (this.getConfig().getInt("ver", 0) < 1) {
             this.getConfig().options().copyDefaults(true);
@@ -448,17 +478,8 @@ public class PVPArena extends JavaPlugin {
             this.saveConfig();
         }
 
-        Debugger.load(this, Bukkit.getConsoleSender());
-        ArenaClass.addGlobalClasses();
-        ArenaManager.load_arenas();
-
-        if (this.getConfig().getBoolean("use_shortcuts") ||
-                this.getConfig().getBoolean("only_shortcuts")) {
+        if (this.getConfig().getBoolean("use_shortcuts") || this.getConfig().getBoolean("only_shortcuts")) {
             ArenaManager.readShortcuts(this.getConfig().getConfigurationSection("shortcuts"));
         }
-
-        this.updateChecker = new UpdateChecker(this.getFile());
-
-        Language.logInfo(MSG.LOG_PLUGIN_ENABLED, this.getDescription().getFullName());
     }
 }

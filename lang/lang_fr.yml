@@ -375,9 +375,6 @@ nulang:
   log:
     plugindisabled: désactivé (version %1%)
     pluginenabled: activé (version %1%)
-    trickerdisabled: Suivi du plugin désactivé. Rendez-vous bientôt ?
-    trackingenabled: 'Suivi du plugin activé. Configurer le suivi: false dans la configuration
-      pricipale à désactiver.'
     updatedisabled: Mises à jour désactivée. Pensez à vérifier spigot.org pour les mises à jour.
     updateenabled: Recherche de mise à jour...
     warning: '%1%'

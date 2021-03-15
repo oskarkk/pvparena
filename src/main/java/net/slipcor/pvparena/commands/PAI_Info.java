@@ -2,6 +2,7 @@ package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
+import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
@@ -66,181 +67,152 @@ public class PAI_Info extends AbstractArenaCommand {
         arena.msg(sender, Language.parse(arena, MSG.INFO_CLASSES, StringParser.joinSet(classes, ", ")));
         arena.msg(sender, Language.parse(arena, MSG.INFO_OWNER, arena.getOwner() == null ? "server" : arena.getOwner()));
 
+        Config cfg = arena.getArenaConfig();
         if (displayMode == null || "chat".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "chat"));
-            arena.msg(sender, StringParser.colorVar("colorNick",
-                    arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) + " | " +
-                    StringParser.colorVar("defaultTeam",
-                            arena.getArenaConfig().getBoolean(CFG.CHAT_DEFAULTTEAM)) + " | " +
-                    StringParser.colorVar("enabled",
-                            arena.getArenaConfig().getBoolean(CFG.CHAT_ENABLED)) + " | " +
-                    StringParser.colorVar("onlyPrivate",
-                            arena.getArenaConfig().getBoolean(CFG.CHAT_ONLYPRIVATE)));
+            arena.msg(sender,
+                    StringParser.colorVar("colorNick", cfg.getBoolean(CFG.CHAT_COLORNICK)) + " | " +
+                    StringParser.colorVar("defaultTeam", cfg.getBoolean(CFG.CHAT_DEFAULTTEAM)) + " | " +
+                    StringParser.colorVar("enabled", cfg.getBoolean(CFG.CHAT_ENABLED)) + " | " +
+                    StringParser.colorVar("onlyPrivate", cfg.getBoolean(CFG.CHAT_ONLYPRIVATE)));
         }
 
         if (displayMode == null || "command".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "command"));
-            arena.msg(sender, StringParser.colorVar("defaultjoin",
-                    arena.getArenaConfig().getBoolean(CFG.CMDS_DEFAULTJOIN)));
+            arena.msg(sender, StringParser.colorVar("defaultjoin", cfg.getBoolean(CFG.CMDS_DEFAULTJOIN)));
         }
 
         if (displayMode == null || "damage".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "damage"));
             arena.msg(sender, StringParser.colorVar("armor",
-                    arena.getArenaConfig().getBoolean(CFG.DAMAGE_ARMOR)) + " | " +
-                    "spawnCamp: " + arena.getArenaConfig().getInt(CFG.DAMAGE_SPAWNCAMP) + " | " +
-                    StringParser.colorVar("weapons",
-                            arena.getArenaConfig().getBoolean(CFG.DAMAGE_WEAPONS)));
+                    cfg.getBoolean(CFG.DAMAGE_ARMOR)) + " | " +
+                    "spawnCamp: " + cfg.getInt(CFG.DAMAGE_SPAWNCAMP) + " | " +
+                    StringParser.colorVar("weapons", cfg.getBoolean(CFG.DAMAGE_WEAPONS)));
         }
 
         if (displayMode == null || "general".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "general"));
-            arena.msg(sender, StringParser.colorVar("classspawn",
-                    arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) + " | " +
-                    StringParser.colorVar("leavedeath",
-                            arena.getArenaConfig().getBoolean(CFG.GENERAL_LEAVEDEATH)) + " | " +
-                    StringParser.colorVar("quickspawn",
-                            arena.getArenaConfig().getBoolean(CFG.GENERAL_QUICKSPAWN)) + " | " +
-                    StringParser.colorVar("smartspawn",
-                            arena.getArenaConfig().getBoolean(CFG.GENERAL_SMARTSPAWN)));
+            arena.msg(sender,
+                    StringParser.colorVar("classspawn", cfg.getBoolean(CFG.GENERAL_CLASSSPAWN)) + " | " +
+                    StringParser.colorVar("leavedeath", cfg.getBoolean(CFG.GENERAL_LEAVEDEATH)) + " | " +
+                    StringParser.colorVar("quickspawn", cfg.getBoolean(CFG.GENERAL_QUICKSPAWN)) + " | " +
+                    StringParser.colorVar("smartspawn", cfg.getBoolean(CFG.GENERAL_SMARTSPAWN)));
 
             arena.msg(sender,
-                    "gameMode: " + arena.getArenaConfig().getGameMode(CFG.GENERAL_GAMEMODE) + " | " +
-                            "time end: " + arena.getArenaConfig().getInt(CFG.GENERAL_TIMER) + " | " +
-                            "time end winner: " + arena.getArenaConfig().getString(CFG.GENERAL_TIMER_WINNER) + " | " +
-                            "wand: " + arena.getArenaConfig().getString(CFG.GENERAL_WAND));
+                    "gameMode: " + cfg.getGameMode(CFG.GENERAL_GAMEMODE) + " | " +
+                            "time end: " + cfg.getInt(CFG.GENERAL_TIMER) + " | " +
+                            "time end winner: " + cfg.getString(CFG.GENERAL_TIMER_WINNER));
 
         }
 
         if (displayMode == null || "command".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "goal"));
-            arena.msg(sender, StringParser.colorVar("addLivesPerPlayer",
-                    arena.getArenaConfig().getBoolean(CFG.GENERAL_ADDLIVESPERPLAYER)));
+            arena.msg(sender, StringParser.colorVar("addLivesPerPlayer", cfg.getBoolean(CFG.GENERAL_ADDLIVESPERPLAYER)));
         }
 
         if (displayMode == null || "item".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "item"));
-            arena.msg(sender, "minplayers: " +
-                    arena.getArenaConfig().getInt(CFG.ITEMS_MINPLAYERS) + " | " +
-                    "rewards: " +
-                    StringParser.getItems(arena.getArenaConfig().getItems(CFG.ITEMS_REWARDS)) + " | " +
-                    StringParser.colorVar("random",
-                            arena.getArenaConfig().getBoolean(CFG.ITEMS_RANDOM)));
+            arena.msg(sender, "minplayers: " + cfg.getInt(CFG.ITEMS_MINPLAYERS) + " | " +
+                    "rewards: " + StringParser.getItems(cfg.getItems(CFG.ITEMS_REWARDS)) + " | " +
+                    StringParser.colorVar("random", cfg.getBoolean(CFG.ITEMS_RANDOM)));
 
         }
 
         if (displayMode == null || "join".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "join"));
-            arena.msg(sender, "range: " +
-                    arena.getArenaConfig().getInt(CFG.JOIN_RANGE) + " | " +
-                    StringParser.colorVar("forceregionjoin",
-                            arena.getArenaConfig().getBoolean(CFG.JOIN_FORCE)));
+            arena.msg(sender, "range: " + cfg.getInt(CFG.JOIN_RANGE) + " | " +
+                    StringParser.colorVar("forceregionjoin", cfg.getBoolean(CFG.JOIN_FORCE)));
 
         }
 
         if (displayMode == null || "perms".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "perms"));
-            arena.msg(sender, StringParser.colorVar("explicitarena",
-                    arena.getArenaConfig().getBoolean(CFG.PERMS_EXPLICITARENA)) + " | " +
-                    StringParser.colorVar("explicitclass",
-                            arena.getArenaConfig().getBoolean(CFG.PERMS_EXPLICITCLASS)) + " | " +
-                    StringParser.colorVar("joininbattle",
-                            arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE)) + " | " +
-                    StringParser.colorVar("teamkill",
-                            arena.getArenaConfig().getBoolean(CFG.PERMS_TEAMKILL)));
+            arena.msg(sender,
+                    StringParser.colorVar("explicitarena", cfg.getBoolean(CFG.PERMS_EXPLICITARENA)) + " | " +
+                    StringParser.colorVar("explicitclass", cfg.getBoolean(CFG.PERMS_EXPLICITCLASS)) + " | " +
+                    StringParser.colorVar("joininbattle", cfg.getBoolean(CFG.PERMS_JOININBATTLE)) + " | " +
+                    StringParser.colorVar("teamkill", cfg.getBoolean(CFG.PERMS_TEAMKILL)));
 
         }
 
         if (displayMode == null || "player".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "player"));
-            arena.msg(sender, StringParser.colorVar("autoIgniteTNT",
-                    arena.getArenaConfig().getBoolean(CFG.PLAYER_AUTOIGNITE)) + " | " +
-                    StringParser.colorVar("dropsInventory",
-                            arena.getArenaConfig().getBoolean(CFG.PLAYER_DROPSINVENTORY)) + " | " +
-                    StringParser.colorVar("preventDeath",
-                            arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) + " | " +
-                    StringParser.colorVar("refillInventory",
-                            arena.getArenaConfig().getBoolean(CFG.PLAYER_REFILLINVENTORY)));
+            arena.msg(sender,
+                    StringParser.colorVar("autoIgniteTNT", cfg.getBoolean(CFG.PLAYER_AUTOIGNITE)) + " | " +
+                    StringParser.colorVar("dropsInventory", cfg.getBoolean(CFG.PLAYER_DROPSINVENTORY)) + " | " +
+                    StringParser.colorVar("preventDeath", cfg.getBoolean(CFG.PLAYER_PREVENTDEATH)) + " | " +
+                    StringParser.colorVar("refillInventory", cfg.getBoolean(CFG.PLAYER_REFILLINVENTORY)));
 
-            String healthDisplay = String.valueOf(arena.getArenaConfig().getInt(CFG.PLAYER_HEALTH) < 1 ? "FULL" : arena.getArenaConfig().getInt(CFG.PLAYER_HEALTH));
-            healthDisplay += "/" + (arena.getArenaConfig().getInt(CFG.PLAYER_MAXHEALTH) < 1 ? "DEFAULT" : arena.getArenaConfig().getInt(CFG.PLAYER_MAXHEALTH));
+            String healthDisplay = String.valueOf(cfg.getInt(CFG.PLAYER_HEALTH) < 1 ? "FULL" : cfg.getInt(CFG.PLAYER_HEALTH));
+            healthDisplay += "/" + (cfg.getInt(CFG.PLAYER_MAXHEALTH) < 1 ? "DEFAULT" : cfg.getInt(CFG.PLAYER_MAXHEALTH));
 
             arena.msg(sender,
-                    "exhaustion: " + arena.getArenaConfig().getDouble(CFG.PLAYER_EXHAUSTION) + " | " +
-                            "foodLevel: " + arena.getArenaConfig().getInt(CFG.PLAYER_FOODLEVEL) + " | " +
+                    "exhaustion: " + cfg.getDouble(CFG.PLAYER_EXHAUSTION) + " | " +
+                            "foodLevel: " + cfg.getInt(CFG.PLAYER_FOODLEVEL) + " | " +
                             "health: " + healthDisplay + " | " +
-                            "saturation: " + arena.getArenaConfig().getInt(CFG.PLAYER_SATURATION) + " | " +
-                            "time: " + arena.getArenaConfig().getInt(CFG.PLAYER_TIME)
+                            "saturation: " + cfg.getInt(CFG.PLAYER_SATURATION) + " | " +
+                            "time: " + cfg.getInt(CFG.PLAYER_TIME)
             );
         }
 
         if (displayMode == null || "protect".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "protect"));
-            arena.msg(sender, StringParser.colorVar("enabled",
-                    arena.getArenaConfig().getBoolean(CFG.PROTECT_ENABLED)) + " | " +
-                    StringParser.colorVar("punish",
-                            arena.getArenaConfig().getBoolean(CFG.PROTECT_PUNISH)) + " | " +
-                    "spawn: " + arena.getArenaConfig().getInt(CFG.PROTECT_SPAWN));
+            arena.msg(sender, StringParser.colorVar("enabled", cfg.getBoolean(CFG.PROTECT_ENABLED)) + " | " +
+                    StringParser.colorVar("punish", cfg.getBoolean(CFG.PROTECT_PUNISH)) + " | " +
+                    "spawn: " + cfg.getInt(CFG.PROTECT_SPAWN));
 
         }
 
         if (displayMode == null || "ready".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "ready"));
-            arena.msg(sender, StringParser.colorVar("checkEachPlayer",
-                    arena.getArenaConfig().getBoolean(CFG.READY_CHECKEACHPLAYER)) + " | " +
-                    StringParser.colorVar("checkEachTeam",
-                            arena.getArenaConfig().getBoolean(CFG.READY_CHECKEACHTEAM)) + " | " +
-                    "autoClass: " + arena.getArenaConfig().getString(CFG.READY_AUTOCLASS));
+            arena.msg(sender,
+                    StringParser.colorVar("checkEachPlayer", cfg.getBoolean(CFG.READY_CHECKEACHPLAYER)) + " | " +
+                    StringParser.colorVar("checkEachTeam", cfg.getBoolean(CFG.READY_CHECKEACHTEAM)) + " | " +
+                    "autoClass: " + cfg.getString(CFG.READY_AUTOCLASS));
 
 
             arena.msg(sender,
                     "block: " + arena.getReadyBlock() + " | " +
-                            "minPlayers: " + arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) + " | " +
-                            "maxPlayers: " + arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS) + " | " +
-                            "maxTeam: " + arena.getArenaConfig().getInt(CFG.READY_MAXTEAMPLAYERS) + " | " +
-                            "neededRatio: " + arena.getArenaConfig().getDouble(CFG.READY_NEEDEDRATIO));
+                            "minPlayers: " + cfg.getInt(CFG.READY_MINPLAYERS) + " | " +
+                            "maxPlayers: " + cfg.getInt(CFG.READY_MAXPLAYERS) + " | " +
+                            "maxTeam: " + cfg.getInt(CFG.READY_MAXTEAMPLAYERS) + " | " +
+                            "neededRatio: " + cfg.getDouble(CFG.READY_NEEDEDRATIO));
         }
 
         if (displayMode == null || "time".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "time"));
             arena.msg(sender,
-                    "endCountDown: " + arena.getArenaConfig().getInt(CFG.TIME_ENDCOUNTDOWN) + " | " +
-                            "startCountDown: " + arena.getArenaConfig().getInt(CFG.TIME_STARTCOUNTDOWN) + " | " +
-                            "regionTimer: " + arena.getArenaConfig().getInt(CFG.TIME_REGIONTIMER));
+                    "endCountDown: " + cfg.getInt(CFG.TIME_ENDCOUNTDOWN) + " | " +
+                            "startCountDown: " + cfg.getInt(CFG.TIME_STARTCOUNTDOWN) + " | " +
+                            "regionTimer: " + cfg.getInt(CFG.TIME_REGIONTIMER));
             arena.msg(sender,
-                    "teleportProtect: " + arena.getArenaConfig().getInt(CFG.TIME_TELEPORTPROTECT) + " | " +
-                            "warmupCountDown: " + arena.getArenaConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN) + " | " +
-                            "pvp: " + arena.getArenaConfig().getInt(CFG.TIME_PVP));
+                    "teleportProtect: " + cfg.getInt(CFG.TIME_TELEPORTPROTECT) + " | " +
+                            "warmupCountDown: " + cfg.getInt(CFG.TIME_WARMUPCOUNTDOWN) + " | " +
+                            "pvp: " + cfg.getInt(CFG.TIME_PVP));
 
         }
 
         if (displayMode == null || "tp".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "tp"));
             arena.msg(sender,
-                    "death: " + arena.getArenaConfig().getString(CFG.TP_DEATH) + " | " +
-                            "exit: " + arena.getArenaConfig().getString(CFG.TP_EXIT) + " | " +
-                            "lose: " + arena.getArenaConfig().getString(CFG.TP_LOSE) + " | " +
-                            "win: " + arena.getArenaConfig().getString(CFG.TP_WIN));
+                    "death: " + cfg.getString(CFG.TP_DEATH) + " | " +
+                            "exit: " + cfg.getString(CFG.TP_EXIT) + " | " +
+                            "lose: " + cfg.getString(CFG.TP_LOSE) + " | " +
+                            "win: " + cfg.getString(CFG.TP_WIN));
 
         }
 
-        if (displayMode == null || displayMode.isEmpty()) {
-            if (displayMode == null || "chat".equals(displayMode)) {
-                arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "chat"));
-                arena.msg(sender, StringParser.colorVar("classSignsDisplay",
-                        arena.getArenaConfig().getBoolean(CFG.USES_CLASSSIGNSDISPLAY)) + " | " +
-                        StringParser.colorVar("deathMessages",
-                                arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) + " | " +
-                        StringParser.colorVar("evenTeams",
-                                arena.getArenaConfig().getBoolean(CFG.USES_EVENTEAMS)));
+        if (displayMode == null || displayMode.isEmpty() || "chat".equals(displayMode)) {
+            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "chat"));
+            arena.msg(sender,
+                    StringParser.colorVar("classSignsDisplay", cfg.getBoolean(CFG.USES_CLASSSIGNSDISPLAY)) + " | " +
+                    StringParser.colorVar("deathMessages", cfg.getBoolean(CFG.USES_DEATHMESSAGES)) + " | " +
+                    StringParser.colorVar("evenTeams", cfg.getBoolean(CFG.USES_EVENTEAMS)));
 
-                arena.msg(sender, StringParser.colorVar("ingameClassSwitch",
-                        arena.getArenaConfig().getBoolean(CFG.USES_INGAMECLASSSWITCH)) + " | " +
-                        StringParser.colorVar("overlapCheck",
-                                arena.getArenaConfig().getBoolean(CFG.USES_OVERLAPCHECK)) + " | " +
-                        StringParser.colorVar("woolHead",
-                                arena.getArenaConfig().getBoolean(CFG.USES_WOOLHEAD)));
-            }
+            arena.msg(sender,
+                    StringParser.colorVar("ingameClassSwitch", cfg.getBoolean(CFG.USES_INGAMECLASSSWITCH)) + " | " +
+                    StringParser.colorVar("overlapCheck", cfg.getBoolean(CFG.USES_OVERLAPCHECK)) + " | " +
+                    StringParser.colorVar("woolHead", cfg.getBoolean(CFG.USES_WOOLHEAD)));
         }
 
         if (displayMode == null || "region".equalsIgnoreCase(displayMode)) {

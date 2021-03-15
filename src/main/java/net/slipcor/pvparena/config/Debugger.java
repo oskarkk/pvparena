@@ -136,7 +136,7 @@ public class Debugger {
         boolean isDebugEnabled = config.getBoolean("debug.enable", false);
         try {
             outputMode = DebugOutputMode.valueOf(config.getString("debug.output", BOTH.name()));
-            level = parse(config.getString("debug.output", FINE.getName()));
+            level = parse(config.getString("debug.level", FINE.getName()));
         } catch (IllegalArgumentException e) {
             instance.getLogger().severe("Invalid debug configuration found! Resetting your debug config");
             outputMode = BOTH;

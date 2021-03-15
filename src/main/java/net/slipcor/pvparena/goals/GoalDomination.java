@@ -512,8 +512,7 @@ public class GoalDomination extends ArenaGoal {
 
         if (PVPArena.hasAdminPerms(player)
                 || PVPArena.hasCreatePerms(player, this.arena)
-                && player.getInventory().getItemInMainHand().getType().toString().equals(this.arena
-                .getArenaConfig().getString(CFG.GENERAL_WAND))) {
+                && player.getInventory().getItemInMainHand().getType().equals(PVPArena.getInstance().getWandItem())) {
 
             final Set<PABlockLocation> flags = SpawnManager.getBlocksStartingWith(this.arena, "flag");
 

@@ -112,9 +112,8 @@ public class ArenaRegion {
         if (arena != null
                 && (PVPArena.hasAdminPerms(player) || PVPArena.hasCreatePerms(
                 player, arena))
-                && player.getEquipment().getItemInMainHand() != null
-                && player.getEquipment().getItemInMainHand().getType().toString().equals(arena
-                .getArenaConfig().getString(CFG.GENERAL_WAND))) {
+                && player.getEquipment() != null
+                && player.getEquipment().getItemInMainHand().getType().equals(PVPArena.getInstance().getWandItem())) {
             // - modify mode is active
             // - player has admin perms
             // - player has wand in hand

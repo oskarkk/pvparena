@@ -79,7 +79,6 @@ public class Config {
         GENERAL_TIMER_WINNER("general.timer.winner", "none", null),
         GENERAL_TYPE("general.type", "none", null),
         GENERAL_GOAL("general.goal", "none", null),
-        GENERAL_WAND("general.wand", Material.STICK, null),
         GENERAL_ADDLIVESPERPLAYER("general.addLivesPerPlayer", false, null),
 
         ITEMS_EXCLUDEFROMDROPS("items.excludeFromDrops", new ItemStack[0], null),

@@ -6,9 +6,11 @@ stats: true
 language: en
 onlyPVPinArena: false
 safeadmin: true
-x-offset: 0.5
-y-offset: 0.5
-z-offset: 0.5
+spawnOffset:
+  x: 0.5
+  y: 0.5
+  z: 0.5
+wandItem: STICK
 whitelist:
 - ungod
 whitelist_wildcard: false
@@ -20,7 +22,4 @@ consoleoffduty: false
 update:
   plugin: announce
   modules: announce
-materialprefixes:
-- minecraft
-- bukkit
 globalPrefix: 'PVP Arena'

@@ -356,9 +356,6 @@ nulang:
   log:
     plugindisabled: disabled (version %1%)
     pluginenabled: enabled (version %1%)
-    trickerdisabled: Plugin tracking disabled. See you soon?
-    trackingenabled: 'Plugin tracking enabled. Set tracker: false inside the main
-      config to disable.'
     updatedisabled: Updates deactivated. Please check dev.bukkit for updates.
     updateenabled: Checking for updates...
     warning: '%1%'
