@@ -3,7 +3,7 @@ package net.slipcor.pvparena.modules;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
@@ -64,7 +64,7 @@ public class StandardSpectate extends ArenaModule {
         aPlayer.setLocation(new PALocation(player.getLocation()));
 
         aPlayer.setArena(this.arena);
-        aPlayer.setStatus(Status.WATCH);
+        aPlayer.setStatus(PlayerStatus.WATCH);
 
         this.arena.tpPlayerToCoordNameForJoin(aPlayer, "spectator", true);
         this.arena.msg(player, Language.parse(this.arena, MSG.NOTICE_WELCOME_SPECTATOR));

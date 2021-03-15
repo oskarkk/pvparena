@@ -2,7 +2,7 @@ package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
@@ -59,7 +59,7 @@ public class PAI_Ready extends AbstractArenaCommand {
 
         if (args.length < 1) {
 
-            if (aPlayer.getStatus() != Status.LOUNGE) {
+            if (aPlayer.getStatus() != PlayerStatus.LOUNGE) {
                 return;
             }
 
@@ -68,12 +68,12 @@ public class PAI_Ready extends AbstractArenaCommand {
                 return;
             }
 
-            if (aPlayer.getStatus() != Status.READY) {
+            if (aPlayer.getStatus() != PlayerStatus.READY) {
                 arena.msg(sender, Language.parse(arena, MSG.READY_DONE));
                 arena.broadcast(Language.parse(arena, MSG.PLAYER_READY, aPlayer.getArenaTeam().colorizePlayer(aPlayer.getPlayer())));
             }
 
-            aPlayer.setStatus(Status.READY);
+            aPlayer.setStatus(PlayerStatus.READY);
             if (aPlayer.getArenaTeam().isEveryoneReady()) {
                 arena.broadcast(Language.parse(arena, MSG.TEAM_READY, aPlayer.getArenaTeam().getColoredName()));
             }
@@ -106,9 +106,9 @@ public class PAI_Ready extends AbstractArenaCommand {
         final Set<String> names = new HashSet<>();
 
         for (final ArenaPlayer player : arena.getEveryone()) {
-            if (player.getStatus() == Status.LOUNGE) {
+            if (player.getStatus() == PlayerStatus.LOUNGE) {
                 names.add("&7" + player.getName() + "&r");
-            } else if (player.getStatus() == Status.READY) {
+            } else if (player.getStatus() == PlayerStatus.READY) {
                 names.add("&a" + player.getName() + "&r");
             }
         }

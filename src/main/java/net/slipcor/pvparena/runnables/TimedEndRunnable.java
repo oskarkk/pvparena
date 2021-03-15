@@ -4,6 +4,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -207,11 +208,11 @@ public class TimedEndRunnable extends ArenaRunnable {
                             this.arena.broadcast(Language.parse(this.arena, MSG.PLAYER_HAS_WON,
                                     arenaPlayer.getName()));
                         } else {
-                            if (arenaPlayer.getStatus() != ArenaPlayer.Status.FIGHT) {
+                            if (arenaPlayer.getStatus() != PlayerStatus.FIGHT) {
                                 continue;
                             }
                             arenaPlayer.addLosses();
-                            arenaPlayer.setStatus(ArenaPlayer.Status.LOST);
+                            arenaPlayer.setStatus(PlayerStatus.LOST);
                         }
                     }
                 }
@@ -238,7 +239,7 @@ public class TimedEndRunnable extends ArenaRunnable {
 
                     final Set<ArenaPlayer> apSet = new HashSet<>(team.getTeamMembers());
                     for (final ArenaPlayer p : apSet) {
-                        if (p.getStatus() != ArenaPlayer.Status.FIGHT) {
+                        if (p.getStatus() != PlayerStatus.FIGHT) {
                             continue;
                         }
                         p.addLosses();
@@ -259,7 +260,7 @@ public class TimedEndRunnable extends ArenaRunnable {
                             hasBroadcasted = true;
                         }
 
-                        p.setStatus(ArenaPlayer.Status.LOST);
+                        p.setStatus(PlayerStatus.LOST);
                     }
                 }
             }

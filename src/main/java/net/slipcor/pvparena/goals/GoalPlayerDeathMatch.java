@@ -3,7 +3,7 @@ package net.slipcor.pvparena.goals;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
@@ -89,7 +89,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
         Bukkit.getPluginManager().callEvent(gEvent);
         for (final ArenaTeam team : this.arena.getTeams()) {
             for (final ArenaPlayer ap : team.getTeamMembers()) {
-                if (ap.getStatus() != Status.FIGHT) {
+                if (ap.getStatus() != PlayerStatus.FIGHT) {
                     continue;
                 }
                 ArenaModuleManager.announce(this.arena,
@@ -193,7 +193,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
             for (final ArenaPlayer arenaPlayer : arenaPlayers) {
                 this.getPlayerLifeMap().remove(arenaPlayer.getPlayer());
 
-                arenaPlayer.setStatus(Status.LOST);
+                arenaPlayer.setStatus(PlayerStatus.LOST);
                 arenaPlayer.addLosses();
 
                 if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {

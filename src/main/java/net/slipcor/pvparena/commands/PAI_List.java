@@ -3,6 +3,7 @@ package net.slipcor.pvparena.commands;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
@@ -27,18 +28,18 @@ public class PAI_List extends AbstractArenaCommand {
         super(new String[]{"pvparena.user", "pvparena.cmds.list"});
     }
 
-    private static final Map<ArenaPlayer.Status, Character> colorMap = new HashMap<>();
+    private static final Map<PlayerStatus, Character> colorMap = new HashMap<>();
 
     static {
 
-        colorMap.put(ArenaPlayer.Status.NULL, 'm'); // error? strike through
-        colorMap.put(ArenaPlayer.Status.WARM, '6'); // warm = gold
-        colorMap.put(ArenaPlayer.Status.LOUNGE, 'b'); // readying up = aqua
-        colorMap.put(ArenaPlayer.Status.READY, 'a'); // ready = green
-        colorMap.put(ArenaPlayer.Status.FIGHT, 'f'); // fighting = white
-        colorMap.put(ArenaPlayer.Status.WATCH, 'e'); // watching = yellow
-        colorMap.put(ArenaPlayer.Status.DEAD, '7'); // dead = silver
-        colorMap.put(ArenaPlayer.Status.LOST, 'c'); // lost = red
+        colorMap.put(PlayerStatus.NULL, 'm'); // error? strike through
+        colorMap.put(PlayerStatus.WARM, '6'); // warm = gold
+        colorMap.put(PlayerStatus.LOUNGE, 'b'); // readying up = aqua
+        colorMap.put(PlayerStatus.READY, 'a'); // ready = green
+        colorMap.put(PlayerStatus.FIGHT, 'f'); // fighting = white
+        colorMap.put(PlayerStatus.WATCH, 'e'); // watching = yellow
+        colorMap.put(PlayerStatus.DEAD, '7'); // dead = silver
+        colorMap.put(PlayerStatus.LOST, 'c'); // lost = red
     }
 
     @Override
@@ -72,7 +73,7 @@ public class PAI_List extends AbstractArenaCommand {
             return;
         }
 
-        final Map<ArenaPlayer.Status, Set<String>> stats = new HashMap<>();
+        final Map<PlayerStatus, Set<String>> stats = new HashMap<>();
 
         for (final ArenaPlayer player : arena.getEveryone()) {
             final Set<String> players = stats.containsKey(player.getStatus()) ? stats.get(player.getStatus()) : new HashSet<String>();
@@ -81,7 +82,7 @@ public class PAI_List extends AbstractArenaCommand {
             stats.put(player.getStatus(), players);
         }
 
-        for (final Map.Entry<ArenaPlayer.Status, Set<String>> statusSetEntry : stats.entrySet()) {
+        for (final Map.Entry<PlayerStatus, Set<String>> statusSetEntry : stats.entrySet()) {
             arena.msg(sender, Language.parse(arena, MSG.getByNode("LIST_" + statusSetEntry.getKey().name()), "&" + colorMap.get(statusSetEntry.getKey()) + StringParser.joinSet(statusSetEntry.getValue(), ", ")));
         }
 

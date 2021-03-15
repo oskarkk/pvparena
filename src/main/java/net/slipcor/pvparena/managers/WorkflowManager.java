@@ -3,7 +3,7 @@ package net.slipcor.pvparena.managers;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.arena.PlayerState;
 import net.slipcor.pvparena.commands.PAA_Region;
@@ -76,7 +76,7 @@ public class WorkflowManager {
 
     public static int handleGetLives(final Arena arena, final ArenaPlayer aPlayer) {
 
-        if (aPlayer.getStatus() == Status.LOUNGE || aPlayer.getStatus() == Status.WATCH) {
+        if (aPlayer.getStatus() == PlayerStatus.LOUNGE || aPlayer.getStatus() == PlayerStatus.WATCH) {
             return 0;
         }
 
@@ -190,7 +190,7 @@ public class WorkflowManager {
             }
 
             if (aPlayer.getArenaClass() != null && arena.startRunner != null) {
-                aPlayer.setStatus(Status.READY);
+                aPlayer.setStatus(PlayerStatus.READY);
             }
 
             return true;
@@ -201,7 +201,7 @@ public class WorkflowManager {
         ArenaModuleManager.parseJoin(arena, player, team);
 
         if (aPlayer.getArenaClass() != null && arena.startRunner != null) {
-            aPlayer.setStatus(Status.READY);
+            aPlayer.setStatus(PlayerStatus.READY);
         }
 
         return true;

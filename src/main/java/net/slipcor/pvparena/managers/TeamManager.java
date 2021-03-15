@@ -2,7 +2,7 @@ package net.slipcor.pvparena.managers;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Config.CFG;
 
@@ -157,7 +157,7 @@ public final class TeamManager {
         final Set<String> activeteams = new HashSet<>();
         for (final ArenaTeam team : arena.getTeams()) {
             for (final ArenaPlayer ap : team.getTeamMembers()) {
-                if (ap.getStatus() == Status.FIGHT) {
+                if (ap.getStatus() == PlayerStatus.FIGHT) {
                     activeteams.add(team.getName());
                     break;
                 }

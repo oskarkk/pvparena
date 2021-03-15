@@ -1,10 +1,7 @@
 package net.slipcor.pvparena.goals;
 
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.arena.ArenaClass;
-import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
-import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.arena.*;
 import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
@@ -81,7 +78,7 @@ public class GoalInfect extends ArenaGoal {
         for (final ArenaTeam team : this.arena.getTeams()) {
             boolean bbreak = false;
             for (final ArenaPlayer player : team.getTeamMembers()) {
-                if (player.getStatus() == Status.FIGHT) {
+                if (player.getStatus() == PlayerStatus.FIGHT) {
                     bbreak = true;
                     break;
                 }
@@ -126,17 +123,17 @@ public class GoalInfect extends ArenaGoal {
     @Override
     public void checkBreak(BlockBreakEvent event) throws GameplayException {
         ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(event.getPlayer());
-        if (this.arena.equals(arenaPlayer.getArena()) && arenaPlayer.getStatus() == Status.FIGHT
+        if (this.arena.equals(arenaPlayer.getArena()) && arenaPlayer.getStatus() == PlayerStatus.FIGHT
                 && this.infectedTeam.equals(arenaPlayer.getArenaTeam())) {
-            if (ArenaPlayer.PlayerPrevention.has(
-                    this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), ArenaPlayer.PlayerPrevention.BREAK
+            if (PlayerPrevention.has(
+                    this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.BREAK
             )) {
                 event.setCancelled(true);
                 this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_BREAK));
                 throw new GameplayException("BREAK not allowed");
             } else if (event.getBlock().getType() == Material.TNT &&
-                    ArenaPlayer.PlayerPrevention.has(
-                            this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), ArenaPlayer.PlayerPrevention.TNTBREAK
+                    PlayerPrevention.has(
+                            this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.TNTBREAK
                     )) {
                 event.setCancelled(true);
                 this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_TNTBREAK));
@@ -149,9 +146,9 @@ public class GoalInfect extends ArenaGoal {
     public void checkCraft(CraftItemEvent event) throws GameplayException {
         ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(((Player) event.getInventory().getHolder()).getName());
         if (this.arena.equals(arenaPlayer.getArena())
-                && arenaPlayer.getStatus() == Status.FIGHT
+                && arenaPlayer.getStatus() == PlayerStatus.FIGHT
                 && this.infectedTeam.equals(arenaPlayer.getArenaTeam())
-                && ArenaPlayer.PlayerPrevention.has(this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), ArenaPlayer.PlayerPrevention.CRAFT)
+                && PlayerPrevention.has(this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.CRAFT)
         ) {
             event.setCancelled(true);
             this.arena.msg(event.getWhoClicked(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_CRAFT));
@@ -163,9 +160,9 @@ public class GoalInfect extends ArenaGoal {
     public void checkDrop(PlayerDropItemEvent event) throws GameplayException {
         ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(event.getPlayer().getName());
         if (this.arena.equals(arenaPlayer.getArena())
-                && arenaPlayer.getStatus() == Status.FIGHT
+                && arenaPlayer.getStatus() == PlayerStatus.FIGHT
                 && this.infectedTeam.equals(arenaPlayer.getArenaTeam())
-                && ArenaPlayer.PlayerPrevention.has(this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), ArenaPlayer.PlayerPrevention.DROP)
+                && PlayerPrevention.has(this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.DROP)
         ) {
             event.setCancelled(true);
             this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_DROP));
@@ -177,9 +174,9 @@ public class GoalInfect extends ArenaGoal {
     public void checkInventory(InventoryClickEvent event) throws GameplayException {
         ArenaPlayer ap = ArenaPlayer.fromPlayer(event.getWhoClicked().getName());
         if (this.arena.equals(ap.getArena())
-                && ap.getStatus() == Status.FIGHT
+                && ap.getStatus() == PlayerStatus.FIGHT
                 && INFECTED.equals(ap.getArenaTeam().getName())
-                && ArenaPlayer.PlayerPrevention.has(this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), ArenaPlayer.PlayerPrevention.INVENTORY)
+                && PlayerPrevention.has(this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.INVENTORY)
         ) {
             event.setCancelled(true);
             event.getWhoClicked().closeInventory();
@@ -192,9 +189,9 @@ public class GoalInfect extends ArenaGoal {
     public void checkPickup(EntityPickupItemEvent event) throws GameplayException {
         ArenaPlayer ap = ArenaPlayer.fromPlayer(event.getEntity().getName());
         if (this.arena.equals(ap.getArena())
-                && ap.getStatus() == Status.FIGHT
+                && ap.getStatus() == PlayerStatus.FIGHT
                 && INFECTED.equals(ap.getArenaTeam().getName())
-                && ArenaPlayer.PlayerPrevention.has(this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), ArenaPlayer.PlayerPrevention.PICKUP)
+                && PlayerPrevention.has(this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.PICKUP)
         ) {
             event.setCancelled(true);
             throw new GameplayException("PICKUP not allowed");
@@ -205,17 +202,17 @@ public class GoalInfect extends ArenaGoal {
     public void checkPlace(BlockPlaceEvent event) throws GameplayException {
         ArenaPlayer ap = ArenaPlayer.fromPlayer(event.getPlayer().getName());
         if (this.arena.equals(ap.getArena())
-                && ap.getStatus() == Status.FIGHT
+                && ap.getStatus() == PlayerStatus.FIGHT
                 && INFECTED.equals(ap.getArenaTeam().getName())) {
-            if (ArenaPlayer.PlayerPrevention.has(
-                    this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), ArenaPlayer.PlayerPrevention.PLACE
+            if (PlayerPrevention.has(
+                    this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.PLACE
             )) {
                 event.setCancelled(true);
                 this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_PLACE));
                 throw new GameplayException("PLACE not allowed");
             } else if (event.getBlock().getType() == Material.TNT &&
-                    ArenaPlayer.PlayerPrevention.has(
-                            this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), ArenaPlayer.PlayerPrevention.TNT
+                    PlayerPrevention.has(
+                            this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.TNT
                     )) {
                 event.setCancelled(true);
                 this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_TNT));
@@ -248,11 +245,11 @@ public class GoalInfect extends ArenaGoal {
             List<String> values = new ArrayList<>();
 
 
-            for (ArenaPlayer.PlayerPrevention pp : ArenaPlayer.PlayerPrevention.values()) {
+            for (PlayerPrevention pp : PlayerPrevention.values()) {
                 if (pp == null) {
                     continue;
                 }
-                values.add((ArenaPlayer.PlayerPrevention.has(value, pp) ?
+                values.add((PlayerPrevention.has(value, pp) ?
                         ChatColor.GREEN.toString() : ChatColor.RED.toString()) + pp.name());
             }
             this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_INFECTED_IPROTECT, StringParser.joinList(values, (ChatColor.WHITE + ", "))));
@@ -268,8 +265,8 @@ public class GoalInfect extends ArenaGoal {
             }
 
             try {
-                final ArenaPlayer.PlayerPrevention pp = ArenaPlayer.PlayerPrevention.valueOf(args[1].toUpperCase());
-                final boolean has = ArenaPlayer.PlayerPrevention.has(value, pp);
+                final PlayerPrevention pp = PlayerPrevention.valueOf(args[1].toUpperCase());
+                final boolean has = PlayerPrevention.has(value, pp);
 
                 debug(this.arena, "plain value: " + value);
                 debug(this.arena, "checked: " + pp.name());
@@ -303,7 +300,7 @@ public class GoalInfect extends ArenaGoal {
                 List<String> values = new ArrayList<>();
 
 
-                for (ArenaPlayer.PlayerPrevention pp : ArenaPlayer.PlayerPrevention.values()) {
+                for (PlayerPrevention pp : PlayerPrevention.values()) {
                     values.add(pp.name());
                 }
                 this.arena.msg(sender,
@@ -329,7 +326,7 @@ public class GoalInfect extends ArenaGoal {
 
         for (final ArenaTeam team : this.arena.getTeams()) {
             for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
-                if (arenaPlayer.getStatus() != Status.FIGHT) {
+                if (arenaPlayer.getStatus() != PlayerStatus.FIGHT) {
                     continue;
                 }
                 if (INFECTED.equals(arenaPlayer.getArenaTeam().getName())) {
@@ -376,7 +373,7 @@ public class GoalInfect extends ArenaGoal {
 
                 final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, INFECTED, "playerDeath:" + player.getName());
                 Bukkit.getPluginManager().callEvent(gEvent);
-                aPlayer.setStatus(Status.LOST);
+                aPlayer.setStatus(PlayerStatus.LOST);
                 // kill, remove!
                 this.getPlayerLifeMap().remove(player);
                 if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {

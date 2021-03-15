@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static net.slipcor.pvparena.arena.ArenaPlayer.Status.LOUNGE;
+import static net.slipcor.pvparena.arena.PlayerStatus.LOUNGE;
 
 /**
  * <pre>PVP Arena JOIN Command class</pre>

@@ -3,7 +3,7 @@ package net.slipcor.pvparena.regions;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.PAA_Region;
@@ -480,7 +480,7 @@ public class ArenaRegion {
     }
 
     private void killPlayerIfFighting(ArenaPlayer aPlayer) {
-        if (aPlayer.getStatus() == Status.FIGHT) {
+        if (aPlayer.getStatus() == PlayerStatus.FIGHT) {
             Bukkit.getWorld(this.world).strikeLightningEffect(aPlayer.getPlayer().getLocation());
             final EntityDamageEvent event = new EntityDamageEvent(aPlayer.getPlayer(), DamageCause.LIGHTNING, 10.0);
             PlayerListener.finallyKillPlayer(this.arena, aPlayer.getPlayer(), event);

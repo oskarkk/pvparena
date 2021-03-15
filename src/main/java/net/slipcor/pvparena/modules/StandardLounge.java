@@ -3,7 +3,7 @@ package net.slipcor.pvparena.modules;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -141,7 +141,7 @@ public class StandardLounge extends ArenaModule {
             this.arena.tpPlayerToCoordNameForJoin(aPlayer, team.getName() + "lounge", true);
         }
 
-        aPlayer.setStatus(Status.LOUNGE);
+        aPlayer.setStatus(PlayerStatus.LOUNGE);
         this.arena.msg(player, Language.parse(this.arena, CFG.MSG_LOUNGE));
         if (this.arena.isFreeForAll()) {
             this.arena.msg(player,

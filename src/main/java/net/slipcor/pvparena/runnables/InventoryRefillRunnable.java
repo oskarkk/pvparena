@@ -4,7 +4,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.ColorUtils;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -79,7 +79,7 @@ public class InventoryRefillRunnable implements Runnable {
     public void run() {
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(this.player.getName());
         debug(this.arena, "refilling " + this.player.getName());
-        if (aPlayer.getStatus() == Status.FIGHT) {
+        if (aPlayer.getStatus() == PlayerStatus.FIGHT) {
             if (aPlayer.hasCustomClass() && !this.arena.getArenaConfig().getBoolean(CFG.PLAYER_REFILLCUSTOMINVENTORY) || !this.arena.getArenaConfig().getBoolean(CFG.PLAYER_REFILLINVENTORY)) {
                 if (this.refill) {
                     final ItemStack[] items = new ItemStack[this.additions.size()];

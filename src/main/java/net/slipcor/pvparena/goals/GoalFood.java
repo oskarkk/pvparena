@@ -4,7 +4,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.classes.PABlockLocation;
@@ -190,7 +190,7 @@ public class GoalFood extends ArenaGoal {
 
         for (final ArenaTeam team : this.arena.getTeams()) {
             for (final ArenaPlayer ap : team.getTeamMembers()) {
-                if (ap.getStatus() == Status.FIGHT) {
+                if (ap.getStatus() == PlayerStatus.FIGHT) {
                     aTeam = team;
                     break;
                 }
@@ -475,8 +475,8 @@ public class GoalFood extends ArenaGoal {
                 }
                 this.getTeamLifeMap().remove(otherTeam);
                 for (final ArenaPlayer ap : otherTeam.getTeamMembers()) {
-                    if (ap.getStatus() == Status.FIGHT) {
-                        ap.setStatus(Status.LOST);
+                    if (ap.getStatus() == PlayerStatus.FIGHT) {
+                        ap.setStatus(PlayerStatus.LOST);
                     }
                 }
             }

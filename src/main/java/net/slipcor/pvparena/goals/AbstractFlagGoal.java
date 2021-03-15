@@ -4,7 +4,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.CommandTree;
@@ -294,7 +294,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
 
         for (final ArenaTeam team : this.arena.getTeams()) {
             for (final ArenaPlayer ap : team.getTeamMembers()) {
-                if (ap.getStatus() == Status.FIGHT) {
+                if (ap.getStatus() == PlayerStatus.FIGHT) {
                     aTeam = team;
                     break;
                 }
@@ -476,12 +476,12 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
                 }
                 for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
                     arenaPlayer.addLosses();
-                    arenaPlayer.setStatus(Status.LOST);
+                    arenaPlayer.setStatus(PlayerStatus.LOST);
                 }
             }
             for (final ArenaTeam team : arena.getTeams()) {
                 for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
-                    if (arenaPlayer.getStatus() != Status.FIGHT) {
+                    if (arenaPlayer.getStatus() != PlayerStatus.FIGHT) {
                         continue;
                     }
                     winTeam = team;

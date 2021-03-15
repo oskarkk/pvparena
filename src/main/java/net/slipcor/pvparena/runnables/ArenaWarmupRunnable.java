@@ -3,7 +3,7 @@ package net.slipcor.pvparena.runnables;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.commands.PAG_Spectate;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -44,7 +44,7 @@ public class ArenaWarmupRunnable extends ArenaRunnable {
     @Override
     protected void commit() {
         debug(this.wArena, this.player.getPlayer(), "ArenaWarmupRunnable commiting");
-        this.player.setStatus(Status.WARM);
+        this.player.setStatus(PlayerStatus.WARM);
         if (this.spectator) {
             this.wArena.hasNotPlayed(this.player);
             (new PAG_Spectate()).commit(this.wArena, this.player.getPlayer(), null);

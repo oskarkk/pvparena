@@ -3,7 +3,7 @@ package net.slipcor.pvparena.listeners;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -188,7 +188,7 @@ public class EntityListener implements Listener {
             debug("=> {}", eDamager);
         }
 
-        if (eDamager instanceof Player && ArenaPlayer.fromPlayer(eDamager.getName()).getStatus() == Status.LOST) {
+        if (eDamager instanceof Player && ArenaPlayer.fromPlayer(eDamager.getName()).getStatus() == PlayerStatus.LOST) {
             event.setCancelled(true);
             return;
         }
@@ -286,7 +286,7 @@ public class EntityListener implements Listener {
         }
 
         // cancel if defender or attacker are not fighting
-        if (apAttacker.getStatus() != Status.FIGHT || apDefender.getStatus() != Status.FIGHT ) {
+        if (apAttacker.getStatus() != PlayerStatus.FIGHT || apDefender.getStatus() != PlayerStatus.FIGHT ) {
             debug(arena, attacker, "player or target is not fighting, cancel!");
             debug(arena, defender, "player or target is not fighting, cancel!");
             event.setCancelled(true);
@@ -327,7 +327,7 @@ public class EntityListener implements Listener {
         final Entity eDamagee = event.getHitEntity();
 
 
-        if (eDamager instanceof Player && ArenaPlayer.fromPlayer(((Player) eDamager).getName()).getStatus() == Status.LOST) {
+        if (eDamager instanceof Player && ArenaPlayer.fromPlayer(((Player) eDamager).getName()).getStatus() == PlayerStatus.LOST) {
             return;
         }
 
@@ -338,7 +338,7 @@ public class EntityListener implements Listener {
             final ArenaPlayer apAttacker = ArenaPlayer.fromPlayer(attacker.getName());
             final Arena arena = apDefender.getArena();
 
-            if (arena == null || apAttacker.getArena() == null || apDefender.getStatus() == Status.LOST || !arena.isFightInProgress()) {
+            if (arena == null || apAttacker.getArena() == null || apDefender.getStatus() == PlayerStatus.LOST || !arena.isFightInProgress()) {
                 return;
             }
 
@@ -358,7 +358,7 @@ public class EntityListener implements Listener {
             return;
         }
 
-        if (ArenaPlayer.fromPlayer(entity.getName()).getStatus() == Status.LOST) {
+        if (ArenaPlayer.fromPlayer(entity.getName()).getStatus() == PlayerStatus.LOST) {
             event.setCancelled(true);
             return;
         }
@@ -375,8 +375,8 @@ public class EntityListener implements Listener {
         final ArenaPlayer apDefender = ArenaPlayer.fromPlayer(defender.getName());
 
         if (arena.realEndRunner != null
-                || (!apDefender.getStatus().equals(Status.NULL) && !apDefender
-                .getStatus().equals(Status.FIGHT))) {
+                || (!apDefender.getStatus().equals(PlayerStatus.NULL) && !apDefender
+                .getStatus().equals(PlayerStatus.FIGHT))) {
             event.setCancelled(true);
             return;
         }
@@ -466,7 +466,7 @@ public class EntityListener implements Listener {
         debug(shooter, "legit player");
 
         if (shooter.getArena() == null
-                || !shooter.getStatus().equals(Status.FIGHT)) {
+                || !shooter.getStatus().equals(PlayerStatus.FIGHT)) {
             debug(shooter, "something is null!");
             return;
         }

@@ -3,7 +3,7 @@ package net.slipcor.pvparena.goals;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.PAA_Region;
@@ -168,7 +168,7 @@ public class GoalLiberation extends ArenaGoal {
                 boolean success = false;
 
                 for (final ArenaPlayer jailedPlayer : playerArenaTeam.getTeamMembers()) {
-                    if (jailedPlayer.getStatus() == Status.DEAD) {
+                    if (jailedPlayer.getStatus() == PlayerStatus.DEAD) {
                         SpawnManager.respawn(this.arena, jailedPlayer, null);
                         final List<ItemStack> iList = new ArrayList<>();
 
@@ -232,7 +232,7 @@ public class GoalLiberation extends ArenaGoal {
             boolean someoneAlive = false;
 
             for (final ArenaPlayer temp : team.getTeamMembers()) {
-                if (temp.getStatus() == Status.FIGHT) {
+                if (temp.getStatus() == PlayerStatus.FIGHT) {
                     someoneAlive = true;
                     break;
                 }
@@ -272,7 +272,7 @@ public class GoalLiberation extends ArenaGoal {
         Bukkit.getPluginManager().callEvent(gEvent);
         for (final ArenaTeam arenaTeam : this.arena.getTeams()) {
             for (final ArenaPlayer arenaPlayer : arenaTeam.getTeamMembers()) {
-                if (arenaPlayer.getStatus() != Status.FIGHT) {
+                if (arenaPlayer.getStatus() != PlayerStatus.FIGHT) {
                     continue;
                 }
                 if (this.arena.isFreeForAll()) {
@@ -328,14 +328,14 @@ public class GoalLiberation extends ArenaGoal {
 
             final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
-            aPlayer.setStatus(Status.DEAD);
+            aPlayer.setStatus(PlayerStatus.DEAD);
 
             final ArenaTeam team = aPlayer.getArenaTeam();
 
             boolean someoneAlive = false;
 
             for (final ArenaPlayer temp : team.getTeamMembers()) {
-                if (temp.getStatus() == Status.FIGHT) {
+                if (temp.getStatus() == PlayerStatus.FIGHT) {
                     someoneAlive = true;
                     break;
                 }
@@ -381,7 +381,7 @@ public class GoalLiberation extends ArenaGoal {
                 WorkflowManager.handleRespawn(this.arena,
                         ArenaPlayer.fromPlayer(player), returned);
 
-                ArenaPlayer.fromPlayer(player).setStatus(Status.LOST);
+                ArenaPlayer.fromPlayer(player).setStatus(PlayerStatus.LOST);
 
                 if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                     this.broadcastSimpleDeathMessage(player, event);

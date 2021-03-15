@@ -3,7 +3,7 @@ package net.slipcor.pvparena.runnables;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.core.Language.MSG;
 
 import static net.slipcor.pvparena.config.Debugger.debug;
@@ -30,8 +30,8 @@ public class StartRunnable extends ArenaRunnable {
         debug(arena, "StartRunnable constructor");
         arena.startRunner = this;
         for (final ArenaPlayer player : arena.getFighters()) {
-            if (player.getStatus() != Status.READY) {
-                player.setStatus(Status.READY);
+            if (player.getStatus() != PlayerStatus.READY) {
+                player.setStatus(PlayerStatus.READY);
             }
         }
     }

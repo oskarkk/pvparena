@@ -3,6 +3,7 @@ package net.slipcor.pvparena.commands;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
@@ -51,7 +52,7 @@ public class PAA_ForceWin extends AbstractArenaCommand {
                     continue;
                 }
                 for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
-                    if (arenaPlayer.getStatus() == ArenaPlayer.Status.FIGHT) {
+                    if (arenaPlayer.getStatus() == PlayerStatus.FIGHT) {
                         arenaPlayer.getPlayer().getWorld().strikeLightningEffect(arenaPlayer.getPlayer().getLocation());
                         final EntityDamageEvent e = new EntityDamageEvent(arenaPlayer.getPlayer(), EntityDamageEvent.DamageCause.LIGHTNING,
                                 10.0);
@@ -71,7 +72,7 @@ public class PAA_ForceWin extends AbstractArenaCommand {
                     if (arenaPlayer.equals(aplayer)) {
                         continue;
                     }
-                    if (arenaPlayer.getStatus() == ArenaPlayer.Status.FIGHT) {
+                    if (arenaPlayer.getStatus() == PlayerStatus.FIGHT) {
                         arenaPlayer.getPlayer().getWorld().strikeLightningEffect(arenaPlayer.getPlayer().getLocation());
                         final EntityDamageEvent e = new EntityDamageEvent(arenaPlayer.getPlayer(), EntityDamageEvent.DamageCause.LIGHTNING,
                                 10.0);
@@ -85,7 +86,7 @@ public class PAA_ForceWin extends AbstractArenaCommand {
                         continue;
                     }
                     for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
-                        if (arenaPlayer.getStatus() == ArenaPlayer.Status.FIGHT) {
+                        if (arenaPlayer.getStatus() == PlayerStatus.FIGHT) {
                             arenaPlayer.getPlayer().getWorld().strikeLightningEffect(arenaPlayer.getPlayer().getLocation());
                             final EntityDamageEvent e = new EntityDamageEvent(arenaPlayer.getPlayer(), EntityDamageEvent.DamageCause.LIGHTNING,
                                     10.0);

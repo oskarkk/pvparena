@@ -3,7 +3,7 @@ package net.slipcor.pvparena.managers;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.classes.PABlockLocation;
@@ -145,7 +145,7 @@ public final class SpawnManager {
                         } else {
                             arena.tpPlayerToCoordName(ap, this.locations[this.pos++ % this.locations.length].getName());
                         }
-                        ap.setStatus(Status.FIGHT);
+                        ap.setStatus(PlayerStatus.FIGHT);
                         this.teamMembers.remove(ap);
                         return;
                     }
@@ -201,7 +201,7 @@ public final class SpawnManager {
             @Override
             public void run() {
                 for (final ArenaPlayer ap : this.set) {
-                    ap.setStatus(Status.FIGHT);
+                    ap.setStatus(PlayerStatus.FIGHT);
                     if (this.classSpawn) {
 
 
@@ -302,7 +302,7 @@ public final class SpawnManager {
             @Override
             public void run() {
                 for (final ArenaPlayer ap : this.set) {
-                    ap.setStatus(Status.FIGHT);
+                    ap.setStatus(PlayerStatus.FIGHT);
                     final String spawnName = this.iteratings[this.pos++ % this.iteratings.length];
                     if (spawnName == null) {
                         PVPArena.getInstance().getLogger().warning("Element #" + this.pos + " is null: [" + StringParser.joinArray(this.iteratings, ",") + ']');
@@ -516,7 +516,7 @@ public final class SpawnManager {
                 debug(arena, "bLoc: " + bLoc.toString());
                 aPlayer.setLocation(new PALocation(bLoc));
 
-                aPlayer.setStatus(Status.FIGHT);
+                aPlayer.setStatus(PlayerStatus.FIGHT);
 
                 arena.tpPlayerToCoordName(aPlayer, "old");
                 Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), new Runnable() {
@@ -638,7 +638,7 @@ public final class SpawnManager {
                 for (final PASpawn spawn : spawns) {
                     if (--pos <= 0) {
                         Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), new RespawnRunnable(arena, aPlayer, spawn.getName()), 2);
-                        aPlayer.setStatus(Status.FIGHT);
+                        aPlayer.setStatus(PlayerStatus.FIGHT);
                         return;
                     }
                 }
@@ -680,7 +680,7 @@ public final class SpawnManager {
                     for (final PASpawn spawn : spawns) {
                         if (--pos <= 0) {
                             Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), new RespawnRunnable(arena, aPlayer, spawn.getName()), 2);
-                            aPlayer.setStatus(Status.FIGHT);
+                            aPlayer.setStatus(PlayerStatus.FIGHT);
                             return;
                         }
                     }
@@ -742,7 +742,7 @@ public final class SpawnManager {
             for (final PASpawn spawn : spawns) {
                 if (--pos <= 0) {
                     Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), new RespawnRunnable(arena, aPlayer, spawn.getName()), 2);
-                    aPlayer.setStatus(Status.FIGHT);
+                    aPlayer.setStatus(PlayerStatus.FIGHT);
                     return;
                 }
             }
@@ -751,7 +751,7 @@ public final class SpawnManager {
 
         Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), new RespawnRunnable(arena, aPlayer, overrideSpawn), 2);
         if (overrideSpawn == null || !overrideSpawn.toLowerCase().endsWith("relay")) {
-            aPlayer.setStatus(Status.FIGHT);
+            aPlayer.setStatus(PlayerStatus.FIGHT);
         }
     }
 

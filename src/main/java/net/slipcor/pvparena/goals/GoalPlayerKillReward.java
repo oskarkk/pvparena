@@ -4,7 +4,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.commands.CommandTree;
@@ -168,7 +168,7 @@ public class GoalPlayerKillReward extends ArenaGoal {
 
         for (final ArenaTeam team : this.arena.getNotEmptyTeams()) {
             for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
-                if (arenaPlayer.getStatus() != Status.FIGHT) {
+                if (arenaPlayer.getStatus() != PlayerStatus.FIGHT) {
                     continue;
                 }
 
@@ -234,7 +234,7 @@ public class GoalPlayerKillReward extends ArenaGoal {
                 }
 
                 final int iLives = GoalPlayerKillReward.this.getPlayerLifeMap().get(player);
-                if (ArenaPlayer.fromPlayer(player).getStatus() != Status.FIGHT) {
+                if (ArenaPlayer.fromPlayer(player).getStatus() != PlayerStatus.FIGHT) {
                     return;
                 }
                 if (!GoalPlayerKillReward.this.arena.getArenaConfig().getBoolean(CFG.GOAL_PLAYERKILLREWARD_ONLYGIVE)) {
@@ -274,7 +274,7 @@ public class GoalPlayerKillReward extends ArenaGoal {
             for (final ArenaPlayer arenaPlayer : arenaPlayers) {
                 this.getPlayerLifeMap().remove(arenaPlayer.getPlayer());
 
-                arenaPlayer.setStatus(Status.LOST);
+                arenaPlayer.setStatus(PlayerStatus.LOST);
                 arenaPlayer.addLosses();
             }
 

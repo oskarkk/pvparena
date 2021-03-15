@@ -59,7 +59,7 @@ public class ArenaPlayer {
     private ArenaClass naClass;
     private PlayerState state;
     private PALocation location;
-    private Status status = Status.NULL;
+    private PlayerStatus status = PlayerStatus.NULL;
 
     private ItemStack[] savedInventory;
     private final Set<PermissionAttachment> tempPermissions = new HashSet<>();
@@ -68,46 +68,6 @@ public class ArenaPlayer {
     private Scoreboard backupBoard;
     private String backupBoardTeam;
 
-    /**
-     * Status
-     *
-     * <pre>
-     * - NULL = not part of an arena
-     * - WARM = not part of an arena, warmed up
-     * - LOUNGE = inside an arena lobby mode
-     * - READY = inside an arena lobby mode, readied up
-     * - FIGHT = fighting inside an arena
-     * - WATCH = watching a fight from the spectator area
-     * - DEAD = dead and soon respawning
-     * - LOST = lost and thus spectating
-     * </pre>
-     */
-    public enum Status {
-        NULL, WARM, LOUNGE, READY, FIGHT, WATCH, DEAD, LOST
-    }
-
-
-    /**
-     * PlayerPrevention
-     *
-     * <pre>
-     * BREAK - Block break
-     * PLACE - Block placement
-     * TNT - TNT usage
-     * TNTBREAK - TNT block break
-     * DROP - dropping items
-     * INVENTORY - accessing inventory
-     * PICKUP - picking up stuff
-     * CRAFT - crafting stuff
-     * </pre>
-     */
-    public enum PlayerPrevention {
-        BREAK, PLACE, TNT, TNTBREAK, DROP, INVENTORY, PICKUP, CRAFT;
-
-        public static boolean has(int value, PlayerPrevention s) {
-            return (((int) Math.pow(2, s.ordinal()) & value) > 0);
-        }
-    }
 
     private boolean publicChatting = true;
     private final PABlockLocation[] selection = new PABlockLocation[2];
@@ -529,7 +489,7 @@ public class ArenaPlayer {
         return this.statistics.get(arena.getName());
     }
 
-    public Status getStatus() {
+    public PlayerStatus getStatus() {
         return this.status;
     }
 
@@ -690,7 +650,7 @@ public class ArenaPlayer {
             this.state = null;
         }
 
-        this.setStatus(Status.NULL);
+        this.setStatus(PlayerStatus.NULL);
         this.naClass = null;
 
         if (this.arena != null) {
@@ -732,7 +692,7 @@ public class ArenaPlayer {
         final PAPlayerClassChangeEvent event = new PAPlayerClassChangeEvent(this.arena, this.getPlayer(), aClass);
         Bukkit.getServer().getPluginManager().callEvent(event);
         this.aClass = event.getArenaClass();
-        if (this.arena != null && this.getStatus() != Status.NULL) {
+        if (this.arena != null && this.getStatus() != PlayerStatus.NULL) {
             ArenaModuleManager.parseClassChange(this.arena, this.getPlayer(), this.aClass);
         }
     }
@@ -804,7 +764,7 @@ public class ArenaPlayer {
         map.setStat(type, value);
     }
 
-    public void setStatus(final Status status) {
+    public void setStatus(final PlayerStatus status) {
         debug(this,"{}>{}", this.player.getName(), status.name());
         this.status = status;
     }

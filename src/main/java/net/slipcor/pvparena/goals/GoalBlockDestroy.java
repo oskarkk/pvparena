@@ -4,7 +4,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.classes.PABlockLocation;
@@ -151,9 +151,9 @@ public class GoalBlockDestroy extends ArenaGoal {
                 continue;
             }
             for (final ArenaPlayer ap : currentArenaTeam.getTeamMembers()) {
-                if (ap.getStatus() == Status.FIGHT || ap.getStatus() == Status.DEAD) {
+                if (ap.getStatus() == PlayerStatus.FIGHT || ap.getStatus() == PlayerStatus.DEAD) {
                     ap.addLosses();
-                    ap.setStatus(Status.LOST);
+                    ap.setStatus(PlayerStatus.LOST);
                 }
             }
         }
@@ -213,7 +213,7 @@ public class GoalBlockDestroy extends ArenaGoal {
 
         for (final ArenaTeam team : this.arena.getTeams()) {
             for (final ArenaPlayer ap : team.getTeamMembers()) {
-                if (ap.getStatus() == Status.FIGHT) {
+                if (ap.getStatus() == PlayerStatus.FIGHT) {
                     aTeam = team;
                     break;
                 }

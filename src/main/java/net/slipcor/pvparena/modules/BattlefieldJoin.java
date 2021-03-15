@@ -3,7 +3,7 @@ package net.slipcor.pvparena.modules;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.classes.PASpawn;
@@ -79,7 +79,7 @@ public class BattlefieldJoin extends ArenaModule {
         arenaPlayer.setLocation(new PALocation(arenaPlayer.getPlayer().getLocation()));
 
         arenaPlayer.setArena(this.arena);
-        arenaPlayer.setStatus(Status.LOUNGE);
+        arenaPlayer.setStatus(PlayerStatus.LOUNGE);
         team.add(arenaPlayer);
         final Set<PASpawn> spawns = new HashSet<>();
         if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {

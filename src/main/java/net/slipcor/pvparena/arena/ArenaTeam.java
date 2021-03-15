@@ -1,6 +1,5 @@
 package net.slipcor.pvparena.arena;
 
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.core.ColorUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -109,7 +108,7 @@ public class ArenaTeam {
 
     public boolean isEveryoneReady() {
         for (final ArenaPlayer ap : this.players) {
-            if (ap.getStatus() != Status.READY) {
+            if (ap.getStatus() != PlayerStatus.READY) {
                 return false;
             }
         }

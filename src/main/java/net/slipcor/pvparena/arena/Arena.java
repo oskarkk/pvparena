@@ -1,7 +1,6 @@
 package net.slipcor.pvparena.arena;
 
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.classes.*;
 import net.slipcor.pvparena.core.*;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -301,7 +300,7 @@ public class Arena {
                 return;
             }
             if (this.startRunner != null) {
-                ArenaPlayer.fromPlayer(player).setStatus(Status.READY);
+                ArenaPlayer.fromPlayer(player).setStatus(PlayerStatus.READY);
             }
         }
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
@@ -358,7 +357,7 @@ public class Arena {
         int sum = 0;
         for (final ArenaTeam team : this.teams) {
             for (final ArenaPlayer p : team.getTeamMembers()) {
-                if (p.getStatus() == Status.READY) {
+                if (p.getStatus() == PlayerStatus.READY) {
                     sum++;
                 }
             }
@@ -971,7 +970,7 @@ public class Arena {
         if (this.cfg.getBoolean(CFG.READY_CHECKEACHPLAYER)) {
             for (final ArenaTeam team : this.teams) {
                 for (final ArenaPlayer ap : team.getTeamMembers()) {
-                    if (ap.getStatus() != Status.READY) {
+                    if (ap.getStatus() != PlayerStatus.READY) {
                         return Language
                                 .parse(this, MSG.ERROR_READY_0_ONE_PLAYER_NOT_READY);
                     }
@@ -985,7 +984,7 @@ public class Arena {
             for (final ArenaTeam team : this.teams) {
                 for (final ArenaPlayer ap : team.getTeamMembers()) {
                     if (!this.cfg.getBoolean(CFG.READY_CHECKEACHTEAM)
-                            || ap.getStatus() == Status.READY) {
+                            || ap.getStatus() == PlayerStatus.READY) {
                         activeTeams.add(team.getName());
                         break;
                     }
@@ -1069,7 +1068,7 @@ public class Arena {
      */
     public void callLeaveEvent(final Player player) {
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
-        final PALeaveEvent event = new PALeaveEvent(this, player, aPlayer.getStatus() == Status.FIGHT);
+        final PALeaveEvent event = new PALeaveEvent(this, player, aPlayer.getStatus() == PlayerStatus.FIGHT);
         Bukkit.getPluginManager().callEvent(event);
     }
 
@@ -1166,12 +1165,12 @@ public class Arena {
 
         // pre-parsing for "whole team winning"
         for (final ArenaPlayer arenaPlayer : players) {
-            if (arenaPlayer.getStatus() != null && arenaPlayer.getStatus() == Status.FIGHT) {
+            if (arenaPlayer.getStatus() != null && arenaPlayer.getStatus() == PlayerStatus.FIGHT) {
                 final Player player = arenaPlayer.getPlayer();
                 if (player == null) {
                     continue;
                 }
-                if (!force && arenaPlayer.getStatus() == Status.FIGHT
+                if (!force && arenaPlayer.getStatus() == PlayerStatus.FIGHT
                         && this.fightInProgress && !this.gaveRewards && !this.free && this.cfg.getBoolean(CFG.USES_TEAMREWARDS)) {
                     players.removeAll(arenaPlayer.getArenaTeam().getTeamMembers());
                     this.giveRewardsLater(arenaPlayer.getArenaTeam()); // this removes the players from the arena
@@ -1183,7 +1182,7 @@ public class Arena {
         for (final ArenaPlayer arenaPlayer : players) {
 
             arenaPlayer.debugPrint();
-            if (arenaPlayer.getStatus() != null && arenaPlayer.getStatus() == Status.FIGHT) {
+            if (arenaPlayer.getStatus() != null && arenaPlayer.getStatus() == PlayerStatus.FIGHT) {
                 // TODO enhance wannabe-smart exploit fix for people that
                 // spam join and leave the arena to make one of them win
                 final Player player = arenaPlayer.getPlayer();
@@ -1196,13 +1195,13 @@ public class Arena {
                 this.callExitEvent(player);
                 this.resetPlayer(player, this.cfg.getString(CFG.TP_WIN, "old"),
                         false, force);
-                if (!force && arenaPlayer.getStatus() == Status.FIGHT
+                if (!force && arenaPlayer.getStatus() == PlayerStatus.FIGHT
                         && this.fightInProgress && !this.gaveRewards) {
                     // if we are remaining, give reward!
                     this.giveRewards(player);
                 }
             } else if (arenaPlayer.getStatus() != null
-                    && (arenaPlayer.getStatus() == Status.DEAD || arenaPlayer.getStatus() == Status.LOST)) {
+                    && (arenaPlayer.getStatus() == PlayerStatus.DEAD || arenaPlayer.getStatus() == PlayerStatus.LOST)) {
 
                 final PALoseEvent loseEvent = new PALoseEvent(this, arenaPlayer.getPlayer());
                 Bukkit.getPluginManager().callEvent(loseEvent);
@@ -1224,7 +1223,7 @@ public class Arena {
             arenaPlayer.reset();
         }
         for (final ArenaPlayer player : ArenaPlayer.getAllArenaPlayers()) {
-            if (this.equals(player.getArena()) && player.getStatus() == Status.WATCH) {
+            if (this.equals(player.getArena()) && player.getStatus() == PlayerStatus.WATCH) {
 
                 this.callExitEvent(player.getPlayer());
                 this.resetPlayer(player.getPlayer(),
@@ -1693,7 +1692,7 @@ public class Arena {
         final Map<Location, ArenaPlayer> players = new HashMap<>();
 
         for (final ArenaPlayer ap : this.getFighters()) {
-            if (ap.getStatus() != Status.FIGHT) {
+            if (ap.getStatus() != PlayerStatus.FIGHT) {
                 continue;
             }
             players.put(ap.getPlayer().getLocation(), ap);
@@ -1776,10 +1775,10 @@ public class Arena {
         for (final ArenaTeam team : this.teams) {
             for (final ArenaPlayer ap : team.getTeamMembers()) {
                 if (forceStart) {
-                    ap.setStatus(Status.READY);
+                    ap.setStatus(PlayerStatus.READY);
                 }
-                if (ap.getStatus() == Status.LOUNGE
-                        || ap.getStatus() == Status.READY) {
+                if (ap.getStatus() == PlayerStatus.LOUNGE
+                        || ap.getStatus() == PlayerStatus.READY) {
                     sum++;
                 }
             }
@@ -1920,9 +1919,9 @@ public class Arena {
 
         if ("spectator".equals(place)) {
             if (this.getFighters().contains(aPlayer)) {
-                aPlayer.setStatus(Status.LOST);
+                aPlayer.setStatus(PlayerStatus.LOST);
             } else {
-                aPlayer.setStatus(Status.WATCH);
+                aPlayer.setStatus(PlayerStatus.WATCH);
             }
         }
         PALocation loc = SpawnManager.getSpawnByExactName(this, place);
@@ -1955,8 +1954,8 @@ public class Arena {
         }
 
         if (this.cfg.getBoolean(CFG.USES_INVISIBILITYFIX) &&
-                aPlayer.getStatus() == Status.FIGHT ||
-                aPlayer.getStatus() == Status.LOUNGE) {
+                aPlayer.getStatus() == PlayerStatus.FIGHT ||
+                aPlayer.getStatus() == PlayerStatus.LOUNGE) {
 
             Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), () -> {
                 for (final ArenaPlayer arenaPlayer : Arena.this.getFighters()) {
@@ -2020,7 +2019,7 @@ public class Arena {
             return false;
         }
 
-        if (aPlayer.getStatus() == Status.NULL) {
+        if (aPlayer.getStatus() == PlayerStatus.NULL) {
             // joining DIRECTLY - save loc !!
             aPlayer.setLocation(new PALocation(player.getLocation()));
         } else {
@@ -2067,7 +2066,7 @@ public class Arena {
 
         aPlayer.setArena(this);
         team.add(aPlayer);
-        aPlayer.setStatus(Status.FIGHT);
+        aPlayer.setStatus(PlayerStatus.FIGHT);
 
         final Set<PASpawn> spawns = new HashSet<>();
         if (this.cfg.getBoolean(CFG.GENERAL_CLASSSPAWN)) {

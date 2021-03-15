@@ -3,7 +3,7 @@ package net.slipcor.pvparena.goals;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -101,7 +101,7 @@ public class GoalTeamLives extends AbstractTeamKillGoal {
 
         } else if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
             debug(this.arena, respawnPlayer, "faking player death");
-            ArenaPlayer.fromPlayer(respawnPlayer.getName()).setStatus(Status.LOST);
+            ArenaPlayer.fromPlayer(respawnPlayer.getName()).setStatus(PlayerStatus.LOST);
             PlayerListener.finallyKillPlayer(this.arena, respawnPlayer, event);
         }
     }
@@ -112,8 +112,8 @@ public class GoalTeamLives extends AbstractTeamKillGoal {
         if (iLives <= 1) {
             this.getTeamLifeMap().remove(arenaTeam);
             for (final ArenaPlayer ap : arenaTeam.getTeamMembers()) {
-                if (ap.getStatus() == Status.FIGHT) {
-                    ap.setStatus(Status.LOST);
+                if (ap.getStatus() == PlayerStatus.FIGHT) {
+                    ap.setStatus(PlayerStatus.LOST);
                 }
             }
             WorkflowManager.handleEnd(arena, false);

@@ -3,7 +3,7 @@ package net.slipcor.pvparena.goals;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
@@ -159,8 +159,8 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
                 }
                 this.getTeamLifeMap().remove(otherTeam);
                 for (final ArenaPlayer ap : otherTeam.getTeamMembers()) {
-                    if (ap.getStatus() == Status.FIGHT) {
-                        ap.setStatus(Status.LOST);
+                    if (ap.getStatus() == PlayerStatus.FIGHT) {
+                        ap.setStatus(PlayerStatus.LOST);
                     }
                 }
             }

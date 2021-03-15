@@ -4,7 +4,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
@@ -164,7 +164,7 @@ public class GoalCheckPoints extends ArenaGoal {
                 winner = fighter;
             } else {
                 fighter.addLosses();
-                fighter.setStatus(Status.LOST);
+                fighter.setStatus(PlayerStatus.LOST);
             }
         }
 
@@ -243,7 +243,7 @@ public class GoalCheckPoints extends ArenaGoal {
         ArenaPlayer arenaPlayer = null;
 
         for (ArenaPlayer aPlayer : this.arena.getFighters()) {
-            if (aPlayer.getStatus() == Status.FIGHT) {
+            if (aPlayer.getStatus() == PlayerStatus.FIGHT) {
                 arenaPlayer = aPlayer;
                 break;
             }

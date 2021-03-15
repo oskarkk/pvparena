@@ -14,7 +14,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static net.slipcor.pvparena.arena.ArenaPlayer.Status.*;
+import static net.slipcor.pvparena.arena.PlayerStatus.*;
 import static net.slipcor.pvparena.config.Debugger.debug;
 import static net.slipcor.pvparena.config.Debugger.trace;
 

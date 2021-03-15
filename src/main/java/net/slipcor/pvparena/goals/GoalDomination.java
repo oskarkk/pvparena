@@ -4,7 +4,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PAClaimBar;
@@ -421,12 +421,12 @@ public class GoalDomination extends ArenaGoal {
             for (final ArenaPlayer ap : team.getTeamMembers()) {
 
                 ap.addLosses();
-                ap.setStatus(Status.LOST);
+                ap.setStatus(PlayerStatus.LOST);
             }
         }
         for (final ArenaTeam currentArenaTeam : arena.getNotEmptyTeams()) {
             for (final ArenaPlayer ap : currentArenaTeam.getTeamMembers()) {
-                if (ap.getStatus() != Status.FIGHT) {
+                if (ap.getStatus() != PlayerStatus.FIGHT) {
                     continue;
                 }
                 winteam = currentArenaTeam;
@@ -479,7 +479,7 @@ public class GoalDomination extends ArenaGoal {
 
         for (final ArenaTeam team : this.arena.getTeams()) {
             for (final ArenaPlayer ap : team.getTeamMembers()) {
-                if (ap.getStatus() == Status.FIGHT) {
+                if (ap.getStatus() == PlayerStatus.FIGHT) {
                     aTeam = team;
                     break;
                 }

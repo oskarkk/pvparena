@@ -4,7 +4,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -59,7 +59,7 @@ public class GoalTank extends ArenaGoal {
     @Override
     public boolean checkEnd() {
         final int count = this.getPlayerLifeMap().size();
-        return (count <= 1 || tanks.get(this.arena).getStatus() != Status.FIGHT);
+        return (count <= 1 || tanks.get(this.arena).getStatus() != PlayerStatus.FIGHT);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class GoalTank extends ArenaGoal {
         Bukkit.getPluginManager().callEvent(gEvent);
         for (final ArenaTeam team : this.arena.getTeams()) {
             for (final ArenaPlayer ap : team.getTeamMembers()) {
-                if (ap.getStatus() != Status.FIGHT) {
+                if (ap.getStatus() != PlayerStatus.FIGHT) {
                     continue;
                 }
                 if (tanks.containsValue(ap.getName())) {
@@ -165,7 +165,7 @@ public class GoalTank extends ArenaGoal {
                 PlayerListener.finallyKillPlayer(this.arena, player, event);
             }
 
-            ArenaPlayer.fromPlayer(player).setStatus(Status.LOST);
+            ArenaPlayer.fromPlayer(player).setStatus(PlayerStatus.LOST);
             // player died => commit death!
             WorkflowManager.handleEnd(this.arena, false);
         } else {

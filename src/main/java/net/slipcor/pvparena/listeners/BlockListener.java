@@ -3,7 +3,7 @@ package net.slipcor.pvparena.listeners;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.commands.PAA_Setup;
@@ -108,10 +108,10 @@ public class BlockListener implements Listener {
             return;
         }
 
-        if (ArenaPlayer.fromPlayer(event.getPlayer().getName()).getStatus() == Status.LOST
-                || ArenaPlayer.fromPlayer(event.getPlayer().getName()).getStatus() == Status.WATCH
-                || ArenaPlayer.fromPlayer(event.getPlayer().getName()).getStatus() == Status.LOUNGE
-                || ArenaPlayer.fromPlayer(event.getPlayer().getName()).getStatus() == Status.READY) {
+        if (ArenaPlayer.fromPlayer(event.getPlayer().getName()).getStatus() == PlayerStatus.LOST
+                || ArenaPlayer.fromPlayer(event.getPlayer().getName()).getStatus() == PlayerStatus.WATCH
+                || ArenaPlayer.fromPlayer(event.getPlayer().getName()).getStatus() == PlayerStatus.LOUNGE
+                || ArenaPlayer.fromPlayer(event.getPlayer().getName()).getStatus() == PlayerStatus.READY) {
             event.setCancelled(true);
             return;
         }
@@ -405,7 +405,7 @@ public class BlockListener implements Listener {
         }
 
         final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
-        if (asList(Status.LOST, Status.WATCH, Status.LOUNGE, Status.READY).contains(arenaPlayer.getStatus())) {
+        if (asList(PlayerStatus.LOST, PlayerStatus.WATCH, PlayerStatus.LOUNGE, PlayerStatus.READY).contains(arenaPlayer.getStatus())) {
             event.setCancelled(true);
             return;
         }

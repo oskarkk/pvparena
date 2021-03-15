@@ -3,7 +3,7 @@ package net.slipcor.pvparena.listeners;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.arena.PlayerState;
 import net.slipcor.pvparena.classes.PABlockLocation;
@@ -84,7 +84,7 @@ public class PlayerListener implements Listener {
 
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
-        if ((aPlayer.getStatus() == Status.WATCH || aPlayer.getStatus() == Status.LOST) &&
+        if ((aPlayer.getStatus() == PlayerStatus.WATCH || aPlayer.getStatus() == PlayerStatus.LOST) &&
                 arena.getArenaConfig().getBoolean(CFG.PERMS_SPECINTERACT)) {
             return false;
         }
@@ -98,7 +98,7 @@ public class PlayerListener implements Listener {
             return true;
         }
 
-        if (aPlayer.getStatus() != Status.FIGHT) {
+        if (aPlayer.getStatus() != PlayerStatus.FIGHT) {
             debug(player, "not fighting => cancel");
             debug(player, "> true");
             event.setCancelled(true);
@@ -117,7 +117,7 @@ public class PlayerListener implements Listener {
                 return false;
             }
         }
-        if (ArenaPlayer.fromPlayer(player).getStatus() == Status.LOST) {
+        if (ArenaPlayer.fromPlayer(player).getStatus() == PlayerStatus.LOST) {
             debug(player, "cancelling because LOST");
             event.setCancelled(true);
             return true;
@@ -143,9 +143,9 @@ public class PlayerListener implements Listener {
         }
         final ArenaTeam team = aPlayer.getArenaTeam();
         if (team == null ||
-                aPlayer.getStatus() == Status.DEAD && aPlayer.getPlayer() == null ||
-                aPlayer.getStatus() == Status.LOST ||
-                aPlayer.getStatus() == Status.WATCH) {
+                aPlayer.getStatus() == PlayerStatus.DEAD && aPlayer.getPlayer() == null ||
+                aPlayer.getStatus() == PlayerStatus.LOST ||
+                aPlayer.getStatus() == PlayerStatus.WATCH) {
             if (!arena.getArenaConfig().getBoolean(CFG.PERMS_SPECTALK)) {
                 event.setCancelled(true);
             }
@@ -291,8 +291,8 @@ public class PlayerListener implements Listener {
         if (arena == null) {
             return; // no fighting player => OUT
         }
-        if (aPlayer.getStatus() == Status.READY
-                || aPlayer.getStatus() == Status.LOUNGE) {
+        if (aPlayer.getStatus() == PlayerStatus.READY
+                || aPlayer.getStatus() == PlayerStatus.LOUNGE) {
             event.setCancelled(true);
             arena.msg(player, Language.parse(arena, MSG.NOTICE_NO_DROP_ITEM));
             return;
@@ -310,7 +310,7 @@ public class PlayerListener implements Listener {
             return; // no drop protection
         }
 
-        if (Bukkit.getPlayer(player.getName()) == null || aPlayer.getStatus() == Status.DEAD || aPlayer.getStatus() == Status.LOST) {
+        if (Bukkit.getPlayer(player.getName()) == null || aPlayer.getStatus() == PlayerStatus.DEAD || aPlayer.getStatus() == PlayerStatus.LOST) {
             debug(arena, "Player is dead. allowing drops!");
             return;
         }
@@ -401,7 +401,7 @@ public class PlayerListener implements Listener {
 
         arena.removePlayer(player, arena.getArenaConfig().getString(CFG.TP_DEATH), true, false);
 
-        aPlayer.setStatus(Status.LOST);
+        aPlayer.setStatus(PlayerStatus.LOST);
         aPlayer.addDeath();
 
         PlayerState.fullReset(arena, player);
@@ -438,7 +438,7 @@ public class PlayerListener implements Listener {
 
         final ArenaPlayer ap = ArenaPlayer.fromPlayer(player);
 
-        if (ap.getStatus() == Status.READY || ap.getStatus() == Status.LOUNGE || ap.getArena() != null && !ap.getArena().getArenaConfig().getBoolean(CFG.PLAYER_HUNGER)) {
+        if (ap.getStatus() == PlayerStatus.READY || ap.getStatus() == PlayerStatus.LOUNGE || ap.getArena() != null && !ap.getArena().getArenaConfig().getBoolean(CFG.PLAYER_HUNGER)) {
             event.setCancelled(true);
         }
     }
@@ -510,22 +510,22 @@ public class PlayerListener implements Listener {
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         final ArenaTeam team = aPlayer.getArenaTeam();
 
-        if (aPlayer.getStatus() == Status.WATCH &&
+        if (aPlayer.getStatus() == PlayerStatus.WATCH &&
                 arena.getArenaConfig().getBoolean(CFG.PERMS_SPECINTERACT)) {
             debug(arena, "allowing spectator interaction due to config setting!");
             return;
         }
 
-        if (aPlayer.getStatus() != Status.FIGHT) {
+        if (aPlayer.getStatus() != PlayerStatus.FIGHT) {
             if (whyMe) {
                 debug(arena, player, "exiting! fight in progress AND no INBATTLEJOIN arena!");
                 return;
             }
-            if (asList(Status.LOUNGE, Status.READY).contains(aPlayer.getStatus()) &&
+            if (asList(PlayerStatus.LOUNGE, PlayerStatus.READY).contains(aPlayer.getStatus()) &&
                     arena.getArenaConfig().getBoolean(CFG.PERMS_LOUNGEINTERACT)) {
                 debug(arena, "allowing lounge interaction due to config setting!");
                 event.setCancelled(false);
-            } else if (aPlayer.getStatus() != Status.LOUNGE && aPlayer.getStatus() != Status.READY) {
+            } else if (aPlayer.getStatus() != PlayerStatus.LOUNGE && aPlayer.getStatus() != PlayerStatus.READY) {
                 debug(arena, player, "cancelling: not fighting nor in the lounge");
                 event.setCancelled(true);
             } else if (aPlayer.getArena() != null && team != null) {
@@ -589,7 +589,7 @@ public class PlayerListener implements Listener {
                 if (arena.startRunner != null) {
                     return; // counting down => OUT
                 }
-                if (aPlayer.getStatus() != Status.LOUNGE && aPlayer.getStatus() != Status.READY) {
+                if (aPlayer.getStatus() != PlayerStatus.LOUNGE && aPlayer.getStatus() != PlayerStatus.READY) {
                     return;
                 }
                 event.setCancelled(true);
@@ -600,7 +600,7 @@ public class PlayerListener implements Listener {
                         aPlayer.getPlayer().updateInventory();
                     }
                 }, 1L);
-                final boolean alreadyReady = aPlayer.getStatus() == Status.READY;
+                final boolean alreadyReady = aPlayer.getStatus() == PlayerStatus.READY;
 
                 debug(arena, player, "===============");
                 String msg = "===== class: " + (aPlayer.getArenaClass() == null ? "null" : aPlayer.getArenaClass().getName()) + " =====";
@@ -608,14 +608,14 @@ public class PlayerListener implements Listener {
                 debug(arena, player, "===============");
 
                 if (!arena.isFightInProgress()) {
-                    if (aPlayer.getStatus() != Status.READY) {
+                    if (aPlayer.getStatus() != PlayerStatus.READY) {
                         arena.msg(player, Language.parse(arena, MSG.READY_DONE));
                         if (!alreadyReady) {
                             arena.broadcast(Language.parse(arena, MSG.PLAYER_READY, aPlayer
                                     .getArenaTeam().colorizePlayer(aPlayer.getPlayer())));
                         }
                     }
-                    aPlayer.setStatus(Status.READY);
+                    aPlayer.setStatus(PlayerStatus.READY);
                     if (!alreadyReady && aPlayer.getArenaTeam().isEveryoneReady()) {
                         arena.broadcast(Language.parse(arena, MSG.TEAM_READY, aPlayer
                                 .getArenaTeam().getColoredName()));
@@ -671,7 +671,7 @@ public class PlayerListener implements Listener {
                 }
 
                 ArenaPlayer.fromPlayer(player).setStatus(
-                        Status.FIGHT);
+                        PlayerStatus.FIGHT);
 
                 ArenaModuleManager.lateJoin(arena, player);
                 arena.getGoal().lateJoin(player);
@@ -722,7 +722,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerItemConsume(final PlayerItemConsumeEvent event) {
         ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(event.getPlayer().getName());
-        if (arenaPlayer.getArena() != null && arenaPlayer.getStatus() != Status.FIGHT) {
+        if (arenaPlayer.getArena() != null && arenaPlayer.getStatus() != PlayerStatus.FIGHT) {
             event.setCancelled(true);
         }
     }
@@ -774,7 +774,7 @@ public class PlayerListener implements Listener {
         // players and makes sure every player is an arenaplayer ^^
 
 
-        if (aPlayer.getArena() != null && aPlayer.getStatus() == Status.FIGHT) {
+        if (aPlayer.getArena() != null && aPlayer.getStatus() == PlayerStatus.FIGHT) {
             Arena arena = aPlayer.getArena();
             debug(arena, "Trying to override a rogue RespawnEvent!");
         }
@@ -883,7 +883,7 @@ public class PlayerListener implements Listener {
 
         debug(arena, player, "aimed location: " + event.getTo());
 
-        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL && arenaPlayer.getStatus() != Status.FIGHT) {
+        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL && arenaPlayer.getStatus() != PlayerStatus.FIGHT) {
             debug(arena, player, "onPlayerTeleport: ender pearl when not fighting, cancelling!");
             event.setCancelled(true); // cancel and out
             return;
@@ -914,7 +914,7 @@ public class PlayerListener implements Listener {
             debug(arena, player, "onPlayerTeleport: using telepass");
         }
 
-        if(arenaPlayer.getStatus() == Status.FIGHT) {
+        if(arenaPlayer.getStatus() == PlayerStatus.FIGHT) {
             RegionManager.getInstance().handleFightingPlayerMove(arenaPlayer, toLoc);
         }
 
@@ -963,7 +963,7 @@ public class PlayerListener implements Listener {
             if (arena == null) {
                 return; // no fighting player => OUT
             }
-            if (aPlayer.getStatus() == Status.FIGHT || aPlayer.getStatus() == Status.NULL) {
+            if (aPlayer.getStatus() == PlayerStatus.FIGHT || aPlayer.getStatus() == PlayerStatus.NULL) {
                 return;
             }
             event.setCancelled(true);
