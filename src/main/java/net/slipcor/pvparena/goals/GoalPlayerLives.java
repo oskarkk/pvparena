@@ -67,8 +67,8 @@ public class GoalPlayerLives extends ArenaGoal {
             return (count <= 1); // yep. only one team left. go!
         }
 
-        debug(this.arena, "lives: " + StringParser.joinSet(this.getTeamLifeMap().keySet(), "|"));
-        final int count = this.getTeamLifeMap().size();
+        debug(this.arena, "lives: " + StringParser.joinSet(this.getPlayerLifeMap().keySet(), "|"));
+        final int count = this.getPlayerLifeMap().size();
         return (count <= 1); // yep. only one team left. go!
     }
 
@@ -82,7 +82,13 @@ public class GoalPlayerLives extends ArenaGoal {
 
     @Override
     public Boolean checkPlayerDeath(Player player) {
-        final int pos = this.getTeamLifeMap().get(player);
+        int pos;
+        if(this.arena.isFreeForAll()) {
+            pos = this.getPlayerLifeMap().get(player);
+        } else {
+            ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
+            pos = this.getTeamLifeMap().get(arenaPlayer.getArenaTeam());
+        }
         debug(this.arena, player, "lives before death: " + pos);
         return pos > 1;
     }
