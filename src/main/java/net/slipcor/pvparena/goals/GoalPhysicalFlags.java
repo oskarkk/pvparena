@@ -393,7 +393,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
                 debug(this.arena, player, "equals!OUT! ");
                 continue;
             }
-            if (!this.touchdownTeam.equals(arenaTeam)) {
+            if (arenaTeam.isEmpty() && !this.touchdownTeam.equals(arenaTeam)) {
                 debug(this.arena, player, "size!OUT! ");
                 continue; // dont check for inactive teams
             }
