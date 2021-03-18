@@ -84,7 +84,7 @@ public final class PlayerState {
         debug("backing up PlayerState of {}", this.name);
         cfg.set("state.fireticks", this.fireticks);
         cfg.set("state.foodlevel", this.foodlevel);
-        cfg.set("state.gamemode", this.gamemode);
+        cfg.set("state.gamemode", this.gamemode.toString());
         cfg.set("state.health", this.health);
         cfg.set("state.maxhealth", this.maxhealth);
         cfg.set("state.exhaustion", this.exhaustion);
