@@ -336,7 +336,7 @@ public class PlayerListener implements Listener {
         for (String content : args) {
             if (content != null) {
                 if (content.startsWith("playerDeath")||content.startsWith("trigger")||content.startsWith("playerKill")||content.startsWith("score")) {
-                    event.getArena().updateScoreboards();
+                    event.getArena().getScoreboard().refresh();
                     return;
                 }
             }

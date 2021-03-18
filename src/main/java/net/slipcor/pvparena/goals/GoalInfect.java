@@ -395,7 +395,7 @@ public class GoalInfect extends ArenaGoal {
 
                 PATeamChangeEvent tcEvent = new PATeamChangeEvent(this.arena, player, oldTeam, respawnTeam);
                 Bukkit.getPluginManager().callEvent(tcEvent);
-                this.arena.updateScoreboardTeam(player, oldTeam, respawnTeam);
+                this.arena.getScoreboard().switchPlayerTeam(player, oldTeam, respawnTeam);
 
                 oldTeam.remove(aPlayer);
 
@@ -562,7 +562,7 @@ public class GoalInfect extends ArenaGoal {
             if (arenaTeam.getTeamMembers().contains(infected)) {
                 final PATeamChangeEvent tcEvent = new PATeamChangeEvent(this.arena, infected.getPlayer(), arenaTeam, this.infectedTeam);
                 Bukkit.getPluginManager().callEvent(tcEvent);
-                this.arena.updateScoreboardTeam(infected.getPlayer(), arenaTeam, this.infectedTeam);
+                this.arena.getScoreboard().switchPlayerTeam(infected.getPlayer(), arenaTeam, this.infectedTeam);
                 arenaTeam.remove(infected);
             }
         }

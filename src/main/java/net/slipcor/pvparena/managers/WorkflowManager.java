@@ -449,7 +449,7 @@ public class WorkflowManager {
         }
 
         arena.setStartingTime();
-        arena.updateScoreboards();
+        arena.getScoreboard().refresh();
         return true;
     }
 }

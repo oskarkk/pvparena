@@ -497,8 +497,8 @@ public class GoalLiberation extends ArenaGoal {
             }
         }
         if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
-            this.arena.addCustomScoreBoardEntry(null, Language.parse(this.arena, MSG.GOAL_LIBERATION_SCOREBOARD_HEADING), 102);
-            this.arena.addCustomScoreBoardEntry(null, Language.parse(this.arena, MSG.GOAL_LIBERATION_SCOREBOARD_SEPARATOR), 100);
+            this.arena.getScoreboard().addCustomEntry(null, Language.parse(this.arena, MSG.GOAL_LIBERATION_SCOREBOARD_HEADING), 102);
+            this.arena.getScoreboard().addCustomEntry(null, Language.parse(this.arena, MSG.GOAL_LIBERATION_SCOREBOARD_SEPARATOR), 100);
         }
     }
 
@@ -507,8 +507,8 @@ public class GoalLiberation extends ArenaGoal {
         this.endRunner = null;
         this.getTeamLifeMap().clear();
         if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
-            this.arena.removeCustomScoreBoardEntry(null, 102);
-            this.arena.removeCustomScoreBoardEntry(null, 100);
+            this.arena.getScoreboard().removeCustomEntry(null, 102);
+            this.arena.getScoreboard().removeCustomEntry(null, 100);
         }
     }
 

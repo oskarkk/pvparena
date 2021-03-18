@@ -170,7 +170,7 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
         arena.broadcast(Language.parse(arena, MSG.GOAL_TEAMDEATHCONFIRM_REMAINING, String.valueOf(iLives - 1), team.getColoredName()));
 
         this.getTeamLifeMap().put(team, iLives - 1);
-        arena.updateScoreboards();
+        arena.getScoreboard().refresh();
         return false;
     }
 
