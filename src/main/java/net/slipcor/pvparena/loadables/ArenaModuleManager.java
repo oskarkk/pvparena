@@ -21,7 +21,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <pre>Arena Module Manager class</pre>
@@ -81,14 +83,11 @@ public class ArenaModuleManager {
         return false;
     }
 
-    public static String checkForMissingSpawns(final Arena arena, final Set<String> list) {
-        for (final ArenaModule mod : arena.getMods()) {
-            String error = mod.checkForMissingSpawns(list);
-            if (error != null) {
-                return error;
-            }
-        }
-        return null;
+    public static Set<String> checkForMissingSpawns(final Arena arena, final Set<String> spawnsNames) {
+        return arena.getMods().stream()
+                .map(arenaModule -> arenaModule.checkForMissingSpawns(spawnsNames))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
     }
 
     public static void choosePlayerTeam(final Arena arena, final Player player, final String coloredTeam) {

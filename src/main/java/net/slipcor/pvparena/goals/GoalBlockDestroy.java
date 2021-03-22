@@ -116,12 +116,10 @@ public class GoalBlockDestroy extends ArenaGoal {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        final String team = this.checkForMissingTeamSpawn(list);
-        if (team != null) {
-            return team;
-        }
-        return this.checkForMissingTeamCustom(list, BLOCK);
+    public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
+        final Set<String> errors = this.checkForMissingTeamSpawn(spawnsNames);
+        errors.addAll(this.checkForMissingTeamCustom(spawnsNames, BLOCK));
+        return errors;
     }
 
     @Override

@@ -73,11 +73,11 @@ public class GoalPlayerLives extends ArenaGoal {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        if (!this.arena.isFreeForAll()) {
-            return this.checkForMissingTeamSpawn(list);
+    public Set<String> checkForMissingSpawns(final Set<String> list) {
+        if (this.arena.isFreeForAll()) {
+            return this.checkForMissingFFASpawn(list);
         }
-        return this.checkForMissingSpawn(list);
+        return this.checkForMissingTeamSpawn(list);
     }
 
     @Override
@@ -307,8 +307,8 @@ public class GoalPlayerLives extends ArenaGoal {
     @Override
     public void reset(final boolean force) {
         this.endRunner = null;
-        this.getTeamLifeMap().clear();
         this.getPlayerLifeMap().clear();
+        this.getTeamLifeMap().clear();
     }
 
     @Override

@@ -102,17 +102,10 @@ public class GoalLiberation extends ArenaGoal {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        if (!this.arena.isFreeForAll()) {
-            final String team = this.checkForMissingTeamSpawn(list);
-            if (team != null) {
-                return team;
-            }
-
-            return this.checkForMissingTeamCustom(list, "jail");
-        }
-        PVPArena.getInstance().getLogger().warning("Liberation goal running in FFA mode: " + this.arena.getName());
-        return null;
+    public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
+        final Set<String> errors = this.checkForMissingTeamSpawn(spawnsNames);
+        errors.addAll(this.checkForMissingTeamCustom(spawnsNames, "jail"));
+        return errors;
     }
 
     /**

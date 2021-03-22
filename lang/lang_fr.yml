@@ -141,7 +141,7 @@ nulang:
     errorloungefree: Erreur ! L'arène n'est pas de type free. Veuillez utiliser '[teamname]lounge'
     log:
       matnotfound: 'Materiel non reconnu: %1%'
-    missingspawn: 'Spawn perdu: &f%1%'
+    missingspawn: 'Spawns manquants: &f%1%'
     moduleupdate: 'You need to set ''update.modules: true'' to use this command!'
     noarenas: Aucune arène trouvée !
     valueneg: 'Valeurs négatives: &c%1%&r'

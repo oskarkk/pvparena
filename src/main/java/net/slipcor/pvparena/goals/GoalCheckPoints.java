@@ -63,20 +63,16 @@ public class GoalCheckPoints extends ArenaGoal {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        if (!list.contains("spawn")) {
-            return "spawn";
+    public Set<String> checkForMissingSpawns(final Set<String> list) {
+        Set<String> errors = new HashSet<>();
+        if (!list.contains(SPAWN)) {
+            errors.add(SPAWN);
         }
-        int count = 0;
-        for (final String s : list) {
-            if (s.startsWith(CHECKPOINT)) {
-                count++;
-            }
+        // check if the first checkpoint is set
+        if (!list.contains(CHECKPOINT + "1")) {
+            errors.add(CHECKPOINT + "1");
         }
-        if (count < 1) {
-            return "checkpoint: " + count + " / 1";
-        }
-        return null;
+        return errors;
     }
 
     /**
@@ -200,10 +196,10 @@ public class GoalCheckPoints extends ArenaGoal {
         if (args.length < 2 && this.arena.getFighters().contains(ap)) {
             ap.setTelePass(true);
             int value = cpLives - this.getPlayerLifeMap().get(ap.getPlayer());
-            if(value == 0) {
-                ap.getPlayer().teleport(SpawnManager.getSpawnByExactName(this.arena, "spawn").toLocation());
+            if (value == 0) {
+                ap.getPlayer().teleport(SpawnManager.getSpawnByExactName(this.arena, SPAWN).toLocation());
             } else {
-                ap.getPlayer().teleport(SpawnManager.getSpawnByExactName(this.arena, CHECKPOINT +value).toLocation());
+                ap.getPlayer().teleport(SpawnManager.getSpawnByExactName(this.arena, CHECKPOINT + value).toLocation());
             }
             ap.setTelePass(false);
             return;
@@ -220,8 +216,8 @@ public class GoalCheckPoints extends ArenaGoal {
             return;
         }
         Player player = (Player) sender;
-        String spawnName = CHECKPOINT +value;
-        if(value > 0 && value <= cpLives) {
+        String spawnName = CHECKPOINT + value;
+        if (value > 0 && value <= cpLives) {
             this.arena.spawnSet(spawnName, new PALocation(player.getLocation()));
             this.arena.msg(sender, Language.parse(this.arena, MSG.SPAWN_SET, spawnName));
         } else {
@@ -278,12 +274,12 @@ public class GoalCheckPoints extends ArenaGoal {
 
     @Override
     public boolean hasSpawn(final String string) {
-        if (string.startsWith(CHECKPOINT) || string.startsWith("spawn")) {
+        if (string.startsWith(CHECKPOINT) || string.startsWith(SPAWN)) {
             return true;
         }
         if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
             for (final ArenaClass aClass : this.arena.getClasses()) {
-                if (string.toLowerCase().contains(aClass.getName().toLowerCase() + "spawn")) {
+                if (string.toLowerCase().contains(aClass.getName().toLowerCase() + SPAWN)) {
                     return true;
                 }
             }

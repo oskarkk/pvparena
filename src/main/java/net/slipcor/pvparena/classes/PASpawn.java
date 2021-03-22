@@ -4,9 +4,9 @@ public class PASpawn {
     private final PALocation location;
     private final String name;
 
-    public PASpawn(final PALocation loc, final String string) {
+    public PASpawn(final PALocation loc, final String name) {
         this.location = loc;
-        this.name = string;
+        this.name = name;
     }
 
     @Override

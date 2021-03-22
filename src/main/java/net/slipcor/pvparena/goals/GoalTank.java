@@ -63,16 +63,11 @@ public class GoalTank extends ArenaGoal {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        if (!this.arena.isFreeForAll()) {
-            return null; // teams are handled somewhere else
-        }
+    public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
 
-        if (!list.contains("tank")) {
-            return "tank";
-        }
-
-        return this.checkForMissingSpawn(list);
+        Set<String> errors = this.checkForMissingFFASpawn(spawnsNames);
+        errors.addAll(this.checkForMissingFFACustom(spawnsNames, "tank"));
+        return errors;
     }
 
     @Override
@@ -80,7 +75,7 @@ public class GoalTank extends ArenaGoal {
         if (this.getPlayerLifeMap().containsKey(player)) {
             final int iLives = this.getPlayerLifeMap().get(player);
             debug(this.arena, player, "lives before death: " + iLives);
-            return iLives > 1 && !tanks.get(this.arena).equals(player.getName());
+            return iLives > 1 && !tanks.get(this.arena).equals(ArenaPlayer.fromPlayer(player));
         }
         return true;
     }
@@ -106,7 +101,7 @@ public class GoalTank extends ArenaGoal {
                 if (ap.getStatus() != PlayerStatus.FIGHT) {
                     continue;
                 }
-                if (tanks.containsValue(ap.getName())) {
+                if (tanks.containsValue(ap)) {
                     ArenaModuleManager.announce(this.arena,
                             Language.parse(this.arena, MSG.GOAL_TANK_TANKWON, ap.getName()), "END");
                     ArenaModuleManager.announce(this.arena,

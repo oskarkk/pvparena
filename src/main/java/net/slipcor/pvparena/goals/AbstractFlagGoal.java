@@ -112,13 +112,10 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        final String team = this.checkForMissingTeamSpawn(list);
-        if (team != null) {
-            return team;
-        }
-
-        return this.checkForMissingTeamCustom(list, "flag");
+    public Set<String> checkForMissingSpawns(final Set<String> list) {
+        Set<String> errors = this.checkForMissingTeamSpawn(list);
+        errors.addAll(this.checkForMissingTeamCustom(list, "flag"));
+        return errors;
     }
 
 

@@ -28,7 +28,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 
 /**
@@ -42,6 +44,7 @@ import static java.util.Optional.ofNullable;
  */
 
 public class ArenaGoal implements IArenaCommandHandler {
+    public static final String SPAWN = "spawn";
     protected String name;
     protected Arena arena;
     protected Map<ArenaTeam, Integer> teamLifeMap = new HashMap<>();
@@ -173,11 +176,11 @@ public class ArenaGoal implements IArenaCommandHandler {
     /**
      * check if all necessary spawns are set
      *
-     * @param list the list of all set spawns
-     * @return null if ready, error message otherwise
+     * @param spawnsNames the list of all set spawns
+     * @return empty if ready, error message otherwise
      */
-    public String checkForMissingSpawns(final Set<String> list) {
-        return null;
+    public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
+        return new HashSet<>();
     }
 
     /**
@@ -185,63 +188,59 @@ public class ArenaGoal implements IArenaCommandHandler {
      *
      * @return null if ready, error message otherwise
      */
-    protected String checkForMissingSpawn(final Set<String> list) {
-        int count = 0;
-        for (final String s : list) {
-            if (s.startsWith("spawn")) {
-                count++;
+    protected Set<String> checkForMissingFFASpawn(final Set<String> spawnNames) {
+        final Set<String> errors = new HashSet<>();
+        int minPlayers = this.arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS);
+        for (int i = 1; i <= minPlayers; i++) {
+            if(!spawnNames.contains(SPAWN + i)){
+                errors.add(String.format("spawn%s", i));
             }
         }
-        int minPlayers = this.arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS);
-        return count >= minPlayers ? null : "need more spawns! (" + count + "/" + minPlayers + ")";
+
+        return errors;
+    }
+
+    /**
+     * check if necessary custom FFA spawns areList.of set
+     *
+     * + check if a spawn start with custom
+     *
+     * @return null if ready, error message otherwise
+     */
+    protected Set<String> checkForMissingFFACustom(final Set<String> spawnsNames, final String custom) {
+        final Set<String> errors = new HashSet<>();
+        if (!spawnsNames.contains(custom)
+                && spawnsNames.stream().noneMatch(spawnName -> spawnName.startsWith(custom))){
+            errors.add(custom);
+        }
+        return errors;
     }
 
     /**
      * check if necessary team spawns are set
      *
-     * @return null if ready, error message otherwise
+     * @return empty if ready, team(s) missing otherwise
      */
-    protected String checkForMissingTeamSpawn(final Set<String> list) {
-        for (final ArenaTeam team : this.arena.getTeams()) {
-            final String sTeam = team.getName();
-            if (!list.contains(team + "spawn")) {
-                boolean found = false;
-                for (final String s : list) {
-                    if (s.startsWith(sTeam + "spawn")) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    return team.getName() + "spawn not set";
-                }
-            }
-        }
-        return null;
+    protected Set<String> checkForMissingTeamSpawn(final Set<String> spawnsNames) {
+        return this.arena.getTeams().stream()
+                .map(team -> team.getName() + SPAWN)
+                .filter(teamSpawnName -> !spawnsNames.contains(teamSpawnName))
+                .collect(Collectors.toSet());
     }
 
     /**
      * check if necessary custom team spawns are set
      *
+     * + check if a spawn start with team's name + custom
+     *
      * @return null if ready, error message otherwise
      */
-    protected String checkForMissingTeamCustom(final Set<String> list, final String custom) {
-        for (final ArenaTeam team : this.arena.getTeams()) {
-            final String sTeam = team.getName();
-            if (!list.contains(sTeam + custom)) {
-                boolean found = false;
-                for (final String s : list) {
-                    if (s.startsWith(sTeam + custom)) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    return sTeam + custom + "not set";
-                }
-            }
-        }
-        return null;
+    protected Set<String> checkForMissingTeamCustom(final Set<String> spawnsNames, final String custom) {
+        return this.arena.getTeams().stream()
+                .filter(arenaTeam -> !spawnsNames.contains(arenaTeam.getName() + custom))
+                .filter(arenaTeam -> spawnsNames.stream().noneMatch(spawnName -> spawnName.startsWith(arenaTeam + custom)))
+                .map(arenaTeam -> arenaTeam.getName() + custom)
+                .collect(Collectors.toSet());
     }
 
     /**

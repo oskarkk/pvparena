@@ -15,8 +15,8 @@ import net.slipcor.pvparena.managers.ArenaManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static net.slipcor.pvparena.config.Debugger.debug;
 
@@ -33,6 +33,7 @@ import static net.slipcor.pvparena.config.Debugger.debug;
 public class StandardLounge extends ArenaModule {
 
     private static final int PRIORITY = 2;
+    public static final String LOUNGE = "lounge";
 
     public StandardLounge() {
         super("StandardLounge");
@@ -49,39 +50,20 @@ public class StandardLounge extends ArenaModule {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        // not random! we need teams * 2 (lounge + spawn) + exit + spectator
-        debug("parsing not random");
-        final Iterator<String> iter = list.iterator();
-        int lounges = 0;
-        while (iter.hasNext()) {
-            final String spawnName = iter.next();
-            debug("parsing '{}'", spawnName);
-            if (this.arena.isFreeForAll()) {
-                if ("lounge".equals(spawnName)) {
-                    lounges++;
-                }
-            } else {
-                if (spawnName.endsWith("lounge") && !"lounge".equals(spawnName)) {
-                    lounges++;
-                }
-            }
-
+    public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
+        debug("checking missing lounge spawn(s)");
+        List<String> ignoredTeams = Arrays.asList("infected", "tank");
+        Set<String> errors = new HashSet<>();
+        if (this.arena.isFreeForAll() && !spawnsNames.contains(LOUNGE)) {
+            errors.add(LOUNGE);
+        } else {
+            return this.arena.getTeams().stream()
+                    .filter(team -> !ignoredTeams.contains(team.getName()))
+                    .filter(team -> !spawnsNames.contains(team.getName() + LOUNGE))
+                    .map(team -> team.getName() + LOUNGE)
+                    .collect(Collectors.toCollection(() -> errors));
         }
-
-        int neededCount = this.arena.getTeams().size();
-
-        for (final ArenaTeam team : this.arena.getTeams()) {
-            if ("infected".equals(team.getName()) ||
-                    "tank".equalsIgnoreCase(team.getName())) {
-                neededCount--;
-            }
-        }
-        if (lounges == neededCount) {
-            return null;
-        }
-
-        return lounges + "/" + this.arena.getTeams().size() + "x lounge";
+        return errors;
     }
 
     @Override
@@ -101,7 +83,7 @@ public class StandardLounge extends ArenaModule {
 
         if (aPlayer.getArenaClass() == null) {
             String autoClass = this.arena.getArenaConfig().getDefinedString(CFG.READY_AUTOCLASS);
-            if(this.arena.getArenaConfig().getBoolean(CFG.USES_PLAYERCLASSES) && this.arena.getClass(player.getName()) != null) {
+            if (this.arena.getArenaConfig().getBoolean(CFG.USES_PLAYERCLASSES) && this.arena.getClass(player.getName()) != null) {
                 autoClass = player.getName();
             }
             if (autoClass != null && this.arena.getClass(autoClass) == null) {
@@ -115,14 +97,10 @@ public class StandardLounge extends ArenaModule {
     @Override
     public boolean hasSpawn(final String spawnName) {
         if (this.arena.isFreeForAll()) {
-            return spawnName.startsWith("lounge");
+            return spawnName.startsWith(LOUNGE);
         }
-        for (final ArenaTeam team : this.arena.getTeams()) {
-            if (spawnName.startsWith(team.getName() + "lounge")) {
-                return true;
-            }
-        }
-        return false;
+        return this.arena.getTeams().stream()
+                .anyMatch(team -> spawnName.startsWith(team.getName() + LOUNGE));
     }
 
     @Override
@@ -136,9 +114,9 @@ public class StandardLounge extends ArenaModule {
         team.add(aPlayer);
 
         if (this.arena.isFreeForAll()) {
-            this.arena.tpPlayerToCoordNameForJoin(aPlayer, "lounge", true);
+            this.arena.tpPlayerToCoordNameForJoin(aPlayer, LOUNGE, true);
         } else {
-            this.arena.tpPlayerToCoordNameForJoin(aPlayer, team.getName() + "lounge", true);
+            this.arena.tpPlayerToCoordNameForJoin(aPlayer, team.getName() + LOUNGE, true);
         }
 
         aPlayer.setStatus(PlayerStatus.LOUNGE);
@@ -146,9 +124,9 @@ public class StandardLounge extends ArenaModule {
         if (this.arena.isFreeForAll()) {
             this.arena.msg(player,
                     Language.parse(this.arena, CFG.MSG_YOUJOINED,
-                    Integer.toString(team.getTeamMembers().size()),
-                    Integer.toString(this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS))
-            ));
+                            Integer.toString(team.getTeamMembers().size()),
+                            Integer.toString(this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS))
+                    ));
             this.arena.broadcastExcept(
                     player,
                     Language.parse(this.arena, CFG.MSG_PLAYERJOINED,
@@ -163,7 +141,7 @@ public class StandardLounge extends ArenaModule {
                             team.getColoredName() + ChatColor.COLOR_CHAR + 'r',
                             Integer.toString(team.getTeamMembers().size()),
                             Integer.toString(this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS))
-            ));
+                    ));
 
             this.arena.broadcastExcept(
                     player,
@@ -172,7 +150,7 @@ public class StandardLounge extends ArenaModule {
                             team.getColoredName() + ChatColor.COLOR_CHAR + 'r',
                             Integer.toString(team.getTeamMembers().size()),
                             Integer.toString(this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS))
-            ));
+                    ));
         }
 
         if (aPlayer.getState() == null) {

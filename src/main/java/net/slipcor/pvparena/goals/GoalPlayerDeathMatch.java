@@ -63,12 +63,11 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        if (!this.arena.isFreeForAll()) {
-            return null; // teams are handled somewhere else
+    public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
+        if (this.arena.isFreeForAll()) {
+            return this.checkForMissingFFASpawn(spawnsNames);
         }
-
-        return this.checkForMissingSpawn(list);
+        return this.checkForMissingTeamSpawn(spawnsNames);
     }
 
     @Override

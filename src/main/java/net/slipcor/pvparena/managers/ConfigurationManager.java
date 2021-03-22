@@ -5,8 +5,10 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.commands.PAA_Setup;
+import net.slipcor.pvparena.core.CollectionUtils;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
@@ -17,10 +19,12 @@ import net.slipcor.pvparena.regions.ArenaRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static net.slipcor.pvparena.config.Debugger.debug;
 import static net.slipcor.pvparena.core.ItemStackUtils.getItemStacksFromConfig;
@@ -37,7 +41,9 @@ import static net.slipcor.pvparena.core.ItemStackUtils.getItemStacksFromConfig;
  */
 
 public final class ConfigurationManager {
-    //private final static Debugger debug = Debugger.getInstance();
+    private static final String OLD = "old";
+    public static final String CLASSITEMS = "classitems";
+    public static final String SPAWNS = "spawns";
 
     private ConfigurationManager() {
     }
@@ -54,8 +60,8 @@ public final class ConfigurationManager {
         }
         final YamlConfiguration config = cfg.getYamlConfiguration();
 
-        final List<String> goals = cfg.getStringList("goals", new ArrayList<String>());
-        final List<String> modules = cfg.getStringList("mods", new ArrayList<String>());
+        final List<String> goals = cfg.getStringList("goals", new ArrayList<>());
+        final List<String> modules = cfg.getStringList("mods", new ArrayList<>());
 
         ArenaGoalManager goalManager = PVPArena.getInstance().getAgm();
         if (cfg.getString(CFG.GENERAL_TYPE, "null") == null
@@ -64,7 +70,6 @@ public final class ConfigurationManager {
         } else {
             // opening existing arena
             arena.setFree("free".equals(cfg.getString(CFG.GENERAL_TYPE)));
-
 
             values:
             for (final CFG c : CFG.getValues()) {
@@ -114,34 +119,34 @@ public final class ConfigurationManager {
             }
         }
 
-        if (config.get("classitems") == null) {
-            if (PVPArena.getInstance().getConfig().get("classitems") == null) {
-                config.addDefault("classitems.Ranger.items",
+        if (config.get(CLASSITEMS) == null) {
+            if (PVPArena.getInstance().getConfig().get(CLASSITEMS) == null) {
+                config.addDefault(CLASSITEMS + ".Ranger.items",
                         Utils.getItemStacksFromMaterials(Material.BOW, Material.ARROW));
-                config.addDefault("classitems.Ranger.offhand",
+                config.addDefault(CLASSITEMS + ".Ranger.offhand",
                         Utils.getItemStacksFromMaterials(Material.AIR));
-                config.addDefault("classitems.Ranger.armor",
+                config.addDefault(CLASSITEMS + ".Ranger.armor",
                         Utils.getItemStacksFromMaterials(Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS));
 
-                config.addDefault("classitems.Swordsman.items",
+                config.addDefault(CLASSITEMS + ".Swordsman.items",
                         Utils.getItemStacksFromMaterials(Material.DIAMOND_SWORD));
-                config.addDefault("classitems.Swordsman.offhand",
+                config.addDefault(CLASSITEMS + ".Swordsman.offhand",
                         Utils.getItemStacksFromMaterials(Material.AIR));
-                config.addDefault("classitems.Swordsman.armor",
+                config.addDefault(CLASSITEMS + ".Swordsman.armor",
                         Utils.getItemStacksFromMaterials(Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS));
 
-                config.addDefault("classitems.Tank.items",
+                config.addDefault(CLASSITEMS + ".Tank.items",
                         Utils.getItemStacksFromMaterials(Material.STONE_SWORD));
-                config.addDefault("classitems.Tank.offhand",
+                config.addDefault(CLASSITEMS + ".Tank.offhand",
                         Utils.getItemStacksFromMaterials(Material.AIR));
-                config.addDefault("classitems.Tank.armor",
+                config.addDefault(CLASSITEMS + ".Tank.armor",
                         Utils.getItemStacksFromMaterials(Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS));
 
-                config.addDefault("classitems.Pyro.items",
+                config.addDefault(CLASSITEMS + ".Pyro.items",
                         Utils.getItemStacksFromMaterials(Material.FLINT_AND_STEEL, Material.TNT, Material.TNT, Material.TNT));
-                config.addDefault("classitems.Pyro.offhand",
+                config.addDefault(CLASSITEMS + ".Pyro.offhand",
                         Utils.getItemStacksFromMaterials(Material.AIR));
-                config.addDefault("classitems.Pyro.armor",
+                config.addDefault(CLASSITEMS + ".Pyro.armor",
                         Utils.getItemStacksFromMaterials(Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS));
 
             }
@@ -178,20 +183,20 @@ public final class ConfigurationManager {
         cfg.save();
         cfg.load();
 
-        final Map<String, Object> classes = config.getConfigurationSection(
-                "classitems").getValues(false);
+        final Map<String, Object> classes = config.getConfigurationSection(CLASSITEMS).getValues(false);
         arena.getClasses().clear();
         debug(arena, "reading class items");
         ArenaClass.addGlobalClasses(arena);
         for (final Map.Entry<String, Object> stringObjectEntry1 : classes.entrySet()) {
+
             ItemStack[] items;
-            ItemStack offHand = new ItemStack(Material.AIR, 1);
-            ItemStack[] armors = new ItemStack[]{new ItemStack(Material.AIR, 1)};
+            ItemStack offHand;
+            ItemStack[] armors;
 
             try {
-                items = getItemStacksFromConfig(config.getList("classitems."+stringObjectEntry1.getKey()+".items"));
-                offHand = getItemStacksFromConfig(config.getList("classitems."+stringObjectEntry1.getKey()+".offhand"))[0];
-                armors = getItemStacksFromConfig(config.getList("classitems."+stringObjectEntry1.getKey()+".armor"));
+                items = getItemStacksFromConfig(config.getList(CLASSITEMS + "."+stringObjectEntry1.getKey()+".items"));
+                offHand = getItemStacksFromConfig(config.getList(CLASSITEMS + "."+stringObjectEntry1.getKey()+".offhand"))[0];
+                armors = getItemStacksFromConfig(config.getList(CLASSITEMS + "."+stringObjectEntry1.getKey()+".armor"));
             } catch (final Exception e) {
                 Bukkit.getLogger().severe(
                         "[PVP Arena] Error while parsing class, skipping: "
@@ -298,10 +303,6 @@ public final class ConfigurationManager {
     public static String isSetup(final Arena arena) {
         //arena.getArenaConfig().load();
 
-        if (arena.getArenaConfig().getUnsafe("spawns") == null) {
-            return Language.parse(arena, MSG.ERROR_NO_SPAWNS);
-        }
-
         for (final String editor : PAA_Edit.activeEdits.keySet()) {
             if (PAA_Edit.activeEdits.get(editor).getName().equals(
                     arena.getName())) {
@@ -316,33 +317,50 @@ public final class ConfigurationManager {
             }
         }
 
-        final Set<String> list = arena.getArenaConfig().getYamlConfiguration()
-                .getConfigurationSection("spawns").getValues(false).keySet();
+        return isSpawnsSetup(arena);
+    }
 
+    private static String isSpawnsSetup(Arena arena) {
+
+        if (arena.getArenaConfig().getUnsafe(SPAWNS) == null) {
+            return Language.parse(arena, MSG.ERROR_NO_SPAWNS);
+        }
+
+        ConfigurationSection spawnConfigurationSection = arena.getArenaConfig().getYamlConfiguration()
+                .getConfigurationSection(SPAWNS);
+
+        assert spawnConfigurationSection != null;
+        final Set<String> spawnsNames = spawnConfigurationSection.getValues(false)
+                .entrySet().stream().map(spawnConfig -> new PASpawn(Config.parseLocation((String) spawnConfig.getValue()),
+                        spawnConfig.getKey())).map(PASpawn::getName).collect(Collectors.toSet());
+
+        final Set<String> errors = new HashSet<>();
+
+        // mandatory spawns
         final String sExit = arena.getArenaConfig().getString(CFG.TP_EXIT);
-        if (!"old".equals(sExit) && !list.contains(sExit)) {
-            return "Exit Spawn ('" + sExit + "') not set!";
+        if (!OLD.equals(sExit) && !spawnsNames.contains(sExit)) {
+            errors.add(sExit);
         }
         final String sWin = arena.getArenaConfig().getString(CFG.TP_WIN);
-        if (!"old".equals(sWin) && !list.contains(sWin)) {
-            return "Win Spawn ('" + sWin + "') not set!";
+        if (!OLD.equals(sWin) && !spawnsNames.contains(sWin)) {
+            errors.add(sWin);
         }
         final String sLose = arena.getArenaConfig().getString(CFG.TP_LOSE);
-        if (!"old".equals(sLose) && !list.contains(sLose)) {
-            return "Lose Spawn ('" + sLose + "') not set!";
+        if (!OLD.equals(sLose) && !spawnsNames.contains(sLose)) {
+            errors.add(sLose);
         }
         final String sDeath = arena.getArenaConfig().getString(CFG.TP_DEATH);
-        if (!"old".equals(sDeath) && !list.contains(sDeath)) {
-            return "Death Spawn ('" + sDeath + "') not set!";
+        if (!OLD.equals(sDeath) && !spawnsNames.contains(sDeath)) {
+            errors.add(sDeath);
         }
+        // custom mods spawns
+        errors.addAll(ArenaModuleManager.checkForMissingSpawns(arena, spawnsNames));
+        // custom goal spawns
+        errors.addAll(arena.getGoal().checkForMissingSpawns(spawnsNames));
 
-        String error = ArenaModuleManager.checkForMissingSpawns(arena, list);
-        if (error != null) {
-            return Language.parse(arena, MSG.ERROR_MISSING_SPAWN, error);
-        }
-        error = arena.getGoal().checkForMissingSpawns(list);
-        if (error != null) {
-            return Language.parse(arena, MSG.ERROR_MISSING_SPAWN, error);
+        // display all missings spawn in one message
+        if (CollectionUtils.isNotEmpty(errors)) {
+            return Language.parse(arena, MSG.ERROR_MISSING_SPAWN, String.join(", ", errors));
         }
         return null;
     }

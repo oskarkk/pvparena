@@ -48,8 +48,8 @@ public abstract class AbstractTeamKillGoal extends ArenaGoal {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        return this.checkForMissingTeamSpawn(list);
+    public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
+        return this.checkForMissingTeamSpawn(spawnsNames);
     }
 
     @Override

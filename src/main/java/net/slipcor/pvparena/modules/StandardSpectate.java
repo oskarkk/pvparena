@@ -12,6 +12,7 @@ import net.slipcor.pvparena.exceptions.GameplayException;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -26,6 +27,8 @@ import java.util.Set;
 
 public class StandardSpectate extends ArenaModule {
 
+    public static final String SPECTATOR = "spectator";
+
     public StandardSpectate() {
         super("StandardSpectate");
     }
@@ -38,8 +41,8 @@ public class StandardSpectate extends ArenaModule {
     }
 
     @Override
-    public String checkForMissingSpawns(final Set<String> list) {
-        return list.contains("spectator") ? null : "spectator not set";
+    public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
+        return spawnsNames.contains(SPECTATOR) ? Collections.emptySet() : Collections.singleton(SPECTATOR);
     }
 
     @Override
@@ -60,25 +63,25 @@ public class StandardSpectate extends ArenaModule {
     @Override
     public void commitSpectate(final Player player) {
         // standard join --> lounge
-        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
-        aPlayer.setLocation(new PALocation(player.getLocation()));
+        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
+        arenaPlayer.setLocation(new PALocation(player.getLocation()));
 
-        aPlayer.setArena(this.arena);
-        aPlayer.setStatus(PlayerStatus.WATCH);
+        arenaPlayer.setArena(this.arena);
+        arenaPlayer.setStatus(PlayerStatus.WATCH);
 
-        this.arena.tpPlayerToCoordNameForJoin(aPlayer, "spectator", true);
+        this.arena.tpPlayerToCoordNameForJoin(arenaPlayer, SPECTATOR, true);
         this.arena.msg(player, Language.parse(this.arena, MSG.NOTICE_WELCOME_SPECTATOR));
 
-        if (aPlayer.getState() == null) {
+        if (arenaPlayer.getState() == null) {
 
-            final Arena arena = aPlayer.getArena();
+            final Arena arena = arenaPlayer.getArena();
 
-            aPlayer.createState(player);
+            arenaPlayer.createState(player);
             ArenaPlayer.backupAndClearInventory(arena, player);
-            aPlayer.dump();
+            arenaPlayer.dump();
 
 
-            if (aPlayer.getArenaTeam() != null && aPlayer.getArenaClass() == null) {
+            if (arenaPlayer.getArenaTeam() != null && arenaPlayer.getArenaClass() == null) {
                 String autoClass = arena.getArenaConfig().getDefinedString(CFG.READY_AUTOCLASS);
                 if(arena.getArenaConfig().getBoolean(CFG.USES_PLAYERCLASSES) && arena.getClass(player.getName()) != null) {
                     autoClass = player.getName();
@@ -93,6 +96,6 @@ public class StandardSpectate extends ArenaModule {
 
     @Override
     public boolean hasSpawn(final String string) {
-        return "spectator".equalsIgnoreCase(string);
+        return SPECTATOR.equalsIgnoreCase(string);
     }
 }

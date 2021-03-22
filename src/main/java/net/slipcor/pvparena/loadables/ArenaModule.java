@@ -24,7 +24,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +43,7 @@ public abstract class ArenaModule implements IArenaCommandHandler {
     protected Arena arena;
     protected String name;
 
-    public ArenaModule(final String name) {
+    protected ArenaModule(final String name) {
         this.name = name;
     }
 
@@ -90,12 +91,12 @@ public abstract class ArenaModule implements IArenaCommandHandler {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList(new String[0]);
+        return Collections.emptyList();
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList(new String[0]);
+        return Collections.emptyList();
     }
 
     @Override
@@ -150,11 +151,11 @@ public abstract class ArenaModule implements IArenaCommandHandler {
     /**
      * check for unset spawns
      *
-     * @param list the set spawns
+     * @param spawnsNames the set spawns
      * @return null if okay, error message if something is missing
      */
-    public String checkForMissingSpawns(final Set<String> list) {
-        return null;
+    public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
+        return new HashSet<>();
     }
 
     /**
@@ -255,7 +256,7 @@ public abstract class ArenaModule implements IArenaCommandHandler {
 
     public boolean isMissingBattleRegion(final Arena arena) {
         if (this.needsBattleRegion()) {
-            return arena.getRegionsByType(RegionType.BATTLE).size() < 1;
+            return arena.getRegionsByType(RegionType.BATTLE).isEmpty();
         }
         return false;
     }
