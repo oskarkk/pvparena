@@ -602,7 +602,7 @@ public class Arena {
     }
 
     public void msg(final CommandSender sender, final String msg) {
-        if (sender != null && StringUtils.isBlank(msg)) {
+        if (sender != null && !StringUtils.isBlank(msg)) {
             debug(this, '@' + sender.getName() + ": " + msg);
             sender.sendMessage(Language.parse(this, MSG.MESSAGES_GENERAL, this.prefix, msg));
         }
@@ -684,7 +684,7 @@ public class Arena {
     }
 
     public static void pmsg(final CommandSender sender, final String msg) {
-        if (sender != null && StringUtils.isBlank(msg)) {
+        if (sender != null && !StringUtils.isBlank(msg)) {
             debug(sender, "@{} : {}", sender.getName(), msg);
             sender.sendMessage(Language.parse(MSG.MESSAGES_GENERAL, PVPArena.getInstance().getConfig().getString("globalPrefix", "PVP Arena"), msg));
         }
