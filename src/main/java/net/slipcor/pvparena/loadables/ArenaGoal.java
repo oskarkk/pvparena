@@ -30,7 +30,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 
 /**
@@ -63,6 +62,8 @@ public class ArenaGoal implements IArenaCommandHandler {
     public String getName() {
         return this.name;
     }
+
+    public boolean isFreeForAll() { return false; }
 
     /**
      * does the arena type allow joining in battle?

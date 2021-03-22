@@ -51,6 +51,11 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
     }
 
     @Override
+    public boolean isFreeForAll() {
+        return true;
+    }
+
+    @Override
     public boolean allowsJoinInBattle() {
         return this.arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE);
     }
@@ -64,9 +69,6 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
 
     @Override
     public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
-        if (this.arena.isFreeForAll()) {
-            return this.checkForMissingFFASpawn(spawnsNames);
-        }
         return this.checkForMissingTeamSpawn(spawnsNames);
     }
 
@@ -243,8 +245,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
                 }
             }
         }
-        return this.arena.isFreeForAll() && string.toLowerCase()
-                .startsWith("spawn");
+        return string.toLowerCase().startsWith("spawn");
     }
 
     @Override

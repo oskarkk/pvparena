@@ -52,6 +52,7 @@ public class ArenaGoalManager {
         this.addInternalLoadable(GoalTeamDeathConfirm.class);
         this.addInternalLoadable(GoalTeamDeathMatch.class);
         this.addInternalLoadable(GoalTeamLives.class);
+        this.addInternalLoadable(GoalTeamPlayerLives.class);
     }
 
     public Set<String> getAllGoalNames() {

@@ -1,11 +1,7 @@
 package net.slipcor.pvparena.goals;
 
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.arena.ArenaClass;
-import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.PlayerStatus;
-import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.arena.*;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -17,10 +13,8 @@ import net.slipcor.pvparena.loadables.ArenaModuleManager;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.InventoryManager;
 import net.slipcor.pvparena.managers.WorkflowManager;
-import net.slipcor.pvparena.managers.TeamManager;
 import net.slipcor.pvparena.runnables.EndRunnable;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -64,6 +58,11 @@ public class GoalPlayerKillReward extends ArenaGoal {
     }
 
     @Override
+    public boolean isFreeForAll() {
+        return true;
+    }
+
+    @Override
     public boolean allowsJoinInBattle() {
         return this.arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE);
     }
@@ -92,22 +91,13 @@ public class GoalPlayerKillReward extends ArenaGoal {
 
     @Override
     public boolean checkEnd() {
-        if (!this.arena.isFreeForAll()) {
-            final int count = TeamManager.countActiveTeams(this.arena);
-
-            return (count <= 1); // yep. only one team left. go!
-        }
-
         final int count = this.getPlayerLifeMap().size();
-        return (count <= 1); // yep. only one team left. go!
+        return (count <= 1); // yep. only one player left. go!
     }
 
     @Override
     public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
-        if (this.arena.isFreeForAll()) {
-            return this.checkForMissingFFASpawn(spawnsNames);
-        }
-        return this.checkForMissingTeamSpawn(spawnsNames);
+        return this.checkForMissingFFASpawn(spawnsNames);
     }
 
     @Override
@@ -170,33 +160,16 @@ public class GoalPlayerKillReward extends ArenaGoal {
                 if (arenaPlayer.getStatus() != PlayerStatus.FIGHT) {
                     continue;
                 }
+                ArenaModuleManager.announce(this.arena,
+                        Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
+                        "END");
 
-                if (this.arena.isFreeForAll()) {
-                    ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
-                            "END");
+                ArenaModuleManager.announce(this.arena,
+                        Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
+                        "WINNER");
 
-                    ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
-                            "WINNER");
-
-                    this.arena.broadcast(Language.parse(this.arena, MSG.PLAYER_HAS_WON,
-                            arenaPlayer.getName()));
-                } else {
-                    ArenaModuleManager.announce(
-                            this.arena,
-                            Language.parse(this.arena, MSG.TEAM_HAS_WON,
-                                    team.getColoredName()), "END");
-
-                    ArenaModuleManager.announce(
-                            this.arena,
-                            Language.parse(this.arena, MSG.TEAM_HAS_WON,
-                                    team.getColoredName()), "WINNER");
-
-                    this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON,
-                            team.getColoredName()));
-                    break;
-                }
+                this.arena.broadcast(Language.parse(this.arena, MSG.PLAYER_HAS_WON,
+                        arenaPlayer.getName()));
             }
 
             if (ArenaModuleManager.commitEnd(this.arena, team)) {
@@ -301,34 +274,15 @@ public class GoalPlayerKillReward extends ArenaGoal {
 
     @Override
     public boolean hasSpawn(final String string) {
-        if (this.arena.isFreeForAll()) {
-
-            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
-                for (final ArenaClass aClass : this.arena.getClasses()) {
-                    if (string.toLowerCase().startsWith(
-                            aClass.getName().toLowerCase() + SPAWN)) {
-                        return true;
-                    }
-                }
-            }
-            return string.toLowerCase().startsWith(SPAWN);
-        }
-        for (final String teamName : this.arena.getTeamNames()) {
-            if (string.toLowerCase().startsWith(
-                    teamName.toLowerCase() + SPAWN)) {
-                return true;
-            }
-
-            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
-                for (final ArenaClass aClass : this.arena.getClasses()) {
-                    if (string.toLowerCase().startsWith(teamName.toLowerCase() +
-                            aClass.getName().toLowerCase() + SPAWN)) {
-                        return true;
-                    }
+        if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+            for (final ArenaClass aClass : this.arena.getClasses()) {
+                if (string.toLowerCase().startsWith(
+                        aClass.getName().toLowerCase() + SPAWN)) {
+                    return true;
                 }
             }
         }
-        return false;
+        return string.toLowerCase().startsWith(SPAWN);
     }
 
     @Override
@@ -367,31 +321,11 @@ public class GoalPlayerKillReward extends ArenaGoal {
     public void reset(final boolean force) {
         this.endRunner = null;
         this.getPlayerLifeMap().clear();
-        this.getTeamLifeMap().clear();
     }
 
     @Override
     public void setDefaults(final YamlConfiguration config) {
-        if (!this.arena.isFreeForAll()) {
-            if (config.get("teams.free") != null) {
-                config.set("teams", null);
-            }
-            if (config.get("teams") == null) {
-                debug(this.arena, "no teams defined, adding custom red and blue!");
-                config.addDefault("teams.red", ChatColor.RED.name());
-                config.addDefault("teams.blue", ChatColor.BLUE.name());
-            }
-            if (this.arena.getConfig().getBoolean(CFG.GOAL_FLAGS_WOOLFLAGHEAD)
-                    && config.get("flagColors") == null) {
-                debug(this.arena, "no flagheads defined, adding white and black!");
-                config.addDefault("flagColors.red", "WHITE");
-                config.addDefault("flagColors.blue", "BLACK");
-            }
-        }
-
-
-        final ConfigurationSection cs = (ConfigurationSection) config
-                .get("goal.playerkillrewards");
+        final ConfigurationSection cs = (ConfigurationSection) config.get("goal.playerkillrewards");
 
         if (cs != null) {
             for (final String line : cs.getKeys(false)) {
@@ -493,20 +427,7 @@ public class GoalPlayerKillReward extends ArenaGoal {
 
     @Override
     public int getLives(ArenaPlayer arenaPlayer) {
-        // FFA
-        if (this.arena.isFreeForAll()) {
-            return this.getPlayerLifeMap().getOrDefault(arenaPlayer.getPlayer(), 0);
-        }
-
-        // Teams
-        if (this.getTeamLifeMap().containsKey(arenaPlayer.getArenaTeam())) {
-            return this.getPlayerLifeMap().get(arenaPlayer.getPlayer());
-        }
-
-        // Solo by team
-        return arenaPlayer.getArenaTeam().getTeamMembers().stream()
-                .mapToInt(ap -> this.getPlayerLifeMap().getOrDefault(ap.getPlayer(), 0))
-                .sum();
+        return this.getPlayerLifeMap().getOrDefault(arenaPlayer.getPlayer(), 0);
     }
 
 }

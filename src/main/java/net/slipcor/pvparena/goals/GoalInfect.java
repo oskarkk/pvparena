@@ -68,6 +68,11 @@ public class GoalInfect extends ArenaGoal {
     }
 
     @Override
+    public boolean isFreeForAll() {
+        return true;
+    }
+
+    @Override
     public boolean checkEnd() {
         final int count = this.getPlayerLifeMap().size();
 
@@ -496,8 +501,7 @@ public class GoalInfect extends ArenaGoal {
             }
         }
 
-        return this.arena.isFreeForAll() && string.toLowerCase()
-                .startsWith(SPAWN) || string.toLowerCase().startsWith(INFECTED);
+        return string.toLowerCase().startsWith(SPAWN) || string.toLowerCase().startsWith(INFECTED);
     }
 
     @Override

@@ -58,8 +58,8 @@ public final class TeamManager {
     public static ArenaTeam getRandomTeam(final Arena arena) {
         debug(arena, "calculating free team");
 
-        final int maxPlayerPerTeam = arena.getConfig().getInt(CFG.READY_MAXTEAMPLAYERS) == 0?
-                100 : arena.getConfig().getInt(CFG.READY_MAXTEAMPLAYERS);
+        int maxTeamPlayersCfg = arena.getConfig().getInt(CFG.READY_MAXTEAMPLAYERS);
+        final int maxPlayerPerTeam = (maxTeamPlayersCfg == 0) ? 100 : maxTeamPlayersCfg;
 
         // collect the available teams into a map and get count of "players missing" or "space available"
         Map<ArenaTeam, Integer> availableTeamsWithMemberCount = arena.getTeams().stream()

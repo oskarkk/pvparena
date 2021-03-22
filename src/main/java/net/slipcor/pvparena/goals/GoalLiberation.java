@@ -87,18 +87,10 @@ public class GoalLiberation extends ArenaGoal {
     @Override
     public boolean checkEnd() {
         debug(this.arena, "checkEnd - " + this.arena.getName());
+        final int count = TeamManager.countActiveTeams(this.arena);
+        debug(this.arena, "count: " + count);
 
-        if (!this.arena.isFreeForAll()) {
-            debug(this.arena, "TEAMS!");
-            final int count = TeamManager.countActiveTeams(this.arena);
-            debug(this.arena, "count: " + count);
-
-            return count <= 1; // yep. only one team left. go!
-        }
-
-        PVPArena.getInstance().getLogger().warning("Liberation goal running in FFA mode: " + this.arena.getName());
-
-        return false;
+        return count <= 1; // yep. only one team left. go!
     }
 
     @Override
@@ -268,28 +260,14 @@ public class GoalLiberation extends ArenaGoal {
                 if (arenaPlayer.getStatus() != PlayerStatus.FIGHT) {
                     continue;
                 }
-                if (this.arena.isFreeForAll()) {
-                    ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
-                            "END");
+                ArenaModuleManager.announce(
+                        this.arena,
+                        Language.parse(this.arena, MSG.TEAM_HAS_WON,
+                                arenaTeam.getColoredName()), "WINNER");
 
-                    ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
-                            "WINNER");
-
-                    this.arena.broadcast(Language.parse(this.arena, MSG.PLAYER_HAS_WON,
-                            arenaPlayer.getName()));
-                } else {
-
-                    ArenaModuleManager.announce(
-                            this.arena,
-                            Language.parse(this.arena, MSG.TEAM_HAS_WON,
-                                    arenaTeam.getColoredName()), "WINNER");
-
-                    this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON,
-                            arenaTeam.getColoredName()));
-                    break;
-                }
+                this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON,
+                        arenaTeam.getColoredName()));
+                break;
             }
 
             if (ArenaModuleManager.commitEnd(this.arena, arenaTeam)) {
@@ -437,10 +415,6 @@ public class GoalLiberation extends ArenaGoal {
 
     @Override
     public boolean hasSpawn(final String string) {
-        if (this.arena.isFreeForAll()) {
-            PVPArena.getInstance().getLogger().warning("Liberation goal running in FFA mode! /pa " + this.arena.getName() + " !gm team");
-            return false;
-        }
         for (final String teamName : this.arena.getTeamNames()) {
             if (string.toLowerCase().startsWith(
                     teamName.toLowerCase() + "spawn")) {
@@ -472,8 +446,7 @@ public class GoalLiberation extends ArenaGoal {
     @Override
     public void parseLeave(final Player player) {
         if (player == null) {
-            PVPArena.getInstance().getLogger().warning(
-                    this.getName() + ": player NULL");
+            PVPArena.getInstance().getLogger().warning(this.getName() + ": player NULL");
             return;
         }
         ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
@@ -507,13 +480,6 @@ public class GoalLiberation extends ArenaGoal {
 
     @Override
     public void setDefaults(final YamlConfiguration config) {
-        if (this.arena.isFreeForAll()) {
-            return;
-        }
-
-        if (config.get("teams.free") != null) {
-            config.set("teams", null);
-        }
         if (config.get("teams") == null) {
             debug(this.arena, "no teams defined, adding custom red and blue!");
             config.addDefault("teams.red", ChatColor.RED.name());
@@ -526,23 +492,14 @@ public class GoalLiberation extends ArenaGoal {
 
         for (final ArenaPlayer arenaPlayer : this.arena.getFighters()) {
             double score = this.getTeamLifeMap().getOrDefault(arenaPlayer.getArenaTeam(), 0);
-            if (this.arena.isFreeForAll()) {
-
-                if (scores.containsKey(arenaPlayer.getName())) {
-                    scores.put(arenaPlayer.getName(), scores.get(arenaPlayer.getName()) + score);
-                } else {
-                    scores.put(arenaPlayer.getName(), score);
-                }
+            if (arenaPlayer.getArenaTeam() == null) {
+                continue;
+            }
+            if (scores.containsKey(arenaPlayer.getArenaTeam().getName())) {
+                scores.put(arenaPlayer.getArenaTeam().getName(),
+                        scores.get(arenaPlayer.getName()) + score);
             } else {
-                if (arenaPlayer.getArenaTeam() == null) {
-                    continue;
-                }
-                if (scores.containsKey(arenaPlayer.getArenaTeam().getName())) {
-                    scores.put(arenaPlayer.getArenaTeam().getName(),
-                            scores.get(arenaPlayer.getName()) + score);
-                } else {
-                    scores.put(arenaPlayer.getArenaTeam().getName(), score);
-                }
+                scores.put(arenaPlayer.getArenaTeam().getName(), score);
             }
         }
 

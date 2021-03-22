@@ -57,6 +57,11 @@ public class GoalTank extends ArenaGoal {
     }
 
     @Override
+    public boolean isFreeForAll() {
+        return true;
+    }
+
+    @Override
     public boolean checkEnd() {
         final int count = this.getPlayerLifeMap().size();
         return (count <= 1 || tanks.get(this.arena).getStatus() != PlayerStatus.FIGHT);
@@ -218,8 +223,7 @@ public class GoalTank extends ArenaGoal {
             }
         }
 
-        return this.arena.isFreeForAll() && string.toLowerCase()
-                .startsWith("spawn") || "tank".equals(string);
+        return string.toLowerCase().startsWith("spawn") || "tank".equals(string);
     }
 
     @Override

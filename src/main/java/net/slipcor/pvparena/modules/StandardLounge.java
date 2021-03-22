@@ -53,17 +53,17 @@ public class StandardLounge extends ArenaModule {
     public Set<String> checkForMissingSpawns(final Set<String> spawnsNames) {
         debug("checking missing lounge spawn(s)");
         List<String> ignoredTeams = Arrays.asList("infected", "tank");
-        Set<String> errors = new HashSet<>();
+
         if (this.arena.isFreeForAll() && !spawnsNames.contains(LOUNGE)) {
-            errors.add(LOUNGE);
-        } else {
+            return Collections.singleton(LOUNGE);
+        } else if(!this.arena.isFreeForAll()) {
             return this.arena.getTeams().stream()
                     .filter(team -> !ignoredTeams.contains(team.getName()))
                     .filter(team -> !spawnsNames.contains(team.getName() + LOUNGE))
                     .map(team -> team.getName() + LOUNGE)
-                    .collect(Collectors.toCollection(() -> errors));
+                    .collect(Collectors.toSet());
         }
-        return errors;
+        return Collections.emptySet();
     }
 
     @Override

@@ -69,7 +69,6 @@ public final class ConfigurationManager {
             cfg.createDefaults(goals, modules);
         } else {
             // opening existing arena
-            arena.setFree("free".equals(cfg.getString(CFG.GENERAL_TYPE)));
 
             values:
             for (final CFG c : CFG.getValues()) {
@@ -229,7 +228,6 @@ public final class ConfigurationManager {
                 new ItemStack[]{new ItemStack(Material.AIR, 1)});
         arena.setOwner(cfg.getString(CFG.GENERAL_OWNER));
         arena.setLocked(!cfg.getBoolean(CFG.GENERAL_ENABLED));
-        arena.setFree("free".equals(cfg.getString(CFG.GENERAL_TYPE)));
         if (config.getConfigurationSection("arenaregion") == null) {
             debug(arena, "arenaregion null");
         } else {

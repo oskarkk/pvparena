@@ -1,6 +1,6 @@
 # PlayerDeathMatch
 
-> ℹ This goal supports **team** and **free** gamemodes
+> ℹ This goal supports **free** gamemode
 
 ## Description
 

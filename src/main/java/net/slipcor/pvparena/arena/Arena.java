@@ -76,7 +76,6 @@ public class Arena {
     // arena status
     private boolean fightInProgress;
     private boolean locked;
-    private boolean free;
     private final boolean valid;
     private int startCount;
 
@@ -175,21 +174,7 @@ public class Arena {
     }
 
     public boolean isFreeForAll() {
-        return this.free;
-    }
-
-    public void setFree(final boolean isFree) {
-        this.free = isFree;
-        if (this.free && this.cfg.getUnsafe("teams.free") == null) {
-            this.teams.clear();
-            this.teams.add(new ArenaTeam("free", "WHITE"));
-        } else if (this.free) {
-            this.teams.clear();
-            this.teams.add(new ArenaTeam("free", (String) this.cfg
-                    .getUnsafe("teams.free")));
-        }
-        this.cfg.set(CFG.GENERAL_TYPE, isFree ? "free" : "none");
-        this.cfg.save();
+        return this.goal.isFreeForAll();
     }
 
     public ArenaScoreboard getScoreboard() {
@@ -206,6 +191,12 @@ public class Arena {
     public void setGoal(ArenaGoal goal, boolean updateConfig) {
         goal.setArena(this);
         this.goal = goal;
+
+        if(goal.isFreeForAll()) {
+            this.teams.clear();
+            this.teams.add(new ArenaTeam("free", "WHITE"));
+        }
+
         if (updateConfig) {
             this.cfg.set(CFG.GENERAL_GOAL, this.goal.getName());
             this.cfg.save();
@@ -636,7 +627,6 @@ public class Arena {
 
         final EntityDamageEvent lastDamageCause = player.getLastDamageCause();
 
-        Entity eventDamager = ((EntityDamageByEntityEvent) lastDamageCause).getDamager();
         switch (cause) {
             case ENTITY_ATTACK:
             case ENTITY_SWEEP_ATTACK:
@@ -645,6 +635,7 @@ public class Arena {
                 }
 
                 try {
+                    Entity eventDamager = ((EntityDamageByEntityEvent) lastDamageCause).getDamager();
                     debug(this, player, "last damager: " + eventDamager.getType());
                     return Language.parse(this, MSG.getByName("DEATHCAUSE_" + eventDamager.getType().name()));
                 } catch (final Exception e) {
@@ -652,6 +643,7 @@ public class Arena {
                 }
             case ENTITY_EXPLOSION:
                 try {
+                    Entity eventDamager = ((EntityDamageByEntityEvent) lastDamageCause).getDamager();
                     debug(this, player, "last damager: " + eventDamager.getType());
                     return Language.parse(this, MSG.getByName("DEATHCAUSE_" + eventDamager.getType().name()));
                 } catch (final Exception e) {
@@ -662,6 +654,7 @@ public class Arena {
                     return team.colorizePlayer(aPlayer.getPlayer()) + ChatColor.YELLOW;
                 }
                 try {
+                    Entity eventDamager = ((EntityDamageByEntityEvent) lastDamageCause).getDamager();
                     ProjectileSource source = ((Projectile) eventDamager).getShooter();
                     LivingEntity lEntity = (LivingEntity) source;
 
@@ -771,7 +764,7 @@ public class Arena {
             }
         }
 
-        if (!this.free) {
+        if (!this.isFreeForAll()) {
             final Set<String> activeTeams = new HashSet<>();
 
             for (final ArenaTeam team : this.teams) {
@@ -906,7 +899,7 @@ public class Arena {
         for (final ArenaPlayer arenaPlayer : players) {
             if (arenaPlayer.getStatus() != null && arenaPlayer.getStatus() == PlayerStatus.FIGHT) {
                 if (!force && arenaPlayer.getStatus() == PlayerStatus.FIGHT
-                        && this.fightInProgress && !this.gaveRewards && !this.free && this.cfg.getBoolean(CFG.USES_TEAMREWARDS)) {
+                        && this.fightInProgress && !this.gaveRewards && !this.isFreeForAll() && this.cfg.getBoolean(CFG.USES_TEAMREWARDS)) {
                     players.removeAll(arenaPlayer.getArenaTeam().getTeamMembers());
                     this.giveRewardsLater(arenaPlayer.getArenaTeam()); // this removes the players from the arena
                     break;
@@ -1504,7 +1497,7 @@ public class Arena {
                 arenaClass = player.getName();
             }
             spawns.addAll(SpawnManager.getPASpawnsStartingWith(this, team.getName() + arenaClass + "spawn"));
-        } else if (this.free) {
+        } else if (this.isFreeForAll()) {
             if ("free".equals(team.getName())) {
                 spawns.addAll(SpawnManager.getPASpawnsStartingWith(this, "spawn"));
             } else {

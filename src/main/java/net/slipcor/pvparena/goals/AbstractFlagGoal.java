@@ -442,13 +442,6 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
 
     @Override
     public void setDefaults(final YamlConfiguration config) {
-        if (this.arena.isFreeForAll()) {
-            return;
-        }
-
-        if (config.get("teams.free") != null) {
-            config.set("teams", null);
-        }
         if (config.get("teams") == null) {
             debug(this.arena, "no teams defined, adding custom red and blue!");
             config.addDefault("teams.red", ChatColor.RED.name());

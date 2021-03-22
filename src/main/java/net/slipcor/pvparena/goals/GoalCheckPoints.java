@@ -48,6 +48,11 @@ public class GoalCheckPoints extends ArenaGoal {
     }
 
     @Override
+    public boolean isFreeForAll() {
+        return true;
+    }
+
+    @Override
     public boolean allowsJoinInBattle() {
         return this.arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE);
     }
