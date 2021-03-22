@@ -2,11 +2,14 @@ package net.slipcor.pvparena.managers;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.RandomUtils;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static net.slipcor.pvparena.config.Debugger.debug;
 
@@ -22,92 +25,67 @@ import static net.slipcor.pvparena.config.Debugger.debug;
  */
 
 public final class TeamManager {
-    private TeamManager() {}
+    private TeamManager() {
+    }
+
+    /**
+     * check if arena full
+     *
+     * @param arena arena
+     *
+     * @return true if full
+     */
+    public static boolean isArenaFull(final Arena arena) {
+        Integer totalPlayers = arena.getNotEmptyTeams().stream().map(ArenaTeam::getTeamMembers)
+                .map(Set::size).reduce(Integer::sum).orElse(0);
+
+        final int maxPlayers = arena.getConfig().getInt(CFG.READY_MAXPLAYERS) == 0 ? 500 :
+                arena.getConfig().getInt(CFG.READY_MAXPLAYERS);
+
+        if(totalPlayers >= maxPlayers){
+            // arena is full.
+            debug(arena, String.format("Arena is full. (%s/%s)", totalPlayers, maxPlayers));
+            return true;
+        }
+        return false;
+    }
 
     /**
      * calculate the team that needs players the most
      *
      * @return the team name
      */
-    public static String calcFreeTeam(final Arena arena) {
+    public static ArenaTeam getRandomTeam(final Arena arena) {
         debug(arena, "calculating free team");
-        final Map<String, Integer> counts = new HashMap<>();
 
-        // spam the available teams into a map counting the members
+        final int maxPlayerPerTeam = arena.getConfig().getInt(CFG.READY_MAXTEAMPLAYERS) == 0?
+                100 : arena.getConfig().getInt(CFG.READY_MAXTEAMPLAYERS);
 
-        for (final ArenaTeam team : arena.getTeams()) {
-            final int count = team.getTeamMembers().size();
+        // collect the available teams into a map and get count of "players missing" or "space available"
+        Map<ArenaTeam, Integer> availableTeamsWithMemberCount = arena.getTeams().stream()
+                // don't map full teams
+                .filter(arenaTeam -> arenaTeam.getTeamMembers().size() < maxPlayerPerTeam)
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        arenaTeam -> maxPlayerPerTeam - arenaTeam.getTeamMembers().size()));
 
-            if (count > 0) {
-                counts.put(team.getName(), count);
-                debug(arena, "team " + team.getName() + " contains " + count);
-            }
+        if(availableTeamsWithMemberCount.isEmpty()) {
+                // no team available (full or no team defined ?)
+                return null;
         }
 
-        // counts contains TEAMNAME => PLAYERCOUNT
+        // pick only teams with the most "players missing" or "space available"
+        // ex: team blue have 3 spaces, blue have 2 spaces, orange have 1 space and red have 3 spaces
+        // this return a set with blue and red.
+        int max = availableTeamsWithMemberCount.values().stream().max(Comparator.naturalOrder()).orElse(0);
+        final Set<ArenaTeam> teamsWithLessMembers = availableTeamsWithMemberCount.entrySet().stream()
+                .filter(e -> e.getValue() == max)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
 
-        if (counts.size() < arena.getTeams().size()) {
-            // there is a team without members, calculate one of those
-            return returnEmptyTeam(arena, counts.keySet());
-        }
-
-        boolean full = true;
-
-        for (final ArenaTeam team : arena.getTeams()) {
-            final String teamName = team.getName();
-            // check if we are full
-            debug(arena, "String s: " + teamName + "; max: "
-                        + arena.getConfig().getInt(CFG.READY_MAXPLAYERS));
-            if (counts.get(teamName) < arena.getConfig().getInt(
-                    CFG.READY_MAXPLAYERS)
-                    || arena.getConfig().getInt(CFG.READY_MAXPLAYERS) == 0) {
-                full = false;
-                break;
-            }
-        }
-
-        if (full) {
-            // full => OUT!
-            return null;
-        }
-
-        final Set<String> free = new HashSet<>();
-
-        int max = arena.getConfig().getInt(CFG.READY_MAXTEAMPLAYERS);
-        max = max == 0 ? Integer.MAX_VALUE : max;
-        // calculate the max value down to the minimum
-        for (final Map.Entry<String, Integer> stringIntegerEntry : counts.entrySet()) {
-            final int count = stringIntegerEntry.getValue();
-            if (count < max) {
-                free.clear();
-                free.add(stringIntegerEntry.getKey());
-                max = count;
-            } else if (count == max) {
-                free.add(stringIntegerEntry.getKey());
-            }
-        }
-
-        // free now has the minimum teams
-
-        if (free.size() == 1) {
-            for (final String s : free) {
-                return s;
-            }
-        }
-
-        if (free.size() < 1) {
-            return null;
-        }
-
-        final Random random = new Random();
-        int rand = random.nextInt(free.size());
-        for (final String s : free) {
-            if (rand-- == 0) {
-                return s;
-            }
-        }
-
-        return null;
+        // pick a random
+        return RandomUtils.getRandom(teamsWithLessMembers, new Random());
+        // return RandomUtils.getWeightedRandom(availableTeamsWithMemberCount, new Random());
     }
 
     /**
@@ -179,41 +157,5 @@ public final class TeamManager {
         }
         debug(arena, "players having a team: " + result);
         return result;
-    }
-
-    /**
-     * return all empty teams
-     *
-     * @param set the set to search
-     * @return one empty team name
-     */
-    private static String returnEmptyTeam(final Arena arena, final Set<String> set) {
-        debug(arena, "choosing an empty team");
-        final Set<String> empty = new HashSet<>();
-        for (final ArenaTeam team : arena.getTeams()) {
-            final String teamName = team.getName();
-            debug(arena, "team: " + teamName);
-            if (set.contains(teamName)) {
-                continue;
-            }
-            empty.add(teamName);
-        }
-        debug(arena, "empty.size: " + empty.size());
-        if (empty.size() == 1) {
-            for (final String s : empty) {
-                debug(arena, "return: " + s);
-                return s;
-            }
-        }
-
-        final Random random = new Random();
-        int rand = random.nextInt(empty.size());
-        for (final String s : empty) {
-            if (rand-- == 0) {
-                return s;
-            }
-        }
-
-        return null;
     }
 }

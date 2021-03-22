@@ -190,6 +190,7 @@ nulang:
       ou une lettre !
     statsfile: Erreur lors de la lecture du fichier stats !
     teamnotfound: 'Equipe non trouvée: &a%1%&r'
+    noteamavailable: 'Aucune équipe n''est disponible.'
     uninstall: Erreur lors de la désinstallation de &a%1%&r
     uninstall2: PVP Arena tentera une déinstallation au redémarrage du serveur.
     unknownmodule: 'Module non trouvé: %1%'
