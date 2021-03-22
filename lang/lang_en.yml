@@ -179,6 +179,7 @@ nulang:
     spawnfree: Error! Arena is of type free. Use 'spawnX' where X is a digit or letter!
     statsfile: Error while reading the stats file!
     teamnotfound: 'Team not found: &a%1%&r'
+    noteamavailable: 'No team available.'
     uninstall: Error while uninstalling &a%1%&r
     unknownmodule: 'Module not found: %1%'
     whitelist:

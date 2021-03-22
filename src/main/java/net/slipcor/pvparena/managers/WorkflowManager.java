@@ -133,25 +133,34 @@ public class WorkflowManager {
             return false;
         }
 
-        final ArenaTeam team;
-
-        if (args.length < 1) {
-            // usage: /pa {arenaname} join | join an arena
-            team = arena.getTeam(TeamManager.calcFreeTeam(arena));
-        } else if(arena.getTeam(args[0]) == null) {
-            arena.msg(player, Language.parse(arena, MSG.ERROR_TEAMNOTFOUND, args[0]));
+        if(TeamManager.isArenaFull(arena)){
+            arena.msg(player, Language.parse(arena, MSG.ERROR_JOIN_ARENA_FULL));
             return false;
-        } else {
-            team = arena.getTeam(args[0]);
         }
 
-        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
+        final ArenaTeam arenaTeam;
+        if (args.length < 1) {
+            // usage: /pa {arenaname} join | join an arena
+            arenaTeam = TeamManager.getRandomTeam(arena);
+            if(arenaTeam == null){
+                arena.msg(player, Language.parse(arena, MSG.ERROR_NO_TEAM_AVAILABLE));
+                return false;
+            }
+        } else {
+            arenaTeam = arena.getTeam(args[0]);
+            if(arenaTeam == null) {
+                arena.msg(player, Language.parse(arena, MSG.ERROR_TEAMNOTFOUND, args[0]));
+                return false;
+            }
+        }
 
-        ArenaModuleManager.choosePlayerTeam(arena, player, team.getColoredName());
+        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
+
+        ArenaModuleManager.choosePlayerTeam(arena, player, arenaTeam.getColoredName());
 
         arena.markPlayedPlayer(player.getName());
 
-        aPlayer.setPublicChatting(!arena.getConfig().getBoolean(CFG.CHAT_DEFAULTTEAM));
+        arenaPlayer.setPublicChatting(!arena.getConfig().getBoolean(CFG.CHAT_DEFAULTTEAM));
 
         debug(arena, "calling join event");
         final PAJoinEvent event = new PAJoinEvent(arena, player, false);
@@ -162,8 +171,9 @@ public class WorkflowManager {
         }
 
         if (joinModule == null) {
+            debug(arena, "join module null");
             // join module null, just put the joiner to some spawn
-            if (!arena.tryJoin(player, team)) {
+            if (!arena.tryJoin(player, arenaTeam)) {
                 return false;
             }
 
@@ -171,11 +181,11 @@ public class WorkflowManager {
                 arena.msg(player, arena.getConfig().getString(CFG.MSG_YOUJOINED));
                 arena.broadcastExcept(player, Language.parse(arena, CFG.MSG_PLAYERJOINED, player.getName()));
             } else {
-                arena.msg(player, arena.getConfig().getString(CFG.MSG_YOUJOINEDTEAM).replace("%1%", team.getColoredName() + ChatColor.RESET));
-                arena.broadcastExcept(player, Language.parse(arena, CFG.MSG_PLAYERJOINEDTEAM, aPlayer.getName(), team.getColoredName() + ChatColor.RESET));
+                arena.msg(player, arena.getConfig().getString(CFG.MSG_YOUJOINEDTEAM).replace("%1%", arenaTeam.getColoredName() + ChatColor.RESET));
+                arena.broadcastExcept(player, Language.parse(arena, CFG.MSG_PLAYERJOINEDTEAM, arenaPlayer.getName(), arenaTeam.getColoredName() + ChatColor.RESET));
             }
 
-            ArenaModuleManager.parseJoin(arena, player, team);
+            ArenaModuleManager.parseJoin(arena, player, arenaTeam);
 
             joinGoal.initiate((player));
             ArenaModuleManager.initiate(arena, player);
@@ -189,19 +199,19 @@ public class WorkflowManager {
                 arena.getMods().forEach(ArenaModule::parseStart);
             }
 
-            if (aPlayer.getArenaClass() != null && arena.startRunner != null) {
-                aPlayer.setStatus(PlayerStatus.READY);
+            if (arenaPlayer.getArenaClass() != null && arena.startRunner != null) {
+                arenaPlayer.setStatus(PlayerStatus.READY);
             }
 
             return true;
         }
 
-        joinModule.commitJoin(player, team);
+        joinModule.commitJoin(player, arenaTeam);
 
-        ArenaModuleManager.parseJoin(arena, player, team);
+        ArenaModuleManager.parseJoin(arena, player, arenaTeam);
 
-        if (aPlayer.getArenaClass() != null && arena.startRunner != null) {
-            aPlayer.setStatus(PlayerStatus.READY);
+        if (arenaPlayer.getArenaClass() != null && arena.startRunner != null) {
+            arenaPlayer.setStatus(PlayerStatus.READY);
         }
 
         return true;

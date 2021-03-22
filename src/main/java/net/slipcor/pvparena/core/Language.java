@@ -261,6 +261,7 @@ public final class Language {
         ERROR_SPAWNFREE("nulang.error.spawnfree", "Error! Arena is of type &efree&r. Use 'spawnX' where X is a digit or letter!"),
         ERROR_STATS_FILE("nulang.error.statsfile", "Error while reading the stats file!"),
         ERROR_TEAMNOTFOUND("nulang.error.teamnotfound", "Team not found: &a%1%&r"),
+        ERROR_NO_TEAM_AVAILABLE("nulang.error.noteamavailable", "No Team available."),
         ERROR_UNINSTALL("nulang.error.uninstall", "Error while uninstalling: &a%1%&r"),
         ERROR_UNINSTALL2("nulang.error.uninstall2", "PVP Arena will try to uninstall on server restart!"),
         ERROR_UNKNOWN_MODULE("nulang.error.unknownmodule", "Module not found: %1%"),
