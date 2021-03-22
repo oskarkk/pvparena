@@ -45,7 +45,7 @@ public class PAA_Template extends AbstractArenaCommand {
         if ("save".equalsIgnoreCase(args[0])) {
             try {
                 output.createNewFile();
-                arena.getArenaConfig().getYamlConfiguration().save(output);
+                arena.getConfig().getYamlConfiguration().save(output);
 
                 final YamlConfiguration cfg = YamlConfiguration.loadConfiguration(output);
 
@@ -61,9 +61,9 @@ public class PAA_Template extends AbstractArenaCommand {
             final YamlConfiguration cfg = YamlConfiguration.loadConfiguration(output);
 
             for (final String key : cfg.getKeys(false)) {
-                arena.getArenaConfig().getYamlConfiguration().set(key, cfg.get(key));
+                arena.getConfig().getYamlConfiguration().set(key, cfg.get(key));
             }
-            arena.getArenaConfig().save();
+            arena.getConfig().save();
             arena.msg(sender, Language.parse(MSG.TEMPLATE_LOAD_DONE, args[1]));
         } else {
             arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[0], "load | save"));

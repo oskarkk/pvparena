@@ -89,7 +89,7 @@ public abstract class AbstractTeamKillGoal extends ArenaGoal {
         if (ArenaModuleManager.commitEnd(this.arena, aTeam)) {
             return;
         }
-        new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(
+        new EndRunnable(this.arena, this.arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -105,7 +105,7 @@ public abstract class AbstractTeamKillGoal extends ArenaGoal {
                     teamName.toLowerCase() + "spawn")) {
                 return true;
             }
-            if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 for (final ArenaClass aClass : this.arena.getClasses()) {
                     if (string.toLowerCase().startsWith(teamName.toLowerCase() +
                             aClass.getName().toLowerCase() + "spawn")) {

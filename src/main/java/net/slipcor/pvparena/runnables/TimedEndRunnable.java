@@ -74,7 +74,7 @@ public class TimedEndRunnable extends ArenaRunnable {
         if (this.arena.isFreeForAll() && this.arena.getTeams().size() <= 1) {
             winners.add("free");
             debug(this.arena, "adding FREE");
-        } else if (this.arena.getArenaConfig().getDefinedString(Config.CFG.GENERAL_TIMER_WINNER) == null) {
+        } else if (this.arena.getConfig().getDefinedString(Config.CFG.GENERAL_TIMER_WINNER) == null) {
             // check all teams
             double maxScore = 0;
 
@@ -114,7 +114,7 @@ public class TimedEndRunnable extends ArenaRunnable {
                 winners.clear(); // noone wins.
             }
         } else {
-            winners.add(this.arena.getArenaConfig().getString(Config.CFG.GENERAL_TIMER_WINNER));
+            winners.add(this.arena.getConfig().getString(Config.CFG.GENERAL_TIMER_WINNER));
             debug(this.arena, "added winner!");
         }
 
@@ -197,7 +197,7 @@ public class TimedEndRunnable extends ArenaRunnable {
 
                 for (final ArenaPlayer arenaPlayer : arenaPlayers) {
                     if (winners.isEmpty()) {
-                        this.arena.removePlayer(arenaPlayer.getPlayer(), this.arena.getArenaConfig()
+                        this.arena.removePlayer(arenaPlayer.getPlayer(), this.arena.getConfig()
                                 .getString(Config.CFG.TP_LOSE), true, false);
                     } else {
                         if (winners.contains(arenaPlayer.getName())) {

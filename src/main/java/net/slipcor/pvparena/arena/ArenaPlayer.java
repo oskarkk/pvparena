@@ -1,6 +1,5 @@
 package net.slipcor.pvparena.arena;
 
-import org.jetbrains.annotations.NotNull;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PALocation;
@@ -24,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scoreboard.Scoreboard;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.*;
@@ -157,7 +157,7 @@ public class ArenaPlayer {
 
         playerClass.equip(player);
 
-        if (arena.getArenaConfig().getBoolean(CFG.USES_WOOLHEAD)) {
+        if (arena.getConfig().getBoolean(CFG.USES_WOOLHEAD)) {
             final ArenaTeam aTeam = aPlayer.getArenaTeam();
             final ChatColor color = aTeam.getColor();
             debug(player, "forcing woolhead: {}/{}", aTeam.getName(), color);
@@ -224,9 +224,9 @@ public class ArenaPlayer {
 
         final ArenaPlayer aPlayer = fromPlayer(player);
 
-        if (arena.getArenaConfig().getYamlConfiguration().get(CFG.ITEMS_TAKEOUTOFGAME.getNode()) != null) {
+        if (arena.getConfig().getYamlConfiguration().get(CFG.ITEMS_TAKEOUTOFGAME.getNode()) != null) {
             final ItemStack[] items =
-                    arena.getArenaConfig().getItems(CFG.ITEMS_TAKEOUTOFGAME);
+                    arena.getConfig().getItems(CFG.ITEMS_TAKEOUTOFGAME);
 
             final List<Material> allowedMats = new ArrayList<>();
 
@@ -453,6 +453,10 @@ public class ArenaPlayer {
         return this.location;
     }
 
+    public PALocation getLocation() {
+        return new PALocation(this.player.getLocation());
+    }
+
     /**
      * return the player name
      *
@@ -569,7 +573,7 @@ public class ArenaPlayer {
         this.location = Config.parseLocation(cfg.getString("loc"));
 
         if (this.arena != null) {
-            final String goTo = this.arena.getArenaConfig().getString(CFG.TP_EXIT);
+            final String goTo = this.arena.getConfig().getString(CFG.TP_EXIT);
             if (!"old".equals(goTo)) {
                 this.location = SpawnManager.getSpawnByExactName(this.arena, "exit");
             }

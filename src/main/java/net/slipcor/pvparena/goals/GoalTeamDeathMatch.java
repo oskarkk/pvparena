@@ -45,7 +45,7 @@ public class GoalTeamDeathMatch extends AbstractTeamKillGoal {
 
     @Override
     public boolean allowsJoinInBattle() {
-        return this.arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE);
+        return this.arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class GoalTeamDeathMatch extends AbstractTeamKillGoal {
 
     @Override
     protected int getTeamLivesCfg() {
-        return this.arena.getArenaConfig().getInt(CFG.GOAL_TDM_LIVES);
+        return this.arena.getConfig().getInt(CFG.GOAL_TDM_LIVES);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class GoalTeamDeathMatch extends AbstractTeamKillGoal {
         Player killer = respawnPlayer.getKiller();
 
         if (killer == null || respawnPlayer.equals(respawnPlayer.getKiller())) {
-            if (!this.arena.getArenaConfig().getBoolean(CFG.GOAL_TDM_SUICIDESCORE)) {
+            if (!this.arena.getConfig().getBoolean(CFG.GOAL_TDM_SUICIDESCORE)) {
                 this.broadcastSimpleDeathMessage(respawnPlayer, event);
                 this.respawnPlayer(respawnPlayer, event);
                 final PAGoalEvent gEvent;
@@ -105,8 +105,8 @@ public class GoalTeamDeathMatch extends AbstractTeamKillGoal {
         Bukkit.getPluginManager().callEvent(gEvent);
 
         if (this.getTeamLifeMap().get(killerTeam) != null) {
-            if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
-                if (killerTeam.equals(respawnTeam) || !this.arena.getArenaConfig().getBoolean(CFG.GENERAL_SHOWREMAININGLIVES)) {
+            if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+                if (killerTeam.equals(respawnTeam) || !this.arena.getConfig().getBoolean(CFG.GENERAL_SHOWREMAININGLIVES)) {
                     this.broadcastSimpleDeathMessage(respawnPlayer, event);
                 } else {
                     this.broadcastDeathMessage(MSG.FIGHT_KILLED_BY_REMAINING_TEAM_FRAGS, respawnPlayer, event, this.getTeamLifeMap().get(killerTeam));
@@ -120,7 +120,7 @@ public class GoalTeamDeathMatch extends AbstractTeamKillGoal {
     private void respawnPlayer(Player player, PlayerDeathEvent event) {
         final List<ItemStack> returned;
 
-        if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_DROPSINVENTORY)) {
+        if (this.arena.getConfig().getBoolean(CFG.PLAYER_DROPSINVENTORY)) {
             returned = InventoryManager.drop(player);
             event.getDrops().clear();
         } else {
@@ -131,7 +131,7 @@ public class GoalTeamDeathMatch extends AbstractTeamKillGoal {
     }
 
     private void makePlayerLose(Player respawnPlayer, PlayerDeathEvent event) {
-        if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
+        if (this.arena.getConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
             this.respawnPlayer(respawnPlayer, event);
             ArenaPlayer.fromPlayer(respawnPlayer.getName()).setStatus(PlayerStatus.LOST);
         }

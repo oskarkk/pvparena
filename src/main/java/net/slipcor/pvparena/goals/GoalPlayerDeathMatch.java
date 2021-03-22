@@ -52,7 +52,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
 
     @Override
     public boolean allowsJoinInBattle() {
-        return this.arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE);
+        return this.arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
                 return;
             }
         }
-        this.endRunner = new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(
+        this.endRunner = new EndRunnable(this.arena, this.arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -118,13 +118,13 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
             final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, "playerKill:" + player.getName() + ':' + player.getName(), "playerDeath:" + player.getName());
             Bukkit.getPluginManager().callEvent(gEvent);
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+            if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                 this.broadcastSimpleDeathMessage(player, event);
             }
 
             final List<ItemStack> returned;
 
-            if (this.arena.getArenaConfig().getBoolean(
+            if (this.arena.getConfig().getBoolean(
                     CFG.PLAYER_DROPSINVENTORY)) {
                 returned = InventoryManager.drop(player);
                 event.getDrops().clear();
@@ -134,7 +134,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
 
             WorkflowManager.handleRespawn(this.arena, ArenaPlayer.fromPlayer(player), returned);
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.USES_SUICIDEPUNISH)) {
+            if (this.arena.getConfig().getBoolean(CFG.USES_SUICIDEPUNISH)) {
                 for (ArenaPlayer ap : this.arena.getFighters()) {
                     if (player.equals(ap.getPlayer())) {
                         continue;
@@ -156,8 +156,8 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
             return;
         }
 
-        if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
-            if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_SHOWREMAININGLIVES)) {
+        if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+            if (this.arena.getConfig().getBoolean(CFG.GENERAL_SHOWREMAININGLIVES)) {
                 this.broadcastDeathMessage(MSG.FIGHT_KILLED_BY_REMAINING_FRAGS, player, event, iLives-1);
             } else {
                 this.broadcastSimpleDeathMessage(player, event);
@@ -166,7 +166,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
 
         final List<ItemStack> returned;
 
-        if (this.arena.getArenaConfig().getBoolean(
+        if (this.arena.getConfig().getBoolean(
                 CFG.PLAYER_DROPSINVENTORY)) {
             returned = InventoryManager.drop(player);
             event.getDrops().clear();
@@ -195,7 +195,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
                 arenaPlayer.setStatus(PlayerStatus.LOST);
                 arenaPlayer.addLosses();
 
-                if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
+                if (this.arena.getConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
                     debug(this.arena, arenaPlayer.getPlayer(), "faking player death");
                     PlayerListener.finallyKillPlayer(this.arena, arenaPlayer.getPlayer(), killed.getLastDamageCause());
                 }
@@ -208,7 +208,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
                 }
             }
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
+            if (this.arena.getConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
                 debug(this.arena, killed, "faking player death");
                 PlayerListener.finallyKillPlayer(this.arena, killed, killed.getLastDamageCause());
             }
@@ -224,7 +224,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
     @Override
     public void displayInfo(final CommandSender sender) {
         sender.sendMessage("lives: "
-                + this.arena.getArenaConfig().getInt(CFG.GOAL_PDM_LIVES));
+                + this.arena.getConfig().getInt(CFG.GOAL_PDM_LIVES));
     }
 
     @Override
@@ -235,7 +235,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
     @Override
     public boolean hasSpawn(final String string) {
 
-        if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+        if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
             for (final ArenaClass aClass : this.arena.getClasses()) {
                 if (string.toLowerCase().startsWith(
                         aClass.getName().toLowerCase() + "spawn")) {
@@ -249,7 +249,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
 
     @Override
     public void initiate(final Player player) {
-        this.updateLives(player, this.arena.getArenaConfig().getInt(CFG.GOAL_PDM_LIVES));
+        this.updateLives(player, this.arena.getConfig().getInt(CFG.GOAL_PDM_LIVES));
     }
 
 
@@ -273,7 +273,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
     public void parseStart() {
         for (final ArenaTeam team : this.arena.getTeams()) {
             for (final ArenaPlayer ap : team.getTeamMembers()) {
-                this.updateLives(ap.getPlayer(), this.arena.getArenaConfig().getInt(CFG.GOAL_PDM_LIVES));
+                this.updateLives(ap.getPlayer(), this.arena.getConfig().getInt(CFG.GOAL_PDM_LIVES));
             }
         }
     }
@@ -288,7 +288,7 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
     public Map<String, Double> timedEnd(final Map<String, Double> scores) {
 
         for (final ArenaPlayer arenaPlayer : this.arena.getFighters()) {
-            double score = this.arena.getArenaConfig().getInt(CFG.GOAL_PDM_LIVES)
+            double score = this.arena.getConfig().getInt(CFG.GOAL_PDM_LIVES)
                     - (this.getPlayerLifeMap()
                     .getOrDefault(arenaPlayer.getPlayer(), 0));
             if (scores.containsKey(arenaPlayer.getName())) {

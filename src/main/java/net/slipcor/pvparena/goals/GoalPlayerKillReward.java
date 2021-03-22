@@ -65,7 +65,7 @@ public class GoalPlayerKillReward extends ArenaGoal {
 
     @Override
     public boolean allowsJoinInBattle() {
-        return this.arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE);
+        return this.arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE);
     }
 
     @Override
@@ -203,7 +203,7 @@ public class GoalPlayerKillReward extends ArenaGoal {
                 return;
             }
         }
-        this.endRunner = new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(
+        this.endRunner = new EndRunnable(this.arena, this.arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -212,7 +212,7 @@ public class GoalPlayerKillReward extends ArenaGoal {
             if (!this.getPlayerLifeMap().containsKey(player)) {
                 return;
             }
-            if (!this.arena.getArenaConfig().getBoolean(CFG.GOAL_PLAYERKILLREWARD_GRADUALLYDOWN)) {
+            if (!this.arena.getConfig().getBoolean(CFG.GOAL_PLAYERKILLREWARD_GRADUALLYDOWN)) {
                 this.getPlayerLifeMap().put(player, this.getDefaultRemainingKills());
             }
         class ResetRunnable implements Runnable {
@@ -236,7 +236,7 @@ public class GoalPlayerKillReward extends ArenaGoal {
                 if (ArenaPlayer.fromPlayer(player).getStatus() != PlayerStatus.FIGHT) {
                     return;
                 }
-                if (!GoalPlayerKillReward.this.arena.getArenaConfig().getBoolean(CFG.GOAL_PLAYERKILLREWARD_ONLYGIVE)) {
+                if (!GoalPlayerKillReward.this.arena.getConfig().getBoolean(CFG.GOAL_PLAYERKILLREWARD_ONLYGIVE)) {
                     InventoryManager.clearInventory(player);
                 }
                 if (GoalPlayerKillReward.this.getItemMap().containsKey(iLives)) {
@@ -303,7 +303,7 @@ public class GoalPlayerKillReward extends ArenaGoal {
     public boolean hasSpawn(final String string) {
         if (this.arena.isFreeForAll()) {
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 for (final ArenaClass aClass : this.arena.getClasses()) {
                     if (string.toLowerCase().startsWith(
                             aClass.getName().toLowerCase() + SPAWN)) {
@@ -319,7 +319,7 @@ public class GoalPlayerKillReward extends ArenaGoal {
                 return true;
             }
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 for (final ArenaClass aClass : this.arena.getClasses()) {
                     if (string.toLowerCase().startsWith(teamName.toLowerCase() +
                             aClass.getName().toLowerCase() + SPAWN)) {
@@ -381,7 +381,7 @@ public class GoalPlayerKillReward extends ArenaGoal {
                 config.addDefault("teams.red", ChatColor.RED.name());
                 config.addDefault("teams.blue", ChatColor.BLUE.name());
             }
-            if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_FLAGS_WOOLFLAGHEAD)
+            if (this.arena.getConfig().getBoolean(CFG.GOAL_FLAGS_WOOLFLAGHEAD)
                     && config.get("flagColors") == null) {
                 debug(this.arena, "no flagheads defined, adding white and black!");
                 config.addDefault("flagColors.red", "WHITE");
@@ -466,14 +466,14 @@ public class GoalPlayerKillReward extends ArenaGoal {
 
     private void saveItems() {
         for (final int i : this.getItemMap().keySet()) {
-            this.arena.getArenaConfig().setManually("goal.playerkillrewards.kr" + i+".items",
+            this.arena.getConfig().setManually("goal.playerkillrewards.kr" + i+".items",
                     getSerializableItemStacks(this.getItemMap().get(i)[0]));
-            this.arena.getArenaConfig().setManually("goal.playerkillrewards.kr" + i+".offhand",
+            this.arena.getConfig().setManually("goal.playerkillrewards.kr" + i+".offhand",
                     getSerializableItemStacks(this.getItemMap().get(i)[1]));
-            this.arena.getArenaConfig().setManually("goal.playerkillrewards.kr" + i+".armor",
+            this.arena.getConfig().setManually("goal.playerkillrewards.kr" + i+".armor",
                     getSerializableItemStacks(this.getItemMap().get(i)[2]));
         }
-        this.arena.getArenaConfig().save();
+        this.arena.getConfig().save();
     }
 
     @Override

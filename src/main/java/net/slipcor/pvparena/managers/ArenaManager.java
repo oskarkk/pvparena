@@ -208,7 +208,7 @@ public final class ArenaManager {
     public static Arena getArenaByProtectedRegionLocation(
             final PABlockLocation location, final RegionProtection regionProtection) {
         for (final Arena arena : ARENAS.values()) {
-            if (!arena.getArenaConfig().getBoolean(CFG.PROTECT_ENABLED)) {
+            if (!arena.getConfig().getBoolean(CFG.PROTECT_ENABLED)) {
                 continue;
             }
             for (final ArenaRegion region : arena.getRegions()) {
@@ -350,7 +350,7 @@ public final class ArenaManager {
         arena.stop(true);
         ARENAS.remove(arena.getName().toLowerCase());
         if (deleteConfig) {
-            arena.getArenaConfig().delete();
+            arena.getConfig().delete();
         }
     }
 

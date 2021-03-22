@@ -1,6 +1,7 @@
 package net.slipcor.pvparena.arena;
 
 import net.slipcor.pvparena.core.ColorUtils;
+import net.slipcor.pvparena.core.Config;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -145,5 +146,19 @@ public class ArenaTeam {
     @Override
     public String toString() {
         return this.name;
+    }
+
+    public void sendMessage(ArenaPlayer sender, String msg) {
+        debug(sender, "@{}: {}", this.name, msg);
+        synchronized (this) {
+            this.getTeamMembers().forEach(member -> {
+                if (sender == null) {
+                    member.getPlayer().sendMessage(String.format("%s[%s]%s: %s", this.color, this.name, ChatColor.RESET, msg));
+                } else {
+                    String reset = sender.getArena().getConfig().getBoolean(Config.CFG.CHAT_COLORNICK) ? "" : ChatColor.RESET.toString();
+                    member.getPlayer().sendMessage(String.format("%s[%s] %s%s%s: %s", this.color, this.name, reset, sender.getName(), ChatColor.RESET, msg));
+                }
+            });
+        }
     }
 }

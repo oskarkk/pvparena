@@ -41,8 +41,8 @@ public class PAA_Disable extends AbstractArenaCommand {
         final PAA_Stop cmd = new PAA_Stop();
         cmd.commit(arena, sender, new String[0]);
 
-        arena.getArenaConfig().set(CFG.GENERAL_ENABLED, false);
-        arena.getArenaConfig().save();
+        arena.getConfig().set(CFG.GENERAL_ENABLED, false);
+        arena.getConfig().save();
         arena.setLocked(true);
 
         for (String key : ArenaManager.getShortcutValues().keySet()) {

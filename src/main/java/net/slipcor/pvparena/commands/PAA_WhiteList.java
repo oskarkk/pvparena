@@ -53,8 +53,8 @@ public class PAA_WhiteList extends AbstractArenaCommand {
 
         if (args.length < 2) {
             if ("clear".equalsIgnoreCase(args[0])) {
-                arena.getArenaConfig().setManually(CFG.LISTS_WHITELIST.getNode(), null);
-                arena.getArenaConfig().save();
+                arena.getConfig().setManually(CFG.LISTS_WHITELIST.getNode(), null);
+                arena.getConfig().save();
                 arena.msg(sender, Language.parse(arena, MSG.WHITELIST_ALLCLEARED));
                 return;
             }
@@ -68,8 +68,8 @@ public class PAA_WhiteList extends AbstractArenaCommand {
                 return;
             }
             if (args[1].equalsIgnoreCase("clear")) {
-                arena.getArenaConfig().setManually(CFG.LISTS_WHITELIST.getNode(), null);
-                arena.getArenaConfig().save();
+                arena.getConfig().setManually(CFG.LISTS_WHITELIST.getNode(), null);
+                arena.getConfig().save();
                 arena.msg(sender, Language.parse(arena, MSG.WHITELIST_ALLCLEARED));
                 return;
             }
@@ -90,7 +90,7 @@ public class PAA_WhiteList extends AbstractArenaCommand {
 
         List<String> list = new ArrayList<>();
 
-        list = arena.getArenaConfig().getStringList(CFG.LISTS_WHITELIST.getNode() + '.' + args[0].toLowerCase(), list);
+        list = arena.getConfig().getStringList(CFG.LISTS_WHITELIST.getNode() + '.' + args[0].toLowerCase(), list);
 
         if ("add".equalsIgnoreCase(args[1])) {
             list.add(args[2]);
@@ -110,8 +110,8 @@ public class PAA_WhiteList extends AbstractArenaCommand {
             arena.msg(sender, Language.parse(arena, MSG.WHITELIST_REMOVED, args[2], args[1]));
         }
 
-        arena.getArenaConfig().setManually(CFG.LISTS_WHITELIST.getNode() + '.' + args[0].toLowerCase(), list);
-        arena.getArenaConfig().save();
+        arena.getConfig().setManually(CFG.LISTS_WHITELIST.getNode() + '.' + args[0].toLowerCase(), list);
+        arena.getConfig().save();
 
     }
 

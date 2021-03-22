@@ -54,9 +54,9 @@ public class PAG_Join extends AbstractArenaCommand {
 
         if (arena.isFightInProgress()
                 && (
-                !arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE)
+                !arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE)
                         ||
-                        arena.getArenaConfig().getBoolean(CFG.JOIN_ONLYIFHASPLAYED)
+                        arena.getConfig().getBoolean(CFG.JOIN_ONLYIFHASPLAYED)
                                 && !arena.hasAlreadyPlayed(sender.getName()))) {
 
             arena.msg(sender, Language.parse(arena, MSG.ERROR_FIGHT_IN_PROGRESS));
@@ -82,8 +82,8 @@ public class PAG_Join extends AbstractArenaCommand {
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer((Player) sender);
 
         if (aPlayer.getArena() == null) {
-            if (!arena.getArenaConfig().getBoolean(CFG.PERMS_ALWAYSJOININBATTLE) &&
-                    !arena.getArenaConfig().getBoolean(CFG.JOIN_ONLYIFHASPLAYED) &&
+            if (!arena.getConfig().getBoolean(CFG.PERMS_ALWAYSJOININBATTLE) &&
+                    !arena.getConfig().getBoolean(CFG.JOIN_ONLYIFHASPLAYED) &&
                     arena.hasAlreadyPlayed(aPlayer.getName())) {
                 debug(arena, aPlayer.getPlayer(), "Join_2");
                 arena.msg(aPlayer.getPlayer(), Language.parse(arena, MSG.ERROR_ARENA_ALREADY_PART_OF, ArenaManager.getIndirectArenaName(arena)));

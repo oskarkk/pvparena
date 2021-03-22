@@ -172,7 +172,7 @@ public class GoalLiberation extends ArenaGoal {
                             iList.add(item.clone());
                         }
                         new InventoryRefillRunnable(this.arena, jailedPlayer.getPlayer(), iList);
-                        if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
+                        if (this.arena.getConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
                             player.getScoreboard().getObjective("lives").getScore(player.getName()).setScore(0);
                         }
                         success = true;
@@ -297,7 +297,7 @@ public class GoalLiberation extends ArenaGoal {
             }
         }
 
-        this.endRunner = new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(
+        this.endRunner = new EndRunnable(this.arena, this.arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -336,12 +336,12 @@ public class GoalLiberation extends ArenaGoal {
 
             if (someoneAlive) {
 
-                if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+                if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                     this.broadcastSimpleDeathMessage(player, event);
                 }
                 final List<ItemStack> returned;
 
-                if (this.arena.getArenaConfig().getBoolean(
+                if (this.arena.getConfig().getBoolean(
                         CFG.PLAYER_DROPSINVENTORY)) {
                     returned = InventoryManager.drop(player);
                     event.getDrops().clear();
@@ -356,14 +356,14 @@ public class GoalLiberation extends ArenaGoal {
 
                 this.arena.unKillPlayer(aPlayer.getPlayer(), ofNullable(aPlayer.getPlayer().getLastDamageCause()).map(EntityDamageEvent::getCause).orElse(null), aPlayer.getPlayer().getKiller());
 
-                if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
+                if (this.arena.getConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
                     aPlayer.getPlayer().getScoreboard().getObjective("lives").getScore(aPlayer.getName()).setScore(101);
                 }
             } else {
                 this.getTeamLifeMap().remove(arenaTeam);
                 final List<ItemStack> returned;
 
-                if (this.arena.getArenaConfig().getBoolean(
+                if (this.arena.getConfig().getBoolean(
                         CFG.PLAYER_DROPSINVENTORY)) {
                     returned = InventoryManager.drop(player);
                     event.getDrops().clear();
@@ -376,7 +376,7 @@ public class GoalLiberation extends ArenaGoal {
 
                 ArenaPlayer.fromPlayer(player).setStatus(PlayerStatus.LOST);
 
-                if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+                if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                     this.broadcastSimpleDeathMessage(player, event);
                 }
 
@@ -387,13 +387,13 @@ public class GoalLiberation extends ArenaGoal {
             lives--;
             this.getTeamLifeMap().put(arenaTeam, lives);
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+            if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                 this.broadcastDeathMessage(MSG.FIGHT_KILLED_BY_REMAINING, player, event, lives);
             }
 
             final List<ItemStack> returned;
 
-            if (this.arena.getArenaConfig().getBoolean(
+            if (this.arena.getConfig().getBoolean(
                     CFG.PLAYER_DROPSINVENTORY)) {
                 returned = InventoryManager.drop(player);
                 event.getDrops().clear();
@@ -427,7 +427,7 @@ public class GoalLiberation extends ArenaGoal {
     @Override
     public void displayInfo(final CommandSender sender) {
         sender.sendMessage("lives: "
-                + this.arena.getArenaConfig().getInt(CFG.GOAL_LLIVES_LIVES));
+                + this.arena.getConfig().getInt(CFG.GOAL_LLIVES_LIVES));
     }
 
     @Override
@@ -446,7 +446,7 @@ public class GoalLiberation extends ArenaGoal {
                     teamName.toLowerCase() + "spawn")) {
                 return true;
             }
-            if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 for (final ArenaClass aClass : this.arena.getClasses()) {
                     if (string.toLowerCase().startsWith(teamName.toLowerCase() +
                             aClass.getName().toLowerCase() + "spawn")) {
@@ -466,7 +466,7 @@ public class GoalLiberation extends ArenaGoal {
     public void initiate(final Player player) {
         ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
         ArenaTeam arenaTeam = arenaPlayer.getArenaTeam();
-        this.getTeamLifeMap().put(arenaTeam, this.arena.getArenaConfig().getInt(CFG.GOAL_LLIVES_LIVES));
+        this.getTeamLifeMap().put(arenaTeam, this.arena.getConfig().getInt(CFG.GOAL_LLIVES_LIVES));
     }
 
     @Override
@@ -486,10 +486,10 @@ public class GoalLiberation extends ArenaGoal {
         for (final ArenaTeam team : this.arena.getTeams()) {
             for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
                 this.getTeamLifeMap().put(arenaPlayer.getArenaTeam(),
-                        this.arena.getArenaConfig().getInt(CFG.GOAL_LLIVES_LIVES));
+                        this.arena.getConfig().getInt(CFG.GOAL_LLIVES_LIVES));
             }
         }
-        if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
+        if (this.arena.getConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
             this.arena.getScoreboard().addCustomEntry(null, Language.parse(this.arena, MSG.GOAL_LIBERATION_SCOREBOARD_HEADING), 102);
             this.arena.getScoreboard().addCustomEntry(null, Language.parse(this.arena, MSG.GOAL_LIBERATION_SCOREBOARD_SEPARATOR), 100);
         }
@@ -499,7 +499,7 @@ public class GoalLiberation extends ArenaGoal {
     public void reset(final boolean force) {
         this.endRunner = null;
         this.getTeamLifeMap().clear();
-        if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
+        if (this.arena.getConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
             this.arena.getScoreboard().removeCustomEntry(null, 102);
             this.arena.getScoreboard().removeCustomEntry(null, 100);
         }

@@ -69,12 +69,12 @@ public final class PlayerState {
 
         aPlayer.setFlyState(player.isFlying());
 
-        if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
+        if (arena.getConfig().getBoolean(CFG.CHAT_COLORNICK)) {
             this.displayname = player.getDisplayName();
         }
 
         fullReset(arena, player);
-        final int time = arena.getArenaConfig().getInt(CFG.PLAYER_TIME);
+        final int time = arena.getConfig().getInt(CFG.PLAYER_TIME);
         if (time != -1) {
             player.setPlayerTime(time, false);
         }
@@ -97,14 +97,14 @@ public final class PlayerState {
     }
 
     public static void fullReset(final Arena arena, final Player player) {
-        int iHealth = arena.getArenaConfig().getInt(CFG.PLAYER_HEALTH);
+        int iHealth = arena.getConfig().getInt(CFG.PLAYER_HEALTH);
 
         if (iHealth < 1) {
             iHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
         }
 
-        if (arena.getArenaConfig().getInt(CFG.PLAYER_MAXHEALTH) > 0) {
-             player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(arena.getArenaConfig().getInt(CFG.PLAYER_MAXHEALTH));
+        if (arena.getConfig().getInt(CFG.PLAYER_MAXHEALTH) > 0) {
+             player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(arena.getConfig().getInt(CFG.PLAYER_MAXHEALTH));
         }
 
         if (iHealth > player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()) {
@@ -123,18 +123,18 @@ public final class PlayerState {
         }
         player.setFallDistance(0);
         player.setVelocity(new Vector());
-        player.setFoodLevel(arena.getArenaConfig().getInt(CFG.PLAYER_FOODLEVEL));
-        player.setSaturation(arena.getArenaConfig().getInt(CFG.PLAYER_SATURATION));
-        player.setExhaustion((float) arena.getArenaConfig().getDouble(CFG.PLAYER_EXHAUSTION));
+        player.setFoodLevel(arena.getConfig().getInt(CFG.PLAYER_FOODLEVEL));
+        player.setSaturation(arena.getConfig().getInt(CFG.PLAYER_SATURATION));
+        player.setExhaustion((float) arena.getConfig().getDouble(CFG.PLAYER_EXHAUSTION));
         player.setLevel(0);
         player.setExp(0);
-        if (arena.getArenaConfig().getGameMode(CFG.GENERAL_GAMEMODE) != null) {
-            player.setGameMode(arena.getArenaConfig().getGameMode(CFG.GENERAL_GAMEMODE));
+        if (arena.getConfig().getGameMode(CFG.GENERAL_GAMEMODE) != null) {
+            player.setGameMode(arena.getConfig().getGameMode(CFG.GENERAL_GAMEMODE));
         }
-        player.setCollidable(arena.getArenaConfig().getBoolean(CFG.PLAYER_COLLISION));
+        player.setCollidable(arena.getConfig().getBoolean(CFG.PLAYER_COLLISION));
         PlayerState.removeEffects(player);
 
-        if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
+        if (arena.getConfig().getBoolean(CFG.CHAT_COLORNICK)) {
             final ArenaTeam team = ArenaPlayer.fromPlayer(player).getArenaTeam();
             String n;
             if (team == null) {
@@ -163,11 +163,11 @@ public final class PlayerState {
 
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         player.setFoodLevel(this.foodlevel);
-        if (aPlayer.getArena().getArenaConfig().getGameMode(CFG.GENERAL_GAMEMODE) != null) {
+        if (aPlayer.getArena().getConfig().getGameMode(CFG.GENERAL_GAMEMODE) != null) {
             player.setGameMode(this.gamemode);
         }
 
-        if (aPlayer.getArena().getArenaConfig().getInt(CFG.PLAYER_MAXHEALTH) > 0) {
+        if (aPlayer.getArena().getConfig().getInt(CFG.PLAYER_MAXHEALTH) > 0) {
             player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(this.maxhealth);
         }
 
@@ -188,7 +188,7 @@ public final class PlayerState {
         player.setExhaustion(this.exhaustion);
         player.setFallDistance(0);
         player.setVelocity(new Vector());
-        if (aPlayer.getArena() != null && aPlayer.getArena().getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
+        if (aPlayer.getArena() != null && aPlayer.getArena().getConfig().getBoolean(CFG.CHAT_COLORNICK)) {
             player.setDisplayName(this.displayname);
         }
 
@@ -216,7 +216,7 @@ public final class PlayerState {
         }
 
         if (aPlayer.getArena() != null) {
-            player.setNoDamageTicks(aPlayer.getArena().getArenaConfig().getInt(CFG.TIME_TELEPORTPROTECT) * 20);
+            player.setNoDamageTicks(aPlayer.getArena().getConfig().getInt(CFG.TIME_TELEPORTPROTECT) * 20);
         }
         player.resetPlayerTime();
         player.setCollidable(this.collides);

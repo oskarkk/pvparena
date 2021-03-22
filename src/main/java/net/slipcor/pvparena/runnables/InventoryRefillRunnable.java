@@ -44,10 +44,10 @@ public class InventoryRefillRunnable implements Runnable {
         }
         this.arena = arena == null ? aPlayer.getArena() : arena;
 
-        boolean keepAll = this.arena.getArenaConfig().getBoolean(CFG.ITEMS_KEEPALLONRESPAWN);
+        boolean keepAll = this.arena.getConfig().getBoolean(CFG.ITEMS_KEEPALLONRESPAWN);
 
-        if (this.arena.getArenaConfig().getItems(CFG.ITEMS_KEEPONRESPAWN) != null) {
-            final ItemStack[] items = this.arena.getArenaConfig().getItems(CFG.ITEMS_KEEPONRESPAWN);
+        if (this.arena.getConfig().getItems(CFG.ITEMS_KEEPONRESPAWN) != null) {
+            final ItemStack[] items = this.arena.getConfig().getItems(CFG.ITEMS_KEEPONRESPAWN);
 
             for (final ItemStack item : itemList) {
                 if (item != null) {
@@ -69,7 +69,7 @@ public class InventoryRefillRunnable implements Runnable {
             }
         }
 
-        this.refill = this.arena.getArenaConfig().getBoolean(CFG.PLAYER_REFILLINVENTORY);
+        this.refill = this.arena.getConfig().getBoolean(CFG.PLAYER_REFILLINVENTORY);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.getInstance(), this, 3L);
         this.player = player;
@@ -80,7 +80,7 @@ public class InventoryRefillRunnable implements Runnable {
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(this.player.getName());
         debug(this.arena, "refilling " + this.player.getName());
         if (aPlayer.getStatus() == PlayerStatus.FIGHT) {
-            if (aPlayer.hasCustomClass() && !this.arena.getArenaConfig().getBoolean(CFG.PLAYER_REFILLCUSTOMINVENTORY) || !this.arena.getArenaConfig().getBoolean(CFG.PLAYER_REFILLINVENTORY)) {
+            if (aPlayer.hasCustomClass() && !this.arena.getConfig().getBoolean(CFG.PLAYER_REFILLCUSTOMINVENTORY) || !this.arena.getConfig().getBoolean(CFG.PLAYER_REFILLINVENTORY)) {
                 if (this.refill) {
                     final ItemStack[] items = new ItemStack[this.additions.size()];
                     int pos = 0;
@@ -94,7 +94,7 @@ public class InventoryRefillRunnable implements Runnable {
                                 + ", " + CFG.ITEMS_KEEPALLONRESPAWN.getNode() + " or " + CFG.PLAYER_REFILLCUSTOMINVENTORY.getNode() + " parameter");
                     }
                 }
-                if (this.arena.getArenaConfig().getBoolean(CFG.USES_WOOLHEAD)) {
+                if (this.arena.getConfig().getBoolean(CFG.USES_WOOLHEAD)) {
                     final ArenaTeam aTeam = aPlayer.getArenaTeam();
                     final ChatColor chatColor = aTeam.getColor();
                     debug(this.arena, this.player, "forcing woolhead: " + aTeam.getName() + '/'

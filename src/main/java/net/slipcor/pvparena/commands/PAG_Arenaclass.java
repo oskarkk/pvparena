@@ -68,7 +68,7 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
         final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer((Player) sender);
 
         // Player can change arena class only in lounge or with ingameClassSwith parameter set to true
-        if(arenaPlayer.getStatus() != LOUNGE && !arena.getArenaConfig().getBoolean(CFG.USES_INGAMECLASSSWITCH)) {
+        if(arenaPlayer.getStatus() != LOUNGE && !arena.getConfig().getBoolean(CFG.USES_INGAMECLASSSWITCH)) {
             return;
         }
 
@@ -78,7 +78,7 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
             return;
         }
 
-        if (arena.getArenaConfig().getBoolean(CFG.PERMS_EXPLICITCLASS)
+        if (arena.getConfig().getBoolean(CFG.PERMS_EXPLICITCLASS)
                 && !sender.hasPermission("pvparena.class." + arenaClass.getName())) {
             arena.msg(sender,
                     Language.parse(arena, MSG.ERROR_NOPERM_CLASS, arenaClass.getName()));
@@ -118,7 +118,7 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
             return;
         }
 
-        if (!arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSWITCH_AFTER_RESPAWN) || !arena.isFightInProgress()) {
+        if (!arena.getConfig().getBoolean(CFG.GENERAL_CLASSSWITCH_AFTER_RESPAWN) || !arena.isFightInProgress()) {
             InventoryManager.clearInventory(arenaPlayer.getPlayer());
             arenaPlayer.setArenaClass(arenaClass);
             if (arenaPlayer.getArenaClass() != null) {

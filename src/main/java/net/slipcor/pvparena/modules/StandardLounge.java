@@ -82,8 +82,8 @@ public class StandardLounge extends ArenaModule {
         }
 
         if (aPlayer.getArenaClass() == null) {
-            String autoClass = this.arena.getArenaConfig().getDefinedString(CFG.READY_AUTOCLASS);
-            if (this.arena.getArenaConfig().getBoolean(CFG.USES_PLAYERCLASSES) && this.arena.getClass(player.getName()) != null) {
+            String autoClass = this.arena.getConfig().getDefinedString(CFG.READY_AUTOCLASS);
+            if (this.arena.getConfig().getBoolean(CFG.USES_PLAYERCLASSES) && this.arena.getClass(player.getName()) != null) {
                 autoClass = player.getName();
             }
             if (autoClass != null && this.arena.getClass(autoClass) == null) {
@@ -125,14 +125,14 @@ public class StandardLounge extends ArenaModule {
             this.arena.msg(player,
                     Language.parse(this.arena, CFG.MSG_YOUJOINED,
                             Integer.toString(team.getTeamMembers().size()),
-                            Integer.toString(this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS))
+                            Integer.toString(this.arena.getConfig().getInt(CFG.READY_MAXPLAYERS))
                     ));
             this.arena.broadcastExcept(
                     player,
                     Language.parse(this.arena, CFG.MSG_PLAYERJOINED,
                             player.getName(),
                             Integer.toString(team.getTeamMembers().size()),
-                            Integer.toString(this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS))
+                            Integer.toString(this.arena.getConfig().getInt(CFG.READY_MAXPLAYERS))
                     ));
         } else {
 
@@ -140,7 +140,7 @@ public class StandardLounge extends ArenaModule {
                     Language.parse(this.arena, CFG.MSG_YOUJOINEDTEAM,
                             team.getColoredName() + ChatColor.COLOR_CHAR + 'r',
                             Integer.toString(team.getTeamMembers().size()),
-                            Integer.toString(this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS))
+                            Integer.toString(this.arena.getConfig().getInt(CFG.READY_MAXPLAYERS))
                     ));
 
             this.arena.broadcastExcept(
@@ -149,7 +149,7 @@ public class StandardLounge extends ArenaModule {
                             player.getName(),
                             team.getColoredName() + ChatColor.COLOR_CHAR + 'r',
                             Integer.toString(team.getTeamMembers().size()),
-                            Integer.toString(this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS))
+                            Integer.toString(this.arena.getConfig().getInt(CFG.READY_MAXPLAYERS))
                     ));
         }
 
@@ -163,7 +163,7 @@ public class StandardLounge extends ArenaModule {
 
 
             if (aPlayer.getArenaTeam() != null && aPlayer.getArenaClass() == null) {
-                final String autoClass = arena.getArenaConfig().getDefinedString(CFG.READY_AUTOCLASS);
+                final String autoClass = arena.getConfig().getDefinedString(CFG.READY_AUTOCLASS);
                 if (autoClass != null && arena.getClass(autoClass) != null) {
                     arena.chooseClass(aPlayer.getPlayer(), null, autoClass);
                 }

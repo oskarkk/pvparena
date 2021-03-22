@@ -64,7 +64,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
 
     @Override
     protected boolean hasWoolHead() {
-        return this.arena.getArenaConfig().getBoolean(CFG.GOAL_PFLAGS_WOOLFLAGHEAD);
+        return this.arena.getConfig().getBoolean(CFG.GOAL_PFLAGS_WOOLFLAGHEAD);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
         }
         debug(this.arena, player, "checking interact");
 
-        Material flagType = this.arena.getArenaConfig().getMaterial(CFG.GOAL_PFLAGS_FLAGTYPE);
+        Material flagType = this.arena.getConfig().getMaterial(CFG.GOAL_PFLAGS_FLAGTYPE);
         if (!ColorUtils.isSubType(block.getType(), flagType)) {
             debug(this.arena, player, "block, but not flag");
             return false;
@@ -118,7 +118,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
                         .anyMatch(team -> team.getName().equals(TOUCHDOWN))) {
                     debug(this.arena, player, "the flag of the own team is taken!");
 
-                    if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_PFLAGS_MUSTBESAFE)
+                    if (this.arena.getConfig().getBoolean(CFG.GOAL_PFLAGS_MUSTBESAFE)
                             && this.getFlagMap().keySet().stream()
                             .noneMatch(team -> team.getName().equals(TOUCHDOWN))) {
                         debug(this.arena, player, "cancelling");
@@ -241,7 +241,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
 
     @Override
     public void displayInfo(final CommandSender sender) {
-        Config cfg = this.arena.getArenaConfig();
+        Config cfg = this.arena.getConfig();
         sender.sendMessage("flageffect: " + cfg.getString(CFG.GOAL_PFLAGS_FLAGEFFECT));
         sender.sendMessage("flagtype: " + cfg.getString(CFG.GOAL_PFLAGS_FLAGTYPE));
         sender.sendMessage("lives: " + cfg.getInt(CFG.GOAL_PFLAGS_LIVES));
@@ -261,7 +261,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         final ArenaTeam team = aPlayer.getArenaTeam();
         if (!this.getTeamLifeMap().containsKey(team)) {
-            this.getTeamLifeMap().put(aPlayer.getArenaTeam(), this.arena.getArenaConfig().getInt(CFG.GOAL_PFLAGS_LIVES));
+            this.getTeamLifeMap().put(aPlayer.getArenaTeam(), this.arena.getConfig().getInt(CFG.GOAL_PFLAGS_LIVES));
         }
     }
 
@@ -311,7 +311,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
             if (!arenaTeam.getTeamMembers().isEmpty()) {
                 debug(this.arena, "adding team " + arenaTeam.getName());
                 // team is active
-                this.getTeamLifeMap().put(arenaTeam, this.arena.getArenaConfig().getInt(CFG.GOAL_PFLAGS_LIVES, 3));
+                this.getTeamLifeMap().put(arenaTeam, this.arena.getConfig().getInt(CFG.GOAL_PFLAGS_LIVES, 3));
                 Block flagBlock = this.getTeamFlagLoc(arenaTeam).toLocation().getBlock();
                 this.getFlagDataMap().put(arenaTeam, flagBlock.getBlockData().clone());
             }
@@ -360,7 +360,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
         final Player player = event.getPlayer();
         Material brokenMaterial = event.getBlock().getType();
         if (!this.arena.hasPlayer(event.getPlayer()) ||
-                !ColorUtils.isSubType(brokenMaterial, this.arena.getArenaConfig().getMaterial(CFG.GOAL_PFLAGS_FLAGTYPE))) {
+                !ColorUtils.isSubType(brokenMaterial, this.arena.getConfig().getMaterial(CFG.GOAL_PFLAGS_FLAGTYPE))) {
 
             debug(this.arena, player, "block destroy, ignoring");
             debug(this.arena, player, String.valueOf(this.arena.hasPlayer(event.getPlayer())));

@@ -65,7 +65,7 @@ public class GoalSabotage extends ArenaGoal {
 
     @Override
     public boolean allowsJoinInBattle() {
-        return this.arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE);
+        return this.arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE);
     }
 
     @Override
@@ -228,7 +228,7 @@ public class GoalSabotage extends ArenaGoal {
                             + ChatColor.YELLOW));
         }
 
-        new EndRunnable(arena, arena.getArenaConfig().getInt(
+        new EndRunnable(arena, arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -283,7 +283,7 @@ public class GoalSabotage extends ArenaGoal {
         if (ArenaModuleManager.commitEnd(this.arena, aTeam)) {
             return;
         }
-        new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(
+        new EndRunnable(this.arena, this.arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -373,7 +373,7 @@ public class GoalSabotage extends ArenaGoal {
                     teamName.toLowerCase() + "spawn")) {
                 return true;
             }
-            if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 for (final ArenaClass aClass : this.arena.getClasses()) {
                     if (string.toLowerCase().startsWith(teamName.toLowerCase() +
                             aClass.getName().toLowerCase() + "spawn")) {

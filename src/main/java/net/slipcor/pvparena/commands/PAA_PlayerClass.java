@@ -66,17 +66,17 @@ public class PAA_PlayerClass extends AbstractArenaCommand {
 
         if ("save".equalsIgnoreCase(args[0])) {
 
-            arena.getArenaConfig().setManually("classitems." + className + ".items", getSerializableItemStacks(player.getInventory().getStorageContents()));
-            arena.getArenaConfig().setManually("classitems." + className + ".offhand",  getSerializableItemStacks(player.getInventory().getItemInOffHand()));
-            arena.getArenaConfig().setManually("classitems." + className + ".armor", getSerializableItemStacks(player.getInventory().getArmorContents()));
-            arena.getArenaConfig().save();
+            arena.getConfig().setManually("classitems." + className + ".items", getSerializableItemStacks(player.getInventory().getStorageContents()));
+            arena.getConfig().setManually("classitems." + className + ".offhand",  getSerializableItemStacks(player.getInventory().getItemInOffHand()));
+            arena.getConfig().setManually("classitems." + className + ".armor", getSerializableItemStacks(player.getInventory().getArmorContents()));
+            arena.getConfig().save();
 
             arena.addClass(className, player.getInventory().getStorageContents(), player.getInventory().getItemInOffHand(), player.getInventory().getArmorContents());
             Arena.pmsg(player, Language.parse(arena, MSG.CLASS_SAVED, className));
 
         } else if ("remove".equalsIgnoreCase(args[0])) {
-            arena.getArenaConfig().setManually("classitems." + className, null);
-            arena.getArenaConfig().save();
+            arena.getConfig().setManually("classitems." + className, null);
+            arena.getConfig().save();
             arena.removeClass(className);
             Arena.pmsg(player, Language.parse(arena, MSG.CLASS_REMOVED, className));
         }

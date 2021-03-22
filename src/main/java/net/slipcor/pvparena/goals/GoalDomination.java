@@ -65,11 +65,11 @@ public class GoalDomination extends ArenaGoal {
 
     @Override
     public boolean allowsJoinInBattle() {
-        return this.arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE);
+        return this.arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE);
     }
 
     private void barStart(Location location, String title, ChatColor color, int range) {
-        if (!this.arena.getArenaConfig().getBoolean(CFG.GOAL_DOM_BOSSBAR)) {
+        if (!this.arena.getConfig().getBoolean(CFG.GOAL_DOM_BOSSBAR)) {
             return;
         }
         if (this.getBarMap().containsKey(location)) {
@@ -173,7 +173,7 @@ public class GoalDomination extends ArenaGoal {
         debug(this.arena, "   checkMove();");
         debug(this.arena, "------------------");
 
-        final int checkDistance = this.arena.getArenaConfig().getInt(CFG.GOAL_DOM_CLAIMRANGE);
+        final int checkDistance = this.arena.getConfig().getInt(CFG.GOAL_DOM_CLAIMRANGE);
 
         for (final PABlockLocation paLoc : SpawnManager.getBlocksStartingWith(this.arena, "flag")) {
 
@@ -343,7 +343,7 @@ public class GoalDomination extends ArenaGoal {
     }
 
     private void maybeAddScoreAndBroadCast(final ArenaTeam arenaTeam) {
-        if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_DOM_ONLYWHENMORE)) {
+        if (this.arena.getConfig().getBoolean(CFG.GOAL_DOM_ONLYWHENMORE)) {
             final Map<ArenaTeam, Integer> claimed = new HashMap<>();
             for (final ArenaTeam currentArenaTeam : this.getFlagMap().values()) {
                 final int toAdd;
@@ -366,7 +366,7 @@ public class GoalDomination extends ArenaGoal {
 
         this.reduceLivesCheckEndAndCommit(this.arena, arenaTeam);
 
-        final int max = this.arena.getArenaConfig().getInt(CFG.GOAL_DOM_LIVES);
+        final int max = this.arena.getConfig().getInt(CFG.GOAL_DOM_LIVES);
         if (!this.getTeamLifeMap().containsKey(arenaTeam)) {
             return;
         }
@@ -437,7 +437,7 @@ public class GoalDomination extends ArenaGoal {
         }
 
         this.getTeamLifeMap().clear();
-        new EndRunnable(arena, arena.getArenaConfig().getInt(
+        new EndRunnable(arena, arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -491,7 +491,7 @@ public class GoalDomination extends ArenaGoal {
         if (ArenaModuleManager.commitEnd(this.arena, aTeam)) {
             return;
         }
-        new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(
+        new EndRunnable(this.arena, this.arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -520,8 +520,8 @@ public class GoalDomination extends ArenaGoal {
 
     @Override
     public void displayInfo(final CommandSender sender) {
-        sender.sendMessage("needed points: " + this.arena.getArenaConfig().getInt(CFG.GOAL_DOM_LIVES));
-        sender.sendMessage("claim range: " + this.arena.getArenaConfig().getInt(CFG.GOAL_DOM_CLAIMRANGE));
+        sender.sendMessage("needed points: " + this.arena.getConfig().getInt(CFG.GOAL_DOM_LIVES));
+        sender.sendMessage("claim range: " + this.arena.getConfig().getInt(CFG.GOAL_DOM_CLAIMRANGE));
     }
 
     @NotNull
@@ -547,7 +547,7 @@ public class GoalDomination extends ArenaGoal {
                 return true;
             }
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 for (final ArenaClass aClass : this.arena.getClasses()) {
                     if (string.toLowerCase().startsWith(teamName.toLowerCase() +
                             aClass.getName().toLowerCase() + "spawn")) {
@@ -564,7 +564,7 @@ public class GoalDomination extends ArenaGoal {
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         final ArenaTeam team = aPlayer.getArenaTeam();
         if (!this.getTeamLifeMap().containsKey(team)) {
-            this.getTeamLifeMap().put(aPlayer.getArenaTeam(), this.arena.getArenaConfig()
+            this.getTeamLifeMap().put(aPlayer.getArenaTeam(), this.arena.getConfig()
                     .getInt(CFG.GOAL_DOM_LIVES));
 
             final Set<PABlockLocation> spawns = SpawnManager.getBlocksStartingWith(this.arena, "flag");
@@ -582,7 +582,7 @@ public class GoalDomination extends ArenaGoal {
                 debug(this.arena, "adding team " + team);
                 // team is active
                 this.getTeamLifeMap().put(team,
-                        this.arena.getArenaConfig().getInt(CFG.GOAL_DOM_LIVES, 3));
+                        this.arena.getConfig().getInt(CFG.GOAL_DOM_LIVES, 3));
             }
         }
         final Set<PABlockLocation> spawns = SpawnManager.getBlocksStartingWith(this.arena, "flag");
@@ -591,12 +591,12 @@ public class GoalDomination extends ArenaGoal {
         }
 
         final DominationMainRunnable domMainRunner = new DominationMainRunnable(this.arena, this);
-        final int tickInterval = this.arena.getArenaConfig().getInt(CFG.GOAL_DOM_TICKINTERVAL);
+        final int tickInterval = this.arena.getConfig().getInt(CFG.GOAL_DOM_TICKINTERVAL);
         domMainRunner.runTaskTimer(PVPArena.getInstance(), tickInterval, tickInterval);
 
-        this.announceOffset = this.arena.getArenaConfig().getInt(CFG.GOAL_DOM_ANNOUNCEOFFSET);
+        this.announceOffset = this.arena.getConfig().getInt(CFG.GOAL_DOM_ANNOUNCEOFFSET);
 
-        if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_DOM_PARTICLECIRCLE)) {
+        if (this.arena.getConfig().getBoolean(CFG.GOAL_DOM_PARTICLECIRCLE)) {
             this.circleTask = Bukkit.getScheduler().runTaskTimer(PVPArena.getInstance(),
                     new CircleParticleRunnable(this.arena, CFG.GOAL_DOM_CLAIMRANGE, this.getFlagMap()), 1L, 1L);
         }
@@ -606,7 +606,7 @@ public class GoalDomination extends ArenaGoal {
 
         debug(arena, "reducing lives of team " + arenaTeam);
         if (this.getTeamLifeMap().get(arenaTeam) != null) {
-            final int score = arena.getArenaConfig().getInt(CFG.GOAL_DOM_TICKREWARD);
+            final int score = arena.getConfig().getInt(CFG.GOAL_DOM_TICKREWARD);
             final int iLives = this.getTeamLifeMap().get(arenaTeam) - score;
 
             final PAGoalEvent gEvent = new PAGoalEvent(arena, this, "score:null:" + arenaTeam + ":" + score);

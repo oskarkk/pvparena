@@ -88,7 +88,7 @@ public class ArenaRegion {
      * otherwise
      */
     public static boolean checkRegions(final Arena arena) {
-        if (!arena.getArenaConfig().getBoolean(CFG.USES_OVERLAPCHECK)) {
+        if (!arena.getConfig().getBoolean(CFG.USES_OVERLAPCHECK)) {
             return true;
         }
         debug(arena, "checking regions");
@@ -183,7 +183,7 @@ public class ArenaRegion {
      * @return true if the player is too far away, false otherwise
      */
     public static boolean tooFarAway(final Arena arena, final Player player) {
-        final int joinRange = arena.getArenaConfig().getInt(CFG.JOIN_RANGE);
+        final int joinRange = arena.getConfig().getInt(CFG.JOIN_RANGE);
         if (joinRange < 1) {
             return false;
         }
@@ -359,7 +359,7 @@ public class ArenaRegion {
                 continue;
             }
 
-            if (this.arena.getArenaConfig().getStringList(CFG.GENERAL_REGIONCLEAREXCEPTIONS.getNode(), new ArrayList<String>()).contains(entity.getType().name())) {
+            if (this.arena.getConfig().getStringList(CFG.GENERAL_REGIONCLEAREXCEPTIONS.getNode(), new ArrayList<String>()).contains(entity.getType().name())) {
                 continue;
             }
 
@@ -368,9 +368,9 @@ public class ArenaRegion {
     }
 
     public void saveToConfig() {
-        this.arena.getArenaConfig().setManually("arenaregion." + this.name,
+        this.arena.getConfig().setManually("arenaregion." + this.name,
                 Config.parseToString(this, this.flags, this.protections));
-        this.arena.getArenaConfig().save();
+        this.arena.getConfig().save();
     }
 
     public final void setArena(final Arena arena) {
@@ -416,7 +416,7 @@ public class ArenaRegion {
             } else {
                 if (loc.distance(player.getLocation()) < 3) {
                     debug(player, "damaged in NOCAMP region");
-                    int campDamage = this.arena.getArenaConfig().getInt(CFG.DAMAGE_SPAWNCAMP);
+                    int campDamage = this.arena.getConfig().getInt(CFG.DAMAGE_SPAWNCAMP);
                     player.setLastDamageCause(new EntityDamageEvent(player, DamageCause.CUSTOM, campDamage));
                     player.damage(campDamage);
                 }

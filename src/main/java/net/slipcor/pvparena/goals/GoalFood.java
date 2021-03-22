@@ -86,7 +86,7 @@ public class GoalFood extends ArenaGoal {
 
     @Override
     public boolean allowsJoinInBattle() {
-        return this.arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE);
+        return this.arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE);
     }
 
     @Override
@@ -212,7 +212,7 @@ public class GoalFood extends ArenaGoal {
         if (ArenaModuleManager.commitEnd(this.arena, aTeam)) {
             return;
         }
-        new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(
+        new EndRunnable(this.arena, this.arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -220,13 +220,13 @@ public class GoalFood extends ArenaGoal {
     public void commitPlayerDeath(final Player respawnPlayer, final boolean doesRespawn,
                                   final PlayerDeathEvent event) {
 
-        if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+        if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
             this.broadcastSimpleDeathMessage(respawnPlayer, event);
         }
 
         final List<ItemStack> returned;
 
-        if (this.arena.getArenaConfig().getBoolean(
+        if (this.arena.getConfig().getBoolean(
                 CFG.PLAYER_DROPSINVENTORY)) {
             returned = InventoryManager.drop(respawnPlayer);
             event.getDrops().clear();
@@ -272,11 +272,11 @@ public class GoalFood extends ArenaGoal {
     @Override
     public void displayInfo(final CommandSender sender) {
         sender.sendMessage("items needed: "
-                + this.arena.getArenaConfig().getInt(CFG.GOAL_FOOD_FMAXITEMS));
+                + this.arena.getConfig().getInt(CFG.GOAL_FOOD_FMAXITEMS));
         sender.sendMessage("items per player: "
-                + this.arena.getArenaConfig().getInt(CFG.GOAL_FOOD_FPLAYERITEMS));
+                + this.arena.getConfig().getInt(CFG.GOAL_FOOD_FPLAYERITEMS));
         sender.sendMessage("items per team: "
-                + this.arena.getArenaConfig().getInt(CFG.GOAL_FOOD_FTEAMITEMS));
+                + this.arena.getConfig().getInt(CFG.GOAL_FOOD_FTEAMITEMS));
     }
 
     @NotNull
@@ -291,7 +291,7 @@ public class GoalFood extends ArenaGoal {
                     teamName.toLowerCase() + "spawn")) {
                 return true;
             }
-            if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 for (final ArenaClass aClass : this.arena.getClasses()) {
                     if (string.toLowerCase().startsWith(teamName.toLowerCase() +
                             aClass.getName().toLowerCase() + "spawn")) {
@@ -307,7 +307,7 @@ public class GoalFood extends ArenaGoal {
     public void initiate(final Player player) {
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         if (this.getTeamLifeMap().get(aPlayer.getArenaTeam()) == null) {
-            this.getTeamLifeMap().put(aPlayer.getArenaTeam(), this.arena.getArenaConfig()
+            this.getTeamLifeMap().put(aPlayer.getArenaTeam(), this.arena.getConfig()
                     .getInt(CFG.GOAL_FOOD_FMAXITEMS));
         }
     }
@@ -435,8 +435,8 @@ public class GoalFood extends ArenaGoal {
     @Override
     public void parseStart() {
 
-        final int pAmount = this.arena.getArenaConfig().getInt(CFG.GOAL_FOOD_FPLAYERITEMS);
-        final int tAmount = this.arena.getArenaConfig().getInt(CFG.GOAL_FOOD_FTEAMITEMS);
+        final int pAmount = this.arena.getConfig().getInt(CFG.GOAL_FOOD_FPLAYERITEMS);
+        final int tAmount = this.arena.getConfig().getInt(CFG.GOAL_FOOD_FTEAMITEMS);
 
         for (final ArenaTeam team : this.arena.getTeams()) {
             int pos = new Random().nextInt(cookmap.size());
@@ -459,7 +459,7 @@ public class GoalFood extends ArenaGoal {
                 arenaPlayer.getPlayer().updateInventory();
             }
             this.chestMap.put(SpawnManager.getBlockByExactName(this.arena, team.getName() + FOODCHEST).toLocation().getBlock(), team);
-            this.getTeamLifeMap().put(team, this.arena.getArenaConfig().getInt(CFG.GOAL_FOOD_FMAXITEMS));
+            this.getTeamLifeMap().put(team, this.arena.getConfig().getInt(CFG.GOAL_FOOD_FMAXITEMS));
         }
     }
 
@@ -494,7 +494,7 @@ public class GoalFood extends ArenaGoal {
             return;
         }
 
-        player.getInventory().addItem(new ItemStack(this.getFoodMap().get(team), this.arena.getArenaConfig().getInt(CFG.GOAL_FOOD_FPLAYERITEMS)));
+        player.getInventory().addItem(new ItemStack(this.getFoodMap().get(team), this.arena.getConfig().getInt(CFG.GOAL_FOOD_FPLAYERITEMS)));
         player.updateInventory();
     }
 
@@ -524,7 +524,7 @@ public class GoalFood extends ArenaGoal {
     public Map<String, Double> timedEnd(final Map<String, Double> scores) {
 
         for (final ArenaTeam arenaTeam : this.arena.getTeams()) {
-            double score = this.arena.getArenaConfig().getInt(CFG.GOAL_FOOD_FMAXITEMS)
+            double score = this.arena.getConfig().getInt(CFG.GOAL_FOOD_FMAXITEMS)
                     - this.getTeamLifeMap().getOrDefault(arenaTeam, 0);
             if (scores.containsKey(arenaTeam.getName())) {
                 scores.put(arenaTeam.getName(), scores.get(arenaTeam.getName()) + score);

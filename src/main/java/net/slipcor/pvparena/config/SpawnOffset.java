@@ -1,6 +1,7 @@
 package net.slipcor.pvparena.config;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.util.Vector;
 
 import java.util.Optional;
 
@@ -29,5 +30,9 @@ public class SpawnOffset {
 
     public double getZ() {
         return this.z;
+    }
+
+    public Vector toVector() {
+        return new Vector(this.x, this.y, this.z);
     }
 }

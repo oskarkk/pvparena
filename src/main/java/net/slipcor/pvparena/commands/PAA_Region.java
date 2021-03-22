@@ -98,11 +98,11 @@ public class PAA_Region extends AbstractArenaCommand {
                 arena.msg(sender, Language.parse(arena, MSG.ERROR_REGION_NOTFOUND, args[0]));
                 return;
             }
-            arena.getArenaConfig().setManually("arenaregion." + region.getRegionName(), null);
+            arena.getConfig().setManually("arenaregion." + region.getRegionName(), null);
             arena.msg(sender, Language.parse(arena, MSG.REGION_REMOVED, region.getRegionName()));
 
             arena.getRegions().remove(region);
-            arena.getArenaConfig().save();
+            arena.getConfig().save();
             RegionManager.getInstance().reloadCache();
             return;
         }
@@ -160,7 +160,7 @@ public class PAA_Region extends AbstractArenaCommand {
         final String message = region.update(args[1], args[2]);
 
         if (message != null) {
-            if (arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOSAVE)) {
+            if (arena.getConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOSAVE)) {
                 Bukkit.getServer().dispatchCommand(sender, "pvparena " + arena.getName() + " regsave " + region.getRegionName());
             }
             arena.msg(sender, message);

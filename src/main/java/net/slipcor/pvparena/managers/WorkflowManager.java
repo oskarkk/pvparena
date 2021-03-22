@@ -151,7 +151,7 @@ public class WorkflowManager {
 
         arena.markPlayedPlayer(player.getName());
 
-        aPlayer.setPublicChatting(!arena.getArenaConfig().getBoolean(CFG.CHAT_DEFAULTTEAM));
+        aPlayer.setPublicChatting(!arena.getConfig().getBoolean(CFG.CHAT_DEFAULTTEAM));
 
         debug(arena, "calling join event");
         final PAJoinEvent event = new PAJoinEvent(arena, player, false);
@@ -168,10 +168,10 @@ public class WorkflowManager {
             }
 
             if (arena.isFreeForAll()) {
-                arena.msg(player, arena.getArenaConfig().getString(CFG.MSG_YOUJOINED));
+                arena.msg(player, arena.getConfig().getString(CFG.MSG_YOUJOINED));
                 arena.broadcastExcept(player, Language.parse(arena, CFG.MSG_PLAYERJOINED, player.getName()));
             } else {
-                arena.msg(player, arena.getArenaConfig().getString(CFG.MSG_YOUJOINEDTEAM).replace("%1%", team.getColoredName() + ChatColor.RESET));
+                arena.msg(player, arena.getConfig().getString(CFG.MSG_YOUJOINEDTEAM).replace("%1%", team.getColoredName() + ChatColor.RESET));
                 arena.broadcastExcept(player, Language.parse(arena, CFG.MSG_PLAYERJOINEDTEAM, aPlayer.getName(), team.getColoredName() + ChatColor.RESET));
             }
 
@@ -180,7 +180,7 @@ public class WorkflowManager {
             joinGoal.initiate((player));
             ArenaModuleManager.initiate(arena, player);
 
-            if (arena.getFighters().size() >= Math.max(1, arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS))) {
+            if (arena.getFighters().size() >= Math.max(1, arena.getConfig().getInt(CFG.READY_MINPLAYERS))) {
                 arena.setFightInProgress(true);
 
                 arena.getTeams().forEach(aTeam -> SpawnManager.distribute(arena, aTeam));
@@ -219,32 +219,32 @@ public class WorkflowManager {
         }
 
         StatisticsManager.kill(arena, player.getKiller(), player, doesRespawn);
-        if (arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES) ||
-                arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGESCUSTOM)) {
+        if (arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES) ||
+                arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGESCUSTOM)) {
             event.setDeathMessage("");
         }
 
         if (player.getKiller() != null) {
             player.getKiller().setFoodLevel(
                     player.getKiller().getFoodLevel()
-                            + arena.getArenaConfig().getInt(
+                            + arena.getConfig().getInt(
                             CFG.PLAYER_FEEDFORKILL));
-            if (arena.getArenaConfig().getBoolean(CFG.PLAYER_HEALFORKILL)) {
+            if (arena.getConfig().getBoolean(CFG.PLAYER_HEALFORKILL)) {
                 PlayerState.playersetHealth(player.getKiller(), (int) player.getKiller().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             }
-            if (arena.getArenaConfig().getBoolean(CFG.PLAYER_REFILLFORKILL)) {
+            if (arena.getConfig().getBoolean(CFG.PLAYER_REFILLFORKILL)) {
                 InventoryManager.clearInventory(player.getKiller());
                 ArenaPlayer.fromPlayer(player.getKiller().getName()).getArenaClass().equip(player.getKiller());
             }
-            if (arena.getArenaConfig().getItems(CFG.PLAYER_ITEMSONKILL) != null) {
-                ItemStack[] items = arena.getArenaConfig().getItems(CFG.PLAYER_ITEMSONKILL);
+            if (arena.getConfig().getItems(CFG.PLAYER_ITEMSONKILL) != null) {
+                ItemStack[] items = arena.getConfig().getItems(CFG.PLAYER_ITEMSONKILL);
                 for (ItemStack item : items) {
                     if (item != null) {
                         player.getKiller().getInventory().addItem(item.clone());
                     }
                 }
             }
-            if (arena.getArenaConfig().getBoolean(CFG.USES_TELEPORTONKILL)) {
+            if (arena.getConfig().getBoolean(CFG.USES_TELEPORTONKILL)) {
                 SpawnManager.respawn(arena, ArenaPlayer.fromPlayer(player.getKiller().getName()), null);
             }
         }
@@ -254,14 +254,14 @@ public class WorkflowManager {
 
 
             List<ItemStack> returned = null;
-            if (arena.getArenaConfig().getBoolean(
+            if (arena.getConfig().getBoolean(
                     CFG.PLAYER_DROPSINVENTORY)) {
                 returned = InventoryManager.drop(player);
                 final int exp = event.getDroppedExp();
                 event.getDrops().clear();
-                if (arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
+                if (arena.getConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
                     InventoryManager.dropExp(player, exp);
-                } else if (arena.getArenaConfig().getBoolean(CFG.PLAYER_DROPSEXP)) {
+                } else if (arena.getConfig().getBoolean(CFG.PLAYER_DROPSEXP)) {
                     debug(arena, player, "exp: " + exp);
                     event.setDroppedExp(exp);
                 }
@@ -269,7 +269,7 @@ public class WorkflowManager {
             final ArenaTeam respawnTeam = ArenaPlayer.fromPlayer(
                     player.getName()).getArenaTeam();
 
-            if (arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+            if (arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                 arena.broadcast(Language.parse(arena, MSG.FIGHT_KILLED_BY,
                         respawnTeam.colorizePlayer(player) + ChatColor.YELLOW,
                         arena.parseDeathCause(player, event.getEntity()
@@ -281,7 +281,7 @@ public class WorkflowManager {
                     .getEntity().getLastDamageCause());
 
             if (returned == null) {
-                if (arena.getArenaConfig().getBoolean(CFG.PLAYER_DROPSINVENTORY)) {
+                if (arena.getConfig().getBoolean(CFG.PLAYER_DROPSINVENTORY)) {
                     returned = InventoryManager.drop(player);
                 } else {
                     returned = new ArrayList<>(event.getDrops());
@@ -307,13 +307,13 @@ public class WorkflowManager {
         ArenaModuleManager.parsePlayerDeath(arena, player,
                 player.getLastDamageCause());
 
-        if (!arena.getArenaConfig().getBoolean(CFG.PLAYER_DROPSINVENTORY) || !ArenaPlayer.fromPlayer(player).mayDropInventory()) {
+        if (!arena.getConfig().getBoolean(CFG.PLAYER_DROPSINVENTORY) || !ArenaPlayer.fromPlayer(player).mayDropInventory()) {
             event.getDrops().clear();
         }
         if (doesRespawn
-                || arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
+                || arena.getConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
             InventoryManager.dropExp(player, exp);
-        } else if (arena.getArenaConfig().getBoolean(CFG.PLAYER_DROPSEXP)) {
+        } else if (arena.getConfig().getBoolean(CFG.PLAYER_DROPSEXP)) {
             event.setDroppedExp(exp);
             debug(arena, player, "exp: " + exp);
         }
@@ -404,7 +404,7 @@ public class WorkflowManager {
     public static Boolean handleStart(final Arena arena, final CommandSender sender, final boolean force) {
         debug(arena, "handling start!");
 
-        if (!force && arena.getFighters().size() < Math.min(2, arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS))) {
+        if (!force && arena.getFighters().size() < Math.min(2, arena.getConfig().getInt(CFG.READY_MINPLAYERS))) {
             debug(arena, "not forcing and we have less than minplayers");
             return null;
         }
@@ -439,13 +439,10 @@ public class WorkflowManager {
         }
 
         final SpawnCampRunnable scr = new SpawnCampRunnable(arena);
-        arena.spawnCampRunnerID = Bukkit.getScheduler()
-                .scheduleSyncRepeatingTask(PVPArena.getInstance(), scr, 100L,
-                        arena.getArenaConfig().getInt(CFG.TIME_REGIONTIMER));
-        scr.setId(arena.spawnCampRunnerID);
+        scr.runTaskTimer(PVPArena.getInstance(), 100L, arena.getConfig().getInt(CFG.TIME_REGIONTIMER));
 
-        if (arena.getArenaConfig().getInt(CFG.TIME_PVP) > 0) {
-            arena.pvpRunner = new PVPActivateRunnable(arena, arena.getArenaConfig().getInt(CFG.TIME_PVP));
+        if (arena.getConfig().getInt(CFG.TIME_PVP) > 0) {
+            arena.pvpRunner = new PVPActivateRunnable(arena, arena.getConfig().getInt(CFG.TIME_PVP));
         }
 
         arena.setStartingTime();

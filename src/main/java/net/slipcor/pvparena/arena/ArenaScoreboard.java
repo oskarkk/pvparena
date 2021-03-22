@@ -28,7 +28,7 @@ public class ArenaScoreboard {
 
     public ArenaScoreboard(Arena arena) {
         this.arena = arena;
-        this.special = arena.getArenaConfig().getBoolean(Config.CFG.USES_SCOREBOARD);
+        this.special = arena.getConfig().getBoolean(Config.CFG.USES_SCOREBOARD);
 
         if(this.special) {
             this.initSpecialScoreboard();
@@ -312,8 +312,8 @@ public class ArenaScoreboard {
             sbTeam.setSuffix(ChatColor.RESET.toString());
             sbTeam.setColor(team.getColor());
             sbTeam.setCanSeeFriendlyInvisibles(!this.arena.isFreeForAll());
-            sbTeam.setAllowFriendlyFire(this.arena.getArenaConfig().getBoolean(Config.CFG.PERMS_TEAMKILL));
-            if (!this.arena.getArenaConfig().getBoolean(Config.CFG.PLAYER_COLLISION)) {
+            sbTeam.setAllowFriendlyFire(this.arena.getConfig().getBoolean(Config.CFG.PERMS_TEAMKILL));
+            if (!this.arena.getConfig().getBoolean(Config.CFG.PLAYER_COLLISION)) {
                 sbTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
             }
 

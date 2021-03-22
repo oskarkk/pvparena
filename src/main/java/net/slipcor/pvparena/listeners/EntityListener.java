@@ -113,7 +113,7 @@ public class EntityListener implements Listener {
             }
         }
         debug(arena, "explosion inside an arena, TNT should be blocked");
-        if (!arena.getArenaConfig().getBoolean(CFG.PROTECT_ENABLED)
+        if (!arena.getConfig().getBoolean(CFG.PROTECT_ENABLED)
                 || !(event.getEntity() instanceof TNTPrimed)
                 && !(event.getEntity() instanceof Creeper)) {
 
@@ -224,7 +224,7 @@ public class EntityListener implements Listener {
 
         if ((!(eDamager instanceof Player))) {
             // attacker no player => out!
-            if (arena.getArenaConfig().getBoolean(CFG.DAMAGE_FROMOUTSIDERS)) {
+            if (arena.getConfig().getBoolean(CFG.DAMAGE_FROMOUTSIDERS)) {
                 event.setCancelled(false);
             }
             return;
@@ -253,7 +253,7 @@ public class EntityListener implements Listener {
 
         if (!defTeam || !attTeam || arena.realEndRunner != null) {
             // special case: attacker has no team (might not be in the arena)
-            event.setCancelled(attTeam || !arena.getArenaConfig().getBoolean(CFG.DAMAGE_FROMOUTSIDERS)
+            event.setCancelled(attTeam || !arena.getConfig().getBoolean(CFG.DAMAGE_FROMOUTSIDERS)
                     || !defTeam || arena.realEndRunner != null);
             return;
         }
@@ -266,7 +266,7 @@ public class EntityListener implements Listener {
             // servers
         }
 
-        if ((!arena.getArenaConfig().getBoolean(CFG.PERMS_TEAMKILL))
+        if ((!arena.getConfig().getBoolean(CFG.PERMS_TEAMKILL))
                 && (apAttacker.getArenaTeam())
                 .equals(apDefender.getArenaTeam())) {
             // no team fights!
@@ -296,9 +296,9 @@ public class EntityListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.getInstance(),
                 new DamageResetRunnable(arena, attacker, defender), 1L);
 
-        if (arena.getArenaConfig().getInt(CFG.PROTECT_SPAWN) > 0
+        if (arena.getConfig().getInt(CFG.PROTECT_SPAWN) > 0
                 && SpawnManager.isNearSpawn(arena, defender, arena
-                .getArenaConfig().getInt(CFG.PROTECT_SPAWN))) {
+                .getConfig().getInt(CFG.PROTECT_SPAWN))) {
             // spawn protection!
             debug(arena, attacker, "spawn protection! damage cancelled!");
             debug(arena, defender, "spawn protection! damage cancelled!");
@@ -316,7 +316,7 @@ public class EntityListener implements Listener {
 
         StatisticsManager.damage(arena, attacker, defender, event.getDamage());
 
-        if (arena.getArenaConfig().getBoolean(CFG.DAMAGE_BLOODPARTICLES)) {
+        if (arena.getConfig().getBoolean(CFG.DAMAGE_BLOODPARTICLES)) {
             apDefender.showBloodParticles();
         }
     }
@@ -403,7 +403,7 @@ public class EntityListener implements Listener {
                     return;
                 }
 
-                if (!arena.getArenaConfig().getBoolean(CFG.PERMS_TEAMKILL)) {
+                if (!arena.getConfig().getBoolean(CFG.PERMS_TEAMKILL)) {
                     for (ArenaPlayer ap : aPlayer.getArenaTeam().getTeamMembers()) {
                         if (event.getTarget().equals(ap.getPlayer())) {
                             event.setCancelled(true);
@@ -471,7 +471,7 @@ public class EntityListener implements Listener {
             return;
         }
 
-        if (shooter.getArena().getArenaConfig().getBoolean(CFG.PERMS_TEAMKILL)) {
+        if (shooter.getArena().getConfig().getBoolean(CFG.PERMS_TEAMKILL)) {
             return; // if teamkill allowed, don't check, just ignore
         }
 

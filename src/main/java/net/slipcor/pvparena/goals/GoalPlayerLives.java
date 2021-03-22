@@ -138,14 +138,14 @@ public class GoalPlayerLives extends ArenaGoal {
 
             if (ArenaModuleManager.commitEnd(this.arena, arenaTeam)) {
                 if (this.arena.realEndRunner == null) {
-                    this.endRunner = new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(
+                    this.endRunner = new EndRunnable(this.arena, this.arena.getConfig().getInt(
                             CFG.TIME_ENDCOUNTDOWN));
                 }
                 return;
             }
         }
 
-        this.endRunner = new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(
+        this.endRunner = new EndRunnable(this.arena, this.arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -185,7 +185,7 @@ public class GoalPlayerLives extends ArenaGoal {
                 this.getTeamLifeMap().remove(arenaTeam);
             }
             ArenaPlayer.fromPlayer(player).setStatus(PlayerStatus.LOST);
-            if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
+            if (this.arena.getConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
                 debug(this.arena, player, "faking player death");
                 PlayerListener.finallyKillPlayer(this.arena, player, event);
             }
@@ -199,8 +199,8 @@ public class GoalPlayerLives extends ArenaGoal {
                 this.getTeamLifeMap().put(arenaTeam, nextPlayerOrTeamLive);
             }
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
-                if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_SHOWREMAININGLIVES)) {
+            if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+                if (this.arena.getConfig().getBoolean(CFG.GENERAL_SHOWREMAININGLIVES)) {
                     this.broadcastDeathMessage(MSG.FIGHT_KILLED_BY_REMAINING, player, event, nextPlayerOrTeamLive);
                 } else {
                     this.broadcastSimpleDeathMessage(player, event);
@@ -209,7 +209,7 @@ public class GoalPlayerLives extends ArenaGoal {
 
             final List<ItemStack> returned;
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_DROPSINVENTORY)) {
+            if (this.arena.getConfig().getBoolean(CFG.PLAYER_DROPSINVENTORY)) {
                 returned = InventoryManager.drop(player);
                 event.getDrops().clear();
             } else {
@@ -224,7 +224,7 @@ public class GoalPlayerLives extends ArenaGoal {
     @Override
     public void displayInfo(final CommandSender sender) {
         sender.sendMessage("lives: "
-                + this.arena.getArenaConfig().getInt(CFG.GOAL_PLIVES_LIVES));
+                + this.arena.getConfig().getInt(CFG.GOAL_PLIVES_LIVES));
     }
 
     @Override
@@ -249,7 +249,7 @@ public class GoalPlayerLives extends ArenaGoal {
     public boolean hasSpawn(final String string) {
         if (this.arena.isFreeForAll()) {
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 for (final ArenaClass aClass : this.arena.getClasses()) {
                     if (string.toLowerCase().startsWith(
                             aClass.getName().toLowerCase() + SPAWN)) {
@@ -264,7 +264,7 @@ public class GoalPlayerLives extends ArenaGoal {
                     teamName.toLowerCase() + SPAWN)) {
                 return true;
             }
-            if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 for (final ArenaClass aClass : this.arena.getClasses()) {
                     if (string.toLowerCase().startsWith(teamName.toLowerCase() +
                             aClass.getName().toLowerCase() + SPAWN)) {
@@ -278,7 +278,7 @@ public class GoalPlayerLives extends ArenaGoal {
 
     @Override
     public void initiate(final Player player) {
-        this.updateLives(player, this.arena.getArenaConfig().getInt(CFG.GOAL_PLIVES_LIVES));
+        this.updateLives(player, this.arena.getConfig().getInt(CFG.GOAL_PLIVES_LIVES));
     }
 
     @Override
@@ -299,7 +299,7 @@ public class GoalPlayerLives extends ArenaGoal {
     public void parseStart() {
         for (final ArenaTeam team : this.arena.getTeams()) {
             for (final ArenaPlayer ap : team.getTeamMembers()) {
-                this.updateLives(ap.getPlayer(), this.arena.getArenaConfig().getInt(CFG.GOAL_PLIVES_LIVES));
+                this.updateLives(ap.getPlayer(), this.arena.getConfig().getInt(CFG.GOAL_PLIVES_LIVES));
             }
         }
     }
@@ -325,7 +325,7 @@ public class GoalPlayerLives extends ArenaGoal {
             config.addDefault("teams.red", ChatColor.RED.name());
             config.addDefault("teams.blue", ChatColor.BLUE.name());
         }
-        if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_FLAGS_WOOLFLAGHEAD)
+        if (this.arena.getConfig().getBoolean(CFG.GOAL_FLAGS_WOOLFLAGHEAD)
                 && config.get("flagColors") == null) {
             debug(this.arena, "no flagheads defined, adding white and black!");
             config.addDefault("flagColors.red", "WHITE");

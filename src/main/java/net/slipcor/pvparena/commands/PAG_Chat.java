@@ -53,7 +53,7 @@ public class PAG_Chat extends AbstractArenaCommand {
                 arena.msg(sender, Language.parse(arena, MSG.MESSAGES_TOTEAM));
             } else {
                 aPlayer.setPublicChatting(true);
-                if (arena.getArenaConfig().getBoolean(CFG.CHAT_ONLYPRIVATE)) {
+                if (arena.getConfig().getBoolean(CFG.CHAT_ONLYPRIVATE)) {
                     arena.msg(sender, Language.parse(arena, MSG.MESSAGES_TOARENA));
                 } else {
                     arena.msg(sender, Language.parse(arena, MSG.MESSAGES_TOPUBLIC));
@@ -64,7 +64,7 @@ public class PAG_Chat extends AbstractArenaCommand {
 
         if (StringParser.isPositiveValue(args[0])) {
             aPlayer.setPublicChatting(true);
-            if (arena.getArenaConfig().getBoolean(CFG.CHAT_ONLYPRIVATE)) {
+            if (arena.getConfig().getBoolean(CFG.CHAT_ONLYPRIVATE)) {
                 arena.msg(sender, Language.parse(arena, MSG.MESSAGES_TOARENA));
             } else {
                 arena.msg(sender, Language.parse(arena, MSG.MESSAGES_TOPUBLIC));

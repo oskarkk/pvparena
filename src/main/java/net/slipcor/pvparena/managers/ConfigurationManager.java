@@ -273,7 +273,7 @@ public final class ConfigurationManager {
                 .getValues(true);
 
         if (arena.isFreeForAll()) {
-            if (!arena.getArenaConfig().getBoolean(CFG.PERMS_TEAMKILL) && !"Infect".equals(arena.getArenaConfig().getString(CFG.GENERAL_GOAL))) {
+            if (!arena.getConfig().getBoolean(CFG.PERMS_TEAMKILL) && !"Infect".equals(arena.getConfig().getString(CFG.GENERAL_GOAL))) {
                 PVPArena.getInstance().getLogger().warning("Arena " + arena.getName() + " is running in NO-PVP mode! Make sure people can die!");
             }
         } else {
@@ -303,6 +303,10 @@ public final class ConfigurationManager {
     public static String isSetup(final Arena arena) {
         //arena.getArenaConfig().load();
 
+        if (arena.getConfig().getUnsafe("spawns") == null) {
+            return Language.parse(arena, MSG.ERROR_NO_SPAWNS);
+        }
+
         for (final String editor : PAA_Edit.activeEdits.keySet()) {
             if (PAA_Edit.activeEdits.get(editor).getName().equals(
                     arena.getName())) {
@@ -322,11 +326,11 @@ public final class ConfigurationManager {
 
     private static String isSpawnsSetup(Arena arena) {
 
-        if (arena.getArenaConfig().getUnsafe(SPAWNS) == null) {
+        if (arena.getConfig().getUnsafe(SPAWNS) == null) {
             return Language.parse(arena, MSG.ERROR_NO_SPAWNS);
         }
 
-        ConfigurationSection spawnConfigurationSection = arena.getArenaConfig().getYamlConfiguration()
+        ConfigurationSection spawnConfigurationSection = arena.getConfig().getYamlConfiguration()
                 .getConfigurationSection(SPAWNS);
 
         assert spawnConfigurationSection != null;
@@ -337,19 +341,19 @@ public final class ConfigurationManager {
         final Set<String> errors = new HashSet<>();
 
         // mandatory spawns
-        final String sExit = arena.getArenaConfig().getString(CFG.TP_EXIT);
+        final String sExit = arena.getConfig().getString(CFG.TP_EXIT);
         if (!OLD.equals(sExit) && !spawnsNames.contains(sExit)) {
             errors.add(sExit);
         }
-        final String sWin = arena.getArenaConfig().getString(CFG.TP_WIN);
+        final String sWin = arena.getConfig().getString(CFG.TP_WIN);
         if (!OLD.equals(sWin) && !spawnsNames.contains(sWin)) {
             errors.add(sWin);
         }
-        final String sLose = arena.getArenaConfig().getString(CFG.TP_LOSE);
+        final String sLose = arena.getConfig().getString(CFG.TP_LOSE);
         if (!OLD.equals(sLose) && !spawnsNames.contains(sLose)) {
             errors.add(sLose);
         }
-        final String sDeath = arena.getArenaConfig().getString(CFG.TP_DEATH);
+        final String sDeath = arena.getConfig().getString(CFG.TP_DEATH);
         if (!OLD.equals(sDeath) && !spawnsNames.contains(sDeath)) {
             errors.add(sDeath);
         }

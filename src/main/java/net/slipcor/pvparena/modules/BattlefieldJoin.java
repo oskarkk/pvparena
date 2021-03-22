@@ -82,7 +82,7 @@ public class BattlefieldJoin extends ArenaModule {
         arenaPlayer.setStatus(PlayerStatus.LOUNGE);
         team.add(arenaPlayer);
         final Set<PASpawn> spawns = new HashSet<>();
-        if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+        if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
             final String arenaClass = arenaPlayer.getArenaClass().getName();
             spawns.addAll(SpawnManager.getPASpawnsStartingWith(this.arena, team.getName() + arenaClass + "spawn"));
         } else if (this.arena.isFreeForAll()) {
@@ -115,8 +115,8 @@ public class BattlefieldJoin extends ArenaModule {
 
 
             if (arenaPlayer.getArenaTeam() != null && arenaPlayer.getArenaClass() == null) {
-                String autoClass = arena.getArenaConfig().getDefinedString(CFG.READY_AUTOCLASS);
-                if (arena.getArenaConfig().getBoolean(CFG.USES_PLAYERCLASSES) && arena.getClass(arenaPlayer.getName()) != null) {
+                String autoClass = arena.getConfig().getDefinedString(CFG.READY_AUTOCLASS);
+                if (arena.getConfig().getBoolean(CFG.USES_PLAYERCLASSES) && arena.getClass(arenaPlayer.getName()) != null) {
                     autoClass = arenaPlayer.getName();
                 }
                 if (autoClass != null && arena.getClass(autoClass) != null) {

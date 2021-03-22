@@ -71,10 +71,10 @@ public class PAA_Class extends AbstractArenaCommand {
             final Player player = (Player) sender;
             final List<ItemStack> items = new ArrayList<>();
 
-            arena.getArenaConfig().setManually("classitems." + args[1] + ".items", getSerializableItemStacks(player.getInventory().getStorageContents()));
-            arena.getArenaConfig().setManually("classitems." + args[1] + ".offhand", getSerializableItemStacks(player.getInventory().getItemInOffHand()));
-            arena.getArenaConfig().setManually("classitems." + args[1] + ".armor", getSerializableItemStacks(player.getInventory().getArmorContents()));
-            arena.getArenaConfig().save();
+            arena.getConfig().setManually("classitems." + args[1] + ".items", getSerializableItemStacks(player.getInventory().getStorageContents()));
+            arena.getConfig().setManually("classitems." + args[1] + ".offhand", getSerializableItemStacks(player.getInventory().getItemInOffHand()));
+            arena.getConfig().setManually("classitems." + args[1] + ".armor", getSerializableItemStacks(player.getInventory().getArmorContents()));
+            arena.getConfig().save();
 
             arena.addClass(args[1], player.getInventory().getStorageContents(), player.getInventory().getItemInOffHand(), player.getInventory().getArmorContents());
             Arena.pmsg(player, Language.parse(arena, MSG.CLASS_SAVED, args[1]));
@@ -88,8 +88,8 @@ public class PAA_Class extends AbstractArenaCommand {
             arena.selectClass(aPlayer, args[1]);
         } else if ("remove".equalsIgnoreCase(args[0])) {
             final Player player = (Player) sender;
-            arena.getArenaConfig().setManually("classitems." + args[1], null);
-            arena.getArenaConfig().save();
+            arena.getConfig().setManually("classitems." + args[1], null);
+            arena.getConfig().save();
             arena.removeClass(args[1]);
             Arena.pmsg(player, Language.parse(arena, MSG.CLASS_REMOVED, args[1]));
         }

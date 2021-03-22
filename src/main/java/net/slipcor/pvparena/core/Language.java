@@ -852,12 +852,12 @@ public final class Language {
 
     public static String parse(final Arena arena, final CFG node) {
         debug(arena, "CFG: " + node.getNode());
-        return StringParser.colorize(arena.getArenaConfig().getString(node));
+        return StringParser.colorize(arena.getConfig().getString(node));
     }
 
     public static String parse(final Arena arena, final CFG node, final String... args) {
         debug(arena, "CFG: " + node.getNode());
-        String result = arena.getArenaConfig().getString(node);
+        String result = arena.getConfig().getString(node);
 
         int i = 0;
 

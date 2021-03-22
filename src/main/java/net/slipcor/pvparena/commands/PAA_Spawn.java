@@ -98,9 +98,6 @@ public class PAA_Spawn extends AbstractArenaCommand {
             if (loc == null) {
                 arena.msg(sender, Language.parse(arena, MSG.SPAWN_UNKNOWN, args[0]));
             } else {
-                if (arena.getOffset(args[0]) != null) {
-                    arena.removeOffset(args[0]);
-                }
                 double x,y,z;
 
                 try {
@@ -124,7 +121,7 @@ public class PAA_Spawn extends AbstractArenaCommand {
                     return;
                 }
 
-                arena.setOffset(args[0], x, y, z);
+                arena.getConfig().setOffset(args[0], x, y, z);
 
                 arena.msg(sender, Language.parse(arena, MSG.SPAWN_OFFSET, args[0],
                         String.format("%.1f", x)+", "+String.format("%.1f", y)+", "+String.format("%.1f", z)+" (x, y, z)"));

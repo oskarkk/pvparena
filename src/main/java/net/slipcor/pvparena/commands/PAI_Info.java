@@ -67,7 +67,7 @@ public class PAI_Info extends AbstractArenaCommand {
         arena.msg(sender, Language.parse(arena, MSG.INFO_CLASSES, StringParser.joinSet(classes, ", ")));
         arena.msg(sender, Language.parse(arena, MSG.INFO_OWNER, arena.getOwner() == null ? "server" : arena.getOwner()));
 
-        Config cfg = arena.getArenaConfig();
+        Config cfg = arena.getConfig();
         if (displayMode == null || "chat".equals(displayMode)) {
             arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "chat"));
             arena.msg(sender,

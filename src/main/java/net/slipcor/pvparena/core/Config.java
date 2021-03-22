@@ -5,21 +5,24 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.commands.CommandTree;
+import net.slipcor.pvparena.loadables.ArenaRegionShape;
 import net.slipcor.pvparena.regions.ArenaRegion;
 import net.slipcor.pvparena.regions.RegionFlag;
 import net.slipcor.pvparena.regions.RegionProtection;
 import net.slipcor.pvparena.regions.RegionType;
-import net.slipcor.pvparena.loadables.ArenaRegionShape;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.*;
 
+import static java.util.Optional.ofNullable;
 import static net.slipcor.pvparena.core.ItemStackUtils.getItemStacksFromConfig;
 import static net.slipcor.pvparena.core.Utils.getSerializableItemStacks;
 
@@ -165,7 +168,7 @@ public class Config {
         TP_EXIT("tp.exit", "old", null),
         TP_LOSE("tp.lose", "old", null),
         TP_WIN("tp.win", "old", null),
-        TP_OFFSETS("tp.offsets", new ArrayList<>(), null),
+        TP_OFFSETS("tp.offsets", new HashMap<>(), null),
 
         USES_CLASSSIGNSDISPLAY("uses.classSignsDisplay", false, null),
         USES_DEATHMESSAGES("uses.deathMessages", true, null),
@@ -413,7 +416,7 @@ public class Config {
         MODULES_WORLDEDIT_AUTOSAVE("modules.worldedit.autosave", false, "WorldEdit"),
         MODULES_WORLDEDIT_SCHEMATICPATH("modules.worldedit.schematicpath", "", "WorldEdit"),
         MODULES_WORLDEDIT_REPLACEAIR("modules.worldedit.replaceair", true, "WorldEdit"),
-        MODULES_WORLDEDIT_REGIONS("modules.worldedit.regions", new ArrayList<String>(), "WorldEdit");
+        MODULES_WORLDEDIT_REGIONS("modules.worldedit.regions", new ArrayList<>(), "WorldEdit");
 
         private final String node;
         private final Object value;
@@ -482,6 +485,13 @@ public class Config {
             this.node = node;
             this.value = value;
             this.type = "list";
+            this.module = source;
+        }
+
+        CFG(final String node, final Map<String, String> value, final String source) {
+            this.node = node;
+            this.value = node;
+            this.type = "stringMap";
             this.module = source;
         }
 
@@ -816,10 +826,23 @@ public class Config {
 
     public List<String> getStringList(final String path, final List<String> def) {
         if (this.cfg.get(path) == null) {
-            return def == null ? new LinkedList<String>() : def;
+            return def == null ? new LinkedList<>() : def;
         }
 
         return this.cfg.getStringList(path);
+    }
+
+    public Map<String, String> getStringMap(CFG cfg) {
+        try {
+            ConfigurationSection cs = this.cfg.getConfigurationSection(cfg.getNode());
+            Set<String> keys = cs.getKeys(false);
+
+            Map<String, String> results = new HashMap<>();
+            keys.forEach(key -> ofNullable(cs.getString(key)).ifPresent(value -> results.put(key, value)));
+            return results;
+        } catch (NullPointerException e) {
+            return new HashMap<>();
+        }
     }
 
 
@@ -1054,5 +1077,33 @@ public class Config {
 
         // "world,x1,y1,z1,x2,y2,z2,shape,FLAGS,PROTS,TYPE"
         return StringParser.joinArray(result, ",");
+    }
+
+    public void setOffset(String spawnName, double x, double y, double z) {
+        Map<String, String> offsets = this.getStringMap(CFG.TP_OFFSETS);
+        offsets.put(spawnName, String.format("%.1f;%.1f;%.1f", x, y, z));
+
+        this.cfg.set(CFG.TP_OFFSETS.getNode(), offsets);
+        this.save();
+    }
+
+    @NotNull
+    public Vector getOffset(String spawnName) {
+        Map<String, String> offsets = this.getStringMap(CFG.TP_OFFSETS);
+        String value = offsets.get(spawnName);
+
+        if (value != null && value.contains(";")) {
+            String[] vals = value.split(";");
+            try {
+                return new Vector(
+                        Double.parseDouble(vals[0]),
+                        Double.parseDouble(vals[1]),
+                        Double.parseDouble(vals[2])
+                );
+            } catch (Exception ignored) {
+
+            }
+        }
+        return new Vector(0, 0, 0);
     }
 }

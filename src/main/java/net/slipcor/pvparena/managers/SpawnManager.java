@@ -90,7 +90,7 @@ public final class SpawnManager {
             return;
         }
 
-        if (arena.getArenaConfig().getBoolean(CFG.GENERAL_QUICKSPAWN)) {
+        if (arena.getConfig().getBoolean(CFG.GENERAL_QUICKSPAWN)) {
             class TeleportLater extends BukkitRunnable {
                 private final Set<ArenaPlayer> teamMembers = new HashSet<>();
                 private final boolean classSpawn;
@@ -102,7 +102,7 @@ public final class SpawnManager {
                     for (final ArenaPlayer ap : set) {
                         this.teamMembers.add(ap);
                     }
-                    this.classSpawn = arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN);
+                    this.classSpawn = arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN);
                 }
 
                 @Override
@@ -159,7 +159,7 @@ public final class SpawnManager {
             return;
         }
 
-        if (arena.getArenaConfig().getBoolean(CFG.GENERAL_SMARTSPAWN)) {
+        if (arena.getConfig().getBoolean(CFG.GENERAL_SMARTSPAWN)) {
             distributeSmart(arena, team.getTeamMembers(), team.getName());
             return;
         }
@@ -196,7 +196,7 @@ public final class SpawnManager {
                 for (final ArenaPlayer ap : set) {
                     this.set.add(ap);
                 }
-                this.classSpawn = arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN);
+                this.classSpawn = arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN);
             }
 
             @Override
@@ -502,7 +502,7 @@ public final class SpawnManager {
 
                 Location bLoc = newLoc.toLocation();
                 SpawnOffset spawnOffset = PVPArena.getInstance().getSpawnOffset();
-                bLoc = bLoc.add(spawnOffset.getX(), spawnOffset.getY(), spawnOffset.getZ());
+                bLoc = bLoc.add(spawnOffset.toVector());
 
                 while (bLoc.getBlock().getType() != Material.AIR
                         && bLoc.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR
@@ -595,7 +595,7 @@ public final class SpawnManager {
 
         final Set<PALocation> spawns = new HashSet<>();
 
-        if (arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+        if (arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
             spawns.addAll(SpawnManager.getSpawnsContaining(arena, team.getName() + aPlayer.getArenaClass().getName() + "spawn"));
         } else if (arena.isFreeForAll()) {
             spawns.addAll(SpawnManager.getSpawnsStartingWith(arena, "spawn"));
@@ -625,7 +625,7 @@ public final class SpawnManager {
         if (overrideSpawn == null) {
 
 
-            if (arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)
+            if (arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)
                     && arena.isFreeForAll() == "free".equals(aPlayer.getArenaTeam().getName())) {
 
                 // we want a class spawn and the arena is either not FFA or the player is in the FREE team
@@ -654,7 +654,7 @@ public final class SpawnManager {
             if (arena.isFreeForAll()) {
 
 
-                if (!arena.getArenaConfig().getBoolean(CFG.GENERAL_SMARTSPAWN)
+                if (!arena.getConfig().getBoolean(CFG.GENERAL_SMARTSPAWN)
                         || !"free".equals(aPlayer.getArenaTeam().getName())) {
 
                     // either we generally don't need smart spawning or the player is not in the "free" team ;)
@@ -663,7 +663,7 @@ public final class SpawnManager {
 
                     final Set<PASpawn> spawns = new HashSet<>();
 
-                    if (arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+                    if (arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                         final String arenaClass = aPlayer.getArenaClass().getName();
                         spawns.addAll(SpawnManager.getPASpawnsStartingWith(arena, aPlayer.getArenaTeam().getName() + arenaClass + "spawn"));
                     } else if ("free".equals(aPlayer.getArenaTeam().getName())) {
@@ -763,8 +763,8 @@ public final class SpawnManager {
 
         final String spawnName = Config.parseToString(loc);
         debug(arena, "setting spawn " + place + " to " + spawnName);
-        arena.getArenaConfig().setManually("spawns." + place, spawnName);
-        arena.getArenaConfig().save();
+        arena.getConfig().setManually("spawns." + place, spawnName);
+        arena.getConfig().save();
         arena.addBlock(new PABlock(loc, place));
     }
 

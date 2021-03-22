@@ -124,7 +124,7 @@ public class GoalTank extends ArenaGoal {
             }
         }
 
-        this.endRunner = new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(
+        this.endRunner = new EndRunnable(this.arena, this.arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -155,7 +155,7 @@ public class GoalTank extends ArenaGoal {
 
 
             this.getPlayerLifeMap().remove(player);
-            if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
+            if (this.arena.getConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
                 debug(this.arena, player, "faking player death");
                 PlayerListener.finallyKillPlayer(this.arena, player, event);
             }
@@ -169,12 +169,12 @@ public class GoalTank extends ArenaGoal {
             iLives--;
             this.getPlayerLifeMap().put(player, iLives);
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+            if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                 this.broadcastDeathMessage(MSG.FIGHT_KILLED_BY_REMAINING, player, event, iLives);
             }
             final List<ItemStack> returned;
 
-            if (this.arena.getArenaConfig().getBoolean(
+            if (this.arena.getConfig().getBoolean(
                     CFG.PLAYER_DROPSINVENTORY)) {
                 returned = InventoryManager.drop(player);
                 event.getDrops().clear();
@@ -197,7 +197,7 @@ public class GoalTank extends ArenaGoal {
     @Override
     public void displayInfo(final CommandSender sender) {
         sender.sendMessage("lives: "
-                + this.arena.getArenaConfig().getInt(CFG.GOAL_TANK_LIVES));
+                + this.arena.getConfig().getInt(CFG.GOAL_TANK_LIVES));
     }
 
     @Override
@@ -209,7 +209,7 @@ public class GoalTank extends ArenaGoal {
     public boolean hasSpawn(final String string) {
 
 
-        if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+        if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
             for (final ArenaClass aClass : this.arena.getClasses()) {
                 if (string.toLowerCase().startsWith(
                         aClass.getName().toLowerCase() + "spawn")) {
@@ -224,7 +224,7 @@ public class GoalTank extends ArenaGoal {
 
     @Override
     public void initiate(final Player player) {
-        this.getPlayerLifeMap().put(player, this.arena.getArenaConfig().getInt(CFG.GOAL_TANK_LIVES));
+        this.getPlayerLifeMap().put(player, this.arena.getConfig().getInt(CFG.GOAL_TANK_LIVES));
     }
 
     @Override
@@ -252,7 +252,7 @@ public class GoalTank extends ArenaGoal {
                 if (pos-- == 0) {
                     tank = arenaPlayer;
                 }
-                this.getPlayerLifeMap().put(arenaPlayer.getPlayer(), this.arena.getArenaConfig().getInt(CFG.GOAL_TANK_LIVES));
+                this.getPlayerLifeMap().put(arenaPlayer.getPlayer(), this.arena.getConfig().getInt(CFG.GOAL_TANK_LIVES));
             }
         }
         final ArenaTeam tankTeam = new ArenaTeam("tank", "PINK");

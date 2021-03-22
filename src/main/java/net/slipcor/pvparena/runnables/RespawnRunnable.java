@@ -40,7 +40,7 @@ public class RespawnRunnable implements Runnable {
 
         if (loc == null) {
             final Set<PASpawn> spawns = new HashSet<>();
-            if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 final String arenaClass = this.player.getArenaClass().getName();
                 spawns.addAll(SpawnManager.getPASpawnsStartingWith(this.arena, this.player.getArenaTeam().getName() + arenaClass + "spawn"));
             } else if (this.arena.isFreeForAll()) {

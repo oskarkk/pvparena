@@ -57,7 +57,7 @@ public class PAA_Teleport extends AbstractArenaCommand {
         }
 
         ((Player) sender).teleport(loc.toLocation(), TeleportCause.PLUGIN);
-        ((Player) sender).setNoDamageTicks(arena.getArenaConfig().getInt(CFG.TIME_TELEPORTPROTECT) * 20);
+        ((Player) sender).setNoDamageTicks(arena.getConfig().getInt(CFG.TIME_TELEPORTPROTECT) * 20);
     }
 
     @Override

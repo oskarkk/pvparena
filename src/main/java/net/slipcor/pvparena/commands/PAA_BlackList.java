@@ -53,8 +53,8 @@ public class PAA_BlackList extends AbstractArenaCommand {
 
         if (args.length < 2) {
             if ("clear".equalsIgnoreCase(args[0])) {
-                arena.getArenaConfig().set(CFG.LISTS_BLACKLIST, null);
-                arena.getArenaConfig().save();
+                arena.getConfig().set(CFG.LISTS_BLACKLIST, null);
+                arena.getConfig().save();
                 arena.msg(sender, Language.parse(arena, MSG.BLACKLIST_ALLCLEARED));
                 return;
             }
@@ -68,8 +68,8 @@ public class PAA_BlackList extends AbstractArenaCommand {
                 return;
             }
             if (args[1].equalsIgnoreCase("clear")) {
-                arena.getArenaConfig().set(CFG.LISTS_BLACKLIST, null);
-                arena.getArenaConfig().save();
+                arena.getConfig().set(CFG.LISTS_BLACKLIST, null);
+                arena.getConfig().save();
                 arena.msg(sender, Language.parse(arena, MSG.BLACKLIST_ALLCLEARED));
                 return;
             }
@@ -88,7 +88,7 @@ public class PAA_BlackList extends AbstractArenaCommand {
         }
 
 
-        final List<String> list = arena.getArenaConfig().getStringList(
+        final List<String> list = arena.getConfig().getStringList(
                 CFG.LISTS_BLACKLIST.getNode() + '.' + args[0].toLowerCase(), new ArrayList<String>());
 
         if ("add".equalsIgnoreCase(args[1])) {
@@ -109,8 +109,8 @@ public class PAA_BlackList extends AbstractArenaCommand {
             arena.msg(sender, Language.parse(arena, MSG.BLACKLIST_REMOVED, args[2], args[1]));
         }
 
-        arena.getArenaConfig().setManually(CFG.LISTS_BLACKLIST.getNode() + '.' + args[0].toLowerCase(), list);
-        arena.getArenaConfig().save();
+        arena.getConfig().setManually(CFG.LISTS_BLACKLIST.getNode() + '.' + args[0].toLowerCase(), list);
+        arena.getConfig().save();
 
     }
 

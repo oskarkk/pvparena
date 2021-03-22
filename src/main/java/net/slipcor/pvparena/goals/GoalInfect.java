@@ -112,14 +112,14 @@ public class GoalInfect extends ArenaGoal {
         if (this.arena.equals(arenaPlayer.getArena()) && arenaPlayer.getStatus() == PlayerStatus.FIGHT
                 && this.infectedTeam.equals(arenaPlayer.getArenaTeam())) {
             if (PlayerPrevention.has(
-                    this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.BREAK
+                    this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.BREAK
             )) {
                 event.setCancelled(true);
                 this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_BREAK));
                 throw new GameplayException("BREAK not allowed");
             } else if (event.getBlock().getType() == Material.TNT &&
                     PlayerPrevention.has(
-                            this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.TNTBREAK
+                            this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.TNTBREAK
                     )) {
                 event.setCancelled(true);
                 this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_TNTBREAK));
@@ -134,7 +134,7 @@ public class GoalInfect extends ArenaGoal {
         if (this.arena.equals(arenaPlayer.getArena())
                 && arenaPlayer.getStatus() == PlayerStatus.FIGHT
                 && this.infectedTeam.equals(arenaPlayer.getArenaTeam())
-                && PlayerPrevention.has(this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.CRAFT)
+                && PlayerPrevention.has(this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.CRAFT)
         ) {
             event.setCancelled(true);
             this.arena.msg(event.getWhoClicked(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_CRAFT));
@@ -148,7 +148,7 @@ public class GoalInfect extends ArenaGoal {
         if (this.arena.equals(arenaPlayer.getArena())
                 && arenaPlayer.getStatus() == PlayerStatus.FIGHT
                 && this.infectedTeam.equals(arenaPlayer.getArenaTeam())
-                && PlayerPrevention.has(this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.DROP)
+                && PlayerPrevention.has(this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.DROP)
         ) {
             event.setCancelled(true);
             this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_DROP));
@@ -162,7 +162,7 @@ public class GoalInfect extends ArenaGoal {
         if (this.arena.equals(ap.getArena())
                 && ap.getStatus() == PlayerStatus.FIGHT
                 && INFECTED.equals(ap.getArenaTeam().getName())
-                && PlayerPrevention.has(this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.INVENTORY)
+                && PlayerPrevention.has(this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.INVENTORY)
         ) {
             event.setCancelled(true);
             event.getWhoClicked().closeInventory();
@@ -177,7 +177,7 @@ public class GoalInfect extends ArenaGoal {
         if (this.arena.equals(ap.getArena())
                 && ap.getStatus() == PlayerStatus.FIGHT
                 && INFECTED.equals(ap.getArenaTeam().getName())
-                && PlayerPrevention.has(this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.PICKUP)
+                && PlayerPrevention.has(this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.PICKUP)
         ) {
             event.setCancelled(true);
             throw new GameplayException("PICKUP not allowed");
@@ -191,14 +191,14 @@ public class GoalInfect extends ArenaGoal {
                 && ap.getStatus() == PlayerStatus.FIGHT
                 && INFECTED.equals(ap.getArenaTeam().getName())) {
             if (PlayerPrevention.has(
-                    this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.PLACE
+                    this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.PLACE
             )) {
                 event.setCancelled(true);
                 this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_PLACE));
                 throw new GameplayException("PLACE not allowed");
             } else if (event.getBlock().getType() == Material.TNT &&
                     PlayerPrevention.has(
-                            this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.TNT
+                            this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.TNT
                     )) {
                 event.setCancelled(true);
                 this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_TNT));
@@ -225,7 +225,7 @@ public class GoalInfect extends ArenaGoal {
     @Override
     public void commitCommand(final CommandSender sender, final String[] args) {
 
-        int value = this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS);
+        int value = this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS);
 
         if (GETPROTECT.equalsIgnoreCase(args[0])) {
             List<String> values = new ArrayList<>();
@@ -281,7 +281,7 @@ public class GoalInfect extends ArenaGoal {
                             Language.parse(this.arena, MSG.GOAL_INFECTED_IPROTECT_SET,
                                     pp.name(), ChatColor.RED + "false") + ChatColor.YELLOW);
                 }
-                this.arena.getArenaConfig().set(CFG.GOAL_INFECTED_PPROTECTS, value);
+                this.arena.getConfig().set(CFG.GOAL_INFECTED_PPROTECTS, value);
             } catch (final Exception e) {
                 List<String> values = new ArrayList<>();
 
@@ -293,7 +293,7 @@ public class GoalInfect extends ArenaGoal {
                         Language.parse(this.arena, MSG.ERROR_ARGUMENT, args[1], StringParser.joinList(values, ", ")));
                 return;
             }
-            this.arena.getArenaConfig().save();
+            this.arena.getConfig().save();
 
         }
     }
@@ -341,7 +341,7 @@ public class GoalInfect extends ArenaGoal {
             }
         }
 
-        this.endRunner = new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(
+        this.endRunner = new EndRunnable(this.arena, this.arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -362,7 +362,7 @@ public class GoalInfect extends ArenaGoal {
                 aPlayer.setStatus(PlayerStatus.LOST);
                 // kill, remove!
                 this.getPlayerLifeMap().remove(player);
-                if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
+                if (this.arena.getConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
                     debug(this.arena, player, "faking player death");
                     PlayerListener.finallyKillPlayer(this.arena, player, event);
                 }
@@ -372,7 +372,7 @@ public class GoalInfect extends ArenaGoal {
                 PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, "playerDeath:" + player.getName());
                 Bukkit.getPluginManager().callEvent(gEvent);
                 // dying player -> infected
-                this.getPlayerLifeMap().put(player.getPlayer(), this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_ILIVES));
+                this.getPlayerLifeMap().put(player.getPlayer(), this.arena.getConfig().getInt(CFG.GOAL_INFECTED_ILIVES));
                 this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_INFECTED_YOU));
                 this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_INFECTED_PLAYER, player.getName()));
 
@@ -392,13 +392,13 @@ public class GoalInfect extends ArenaGoal {
                     aPlayer.setArenaClass(infectedClass);
                 }
 
-                if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+                if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                     this.broadcastSimpleDeathMessage(player, event);
                 }
 
                 final List<ItemStack> returned;
 
-                if (this.arena.getArenaConfig().getBoolean(
+                if (this.arena.getConfig().getBoolean(
                         CFG.PLAYER_DROPSINVENTORY)) {
                     returned = InventoryManager.drop(player);
                     event.getDrops().clear();
@@ -420,13 +420,13 @@ public class GoalInfect extends ArenaGoal {
             iLives--;
             this.getPlayerLifeMap().put(player, iLives);
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+            if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                 this.broadcastDeathMessage(MSG.FIGHT_KILLED_BY_REMAINING, player, event, iLives);
             }
 
             final List<ItemStack> returned;
 
-            if (this.arena.getArenaConfig().getBoolean(
+            if (this.arena.getConfig().getBoolean(
                     CFG.PLAYER_DROPSINVENTORY)) {
                 returned = InventoryManager.drop(player);
                 event.getDrops().clear();
@@ -444,13 +444,13 @@ public class GoalInfect extends ArenaGoal {
             iLives--;
             this.getPlayerLifeMap().put(player.getPlayer(), iLives);
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+            if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
                 this.broadcastDeathMessage(MSG.FIGHT_KILLED_BY_REMAINING, player, event, iLives);
             }
 
             final List<ItemStack> returned;
 
-            if (this.arena.getArenaConfig().getBoolean(
+            if (this.arena.getConfig().getBoolean(
                     CFG.PLAYER_DROPSINVENTORY)) {
                 returned = InventoryManager.drop(player);
                 event.getDrops().clear();
@@ -474,9 +474,9 @@ public class GoalInfect extends ArenaGoal {
     @Override
     public void displayInfo(final CommandSender sender) {
         sender.sendMessage("normal lives: "
-                + this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_NLIVES) + " || " +
+                + this.arena.getConfig().getInt(CFG.GOAL_INFECTED_NLIVES) + " || " +
                 "infected lives: "
-                + this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_ILIVES));
+                + this.arena.getConfig().getInt(CFG.GOAL_INFECTED_ILIVES));
     }
 
     @Override
@@ -487,7 +487,7 @@ public class GoalInfect extends ArenaGoal {
     @Override
     public boolean hasSpawn(final String string) {
 
-        if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+        if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
             for (final ArenaClass aClass : this.arena.getClasses()) {
                 if (string.toLowerCase().startsWith(
                         aClass.getName().toLowerCase() + SPAWN)) {
@@ -502,7 +502,7 @@ public class GoalInfect extends ArenaGoal {
 
     @Override
     public void initiate(final Player player) {
-        this.updateLives(player, this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_NLIVES));
+        this.updateLives(player, this.arena.getConfig().getInt(CFG.GOAL_INFECTED_NLIVES));
     }
 
     @Override
@@ -534,11 +534,11 @@ public class GoalInfect extends ArenaGoal {
             for (final ArenaPlayer arenaPlayer : team.getTeamMembers()) {
                 debug(this.arena, arenaPlayer.getPlayer(), "#" + pos + ": " + arenaPlayer);
                 this.getPlayerLifeMap().put(arenaPlayer.getPlayer(),
-                        this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_NLIVES));
+                        this.arena.getConfig().getInt(CFG.GOAL_INFECTED_NLIVES));
                 if (pos-- == 0) {
                     infected = arenaPlayer;
                     this.getPlayerLifeMap().put(arenaPlayer.getPlayer(),
-                            this.arena.getArenaConfig().getInt(CFG.GOAL_INFECTED_ILIVES));
+                            this.arena.getConfig().getInt(CFG.GOAL_INFECTED_ILIVES));
                 }
             }
         }

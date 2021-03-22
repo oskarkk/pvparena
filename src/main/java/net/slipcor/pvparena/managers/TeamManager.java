@@ -57,10 +57,10 @@ public final class TeamManager {
             final String teamName = team.getName();
             // check if we are full
             debug(arena, "String s: " + teamName + "; max: "
-                        + arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS));
-            if (counts.get(teamName) < arena.getArenaConfig().getInt(
+                        + arena.getConfig().getInt(CFG.READY_MAXPLAYERS));
+            if (counts.get(teamName) < arena.getConfig().getInt(
                     CFG.READY_MAXPLAYERS)
-                    || arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS) == 0) {
+                    || arena.getConfig().getInt(CFG.READY_MAXPLAYERS) == 0) {
                 full = false;
                 break;
             }
@@ -73,7 +73,7 @@ public final class TeamManager {
 
         final Set<String> free = new HashSet<>();
 
-        int max = arena.getArenaConfig().getInt(CFG.READY_MAXTEAMPLAYERS);
+        int max = arena.getConfig().getInt(CFG.READY_MAXTEAMPLAYERS);
         max = max == 0 ? Integer.MAX_VALUE : max;
         // calculate the max value down to the minimum
         for (final Map.Entry<String, Integer> stringIntegerEntry : counts.entrySet()) {

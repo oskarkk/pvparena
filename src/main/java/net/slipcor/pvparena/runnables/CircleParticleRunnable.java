@@ -19,7 +19,7 @@ public class CircleParticleRunnable implements Runnable {
     public CircleParticleRunnable(Arena arena, Config.CFG config, Map<Location, ArenaTeam> flagMap) {
         this.arena = arena;
         this.flagMap = flagMap;
-        this.radius = arena.getArenaConfig().getInt(config, 3);
+        this.radius = arena.getConfig().getInt(config, 3);
     }
 
     private Color getDustColor(Location flagLocation) {
@@ -42,7 +42,7 @@ public class CircleParticleRunnable implements Runnable {
 
                 final Color dustColor = this.getDustColor(spawn.getLocation().toLocation());
 
-                Bukkit.getWorld(this.arena.getWorld()).spawnParticle(
+                this.arena.getWorld().spawnParticle(
                         Particle.REDSTONE,
                         x, y, z,
                         0, // count

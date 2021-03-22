@@ -83,19 +83,19 @@ public class WarmupJoin extends ArenaModule {
 
     @Override
     public void commitJoin(final Player player, final ArenaTeam team) {
-        new ArenaWarmupRunnable(this.arena, ArenaPlayer.fromPlayer(player), team.getName(), false, this.arena.getArenaConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
+        new ArenaWarmupRunnable(this.arena, ArenaPlayer.fromPlayer(player), team.getName(), false, this.arena.getConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
         this.announced = true;
     }
 
     @Override
     public void commitSpectate(final Player player) {
-        new ArenaWarmupRunnable(this.arena, ArenaPlayer.fromPlayer(player), null, true, this.arena.getArenaConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
+        new ArenaWarmupRunnable(this.arena, ArenaPlayer.fromPlayer(player), null, true, this.arena.getConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
     }
 
     @Override
     public void displayInfo(final CommandSender sender) {
         sender.sendMessage("seconds: " +
-                this.arena.getArenaConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
+                this.arena.getConfig().getInt(CFG.TIME_WARMUPCOUNTDOWN));
     }
 
     private Set<ArenaPlayer> getPlayerSet() {

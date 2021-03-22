@@ -164,7 +164,7 @@ public class PVPArena extends JavaPlugin {
      */
     public static boolean hasPerms(final CommandSender sender, final Arena arena) {
         debug(arena, sender, "perm check.");
-        if (arena.getArenaConfig().getBoolean(CFG.PERMS_EXPLICITARENA)) {
+        if (arena.getConfig().getBoolean(CFG.PERMS_EXPLICITARENA)) {
             debug(arena, sender, " - explicit: "
                                 + sender.hasPermission("pvparena.join."
                                 + arena.getName().toLowerCase()));
@@ -172,7 +172,7 @@ public class PVPArena extends JavaPlugin {
             debug(arena, sender, sender.hasPermission("pvparena.user"));
         }
 
-        return arena.getArenaConfig().getBoolean(CFG.PERMS_EXPLICITARENA) ? sender
+        return arena.getConfig().getBoolean(CFG.PERMS_EXPLICITARENA) ? sender
                 .hasPermission("pvparena.join." + arena.getName().toLowerCase())
                 : sender.hasPermission("pvparena.user");
     }
@@ -350,7 +350,7 @@ public class PVPArena extends JavaPlugin {
             return true;
         }
 
-        if (paacmd == null && tempArena.getArenaConfig().getBoolean(CFG.CMDS_DEFAULTJOIN) && args.length == 1) {
+        if (paacmd == null && tempArena.getConfig().getBoolean(CFG.CMDS_DEFAULTJOIN) && args.length == 1) {
             paacmd = new PAG_Join();
             debug(tempArena, sender, "committing: " + paacmd.getName());
             paacmd.commit(tempArena, sender, new String[0]);

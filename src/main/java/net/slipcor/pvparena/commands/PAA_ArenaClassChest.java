@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 
 public class PAA_ArenaClassChest extends AbstractArenaCommand {
@@ -53,8 +52,8 @@ public class PAA_ArenaClassChest extends AbstractArenaCommand {
         }
         PABlockLocation loc = new PABlockLocation(b.getLocation());
 
-        arena.getArenaConfig().setManually("classchests."+aClass.getName(), loc.toString());
-        arena.getArenaConfig().save();
+        arena.getConfig().setManually("classchests."+aClass.getName(), loc.toString());
+        arena.getConfig().save();
 
         sender.sendMessage(Language.parse(arena, MSG.CLASSCHEST, aClass.getName(), loc.toString()));
     }

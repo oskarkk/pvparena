@@ -61,7 +61,7 @@ public abstract class ArenaRunnable extends BukkitRunnable {
                 section = Language.getConfig().getConfigurationSection("time_intervals");
             }
         } else {
-            section = arena.getArenaConfig().getYamlConfiguration().getConfigurationSection("time_intervals");
+            section = arena.getConfig().getYamlConfiguration().getConfigurationSection("time_intervals");
         }
         if (section == null) {
             PVPArena.getInstance().getLogger().warning("Language strings 'time_intervals' not found, loading defaults!");

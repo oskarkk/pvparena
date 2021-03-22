@@ -23,7 +23,7 @@ public class ArenaTimer {
     }
 
     public void start() {
-        final int timed = this.arena.getArenaConfig().getInt(CFG.GENERAL_TIMER);
+        final int timed = this.arena.getConfig().getInt(CFG.GENERAL_TIMER);
         if (timed > 0) {
             debug(this.arena, "arena timing!");
             // initiate arena timer

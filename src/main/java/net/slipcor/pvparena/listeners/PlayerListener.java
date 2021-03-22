@@ -78,14 +78,14 @@ public class PlayerListener implements Listener {
             return false;
         }
 
-        if (arena.getArenaConfig().getBoolean(CFG.PERMS_LOUNGEINTERACT)) {
+        if (arena.getConfig().getBoolean(CFG.PERMS_LOUNGEINTERACT)) {
             return false;
         }
 
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
         if ((aPlayer.getStatus() == PlayerStatus.WATCH || aPlayer.getStatus() == PlayerStatus.LOST) &&
-                arena.getArenaConfig().getBoolean(CFG.PERMS_SPECINTERACT)) {
+                arena.getConfig().getBoolean(CFG.PERMS_SPECINTERACT)) {
             return false;
         }
 
@@ -128,67 +128,51 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerChat(final AsyncPlayerChatEvent event) {
 
-        final Player player = event.getPlayer();
+        Player player = event.getPlayer();
+        String message = event.getMessage();
 
         if (PAA_Setup.activeSetups.containsKey(player.getName())) {
-            PAA_Setup.chat(player, event.getMessage());
+            PAA_Setup.chat(player, message);
             return;
         }
 
-        final Arena arena = ArenaPlayer.fromPlayer(player).getArena();
-        final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
+        ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
+        Arena arena = aPlayer.getArena();
 
         if (arena == null) {
             return; // no fighting player => OUT
         }
-        final ArenaTeam team = aPlayer.getArenaTeam();
-        if (team == null ||
-                aPlayer.getStatus() == PlayerStatus.DEAD && aPlayer.getPlayer() == null ||
-                aPlayer.getStatus() == PlayerStatus.LOST ||
-                aPlayer.getStatus() == PlayerStatus.WATCH) {
-            if (!arena.getArenaConfig().getBoolean(CFG.PERMS_SPECTALK)) {
+
+        ArenaTeam team = aPlayer.getArenaTeam();
+        if (team == null || asList(PlayerStatus.DEAD, PlayerStatus.LOST, PlayerStatus.WATCH).contains(aPlayer.getStatus())) {
+            if (!arena.getConfig().getBoolean(CFG.PERMS_SPECTALK)) {
                 event.setCancelled(true);
             }
             return; // no fighting player => OUT
         }
+
         debug(arena, player, "fighting player chatting!");
-        final String sTeam = team.getName();
 
-        if (!arena.getArenaConfig().getBoolean(CFG.CHAT_ONLYPRIVATE)) {
-            if (!arena.getArenaConfig().getBoolean(CFG.CHAT_ENABLED)) {
-                return; // no chat editing
-            }
+        if (arena.getConfig().getBoolean(CFG.CHAT_ENABLED) && !aPlayer.isPublicChatting()) {
 
-            if (aPlayer.isPublicChatting()) {
-                return; // player not privately chatting
-            }
+            if (!arena.getConfig().getBoolean(CFG.CHAT_ONLYPRIVATE)) {
 
-            String toGlobal = arena.getArenaConfig().getString(CFG.CHAT_TOGLOBAL);
+                String toGlobal = arena.getConfig().getString(CFG.CHAT_TOGLOBAL);
 
-            if (!toGlobal.equalsIgnoreCase("none")) {
-                if (event.getMessage().toLowerCase().startsWith(
-                        toGlobal.toLowerCase())) {
-                    event.setMessage(event.getMessage().substring(toGlobal.length()));
-                    return;
+                if (!toGlobal.equalsIgnoreCase("none")) {
+                    if (message.toLowerCase().startsWith(toGlobal.toLowerCase())) {
+                        event.setMessage(message.substring(toGlobal.length()));
+                        return;
+                    }
                 }
             }
 
-            arena.tellTeam(sTeam, event.getMessage(), team.getColor(),
-                    event.getPlayer());
+            team.sendMessage(aPlayer, message);
             event.setCancelled(true);
             return;
         }
 
-        if (arena.getArenaConfig().getBoolean(CFG.CHAT_ENABLED)
-                && !aPlayer.isPublicChatting()) {
-            arena.tellTeam(sTeam, event.getMessage(), team.getColor(),
-                    event.getPlayer());
-            event.setCancelled(true);
-            return;
-        }
-
-        arena.broadcastColored(event.getMessage(), team.getColor(),
-                event.getPlayer()); //
+        arena.broadcastColored(message, team.getColor(), event.getPlayer());
         event.setCancelled(true);
     }
 
@@ -225,14 +209,14 @@ public class PlayerListener implements Listener {
         }
 
         list.clear();
-        list.addAll(arena.getArenaConfig().getStringList(
+        list.addAll(arena.getConfig().getStringList(
                 CFG.LISTS_CMDWHITELIST.getNode(), new ArrayList<String>()));
 
         if (list.size() < 1) {
             list.clear();
             list.add("ungod");
-            arena.getArenaConfig().set(CFG.LISTS_CMDWHITELIST, list);
-            arena.getArenaConfig().save();
+            arena.getConfig().set(CFG.LISTS_CMDWHITELIST, list);
+            arena.getConfig().save();
         }
 
         list.add("pa");
@@ -373,7 +357,7 @@ public class PlayerListener implements Listener {
         final ArenaTeam team = aPlayer.getArenaTeam();
 
         final String playerName = (team == null) ? player.getName() : team.colorizePlayer(player);
-        if (arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+        if (arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
             arena.broadcast(Language.parse(arena,
                     MSG.FIGHT_KILLED_BY,
                     playerName + ChatColor.YELLOW,
@@ -385,7 +369,7 @@ public class PlayerListener implements Listener {
             ));
         }
 
-        if (arena.getArenaConfig().getBoolean(CFG.PLAYER_DROPSINVENTORY)) {
+        if (arena.getConfig().getBoolean(CFG.PLAYER_DROPSINVENTORY)) {
             InventoryManager.drop(player);
             if (eEvent instanceof EntityDeathEvent) {
                 ((EntityDeathEvent) eEvent).getDrops().clear();
@@ -399,7 +383,7 @@ public class PlayerListener implements Listener {
             InventoryManager.clearInventory(player);
         }
 
-        arena.removePlayer(player, arena.getArenaConfig().getString(CFG.TP_DEATH), true, false);
+        arena.removePlayer(player, arena.getConfig().getString(CFG.TP_DEATH), true, false);
 
         aPlayer.setStatus(PlayerStatus.LOST);
         aPlayer.addDeath();
@@ -438,7 +422,7 @@ public class PlayerListener implements Listener {
 
         final ArenaPlayer ap = ArenaPlayer.fromPlayer(player);
 
-        if (ap.getStatus() == PlayerStatus.READY || ap.getStatus() == PlayerStatus.LOUNGE || ap.getArena() != null && !ap.getArena().getArenaConfig().getBoolean(CFG.PLAYER_HUNGER)) {
+        if (ap.getStatus() == PlayerStatus.READY || ap.getStatus() == PlayerStatus.LOUNGE || ap.getArena() != null && !ap.getArena().getConfig().getBoolean(CFG.PLAYER_HUNGER)) {
             event.setCancelled(true);
         }
     }
@@ -511,7 +495,7 @@ public class PlayerListener implements Listener {
         final ArenaTeam team = aPlayer.getArenaTeam();
 
         if (aPlayer.getStatus() == PlayerStatus.WATCH &&
-                arena.getArenaConfig().getBoolean(CFG.PERMS_SPECINTERACT)) {
+                arena.getConfig().getBoolean(CFG.PERMS_SPECINTERACT)) {
             debug(arena, "allowing spectator interaction due to config setting!");
             return;
         }
@@ -522,7 +506,7 @@ public class PlayerListener implements Listener {
                 return;
             }
             if (asList(PlayerStatus.LOUNGE, PlayerStatus.READY).contains(aPlayer.getStatus()) &&
-                    arena.getArenaConfig().getBoolean(CFG.PERMS_LOUNGEINTERACT)) {
+                    arena.getConfig().getBoolean(CFG.PERMS_LOUNGEINTERACT)) {
                 debug(arena, "allowing lounge interaction due to config setting!");
                 event.setCancelled(false);
             } else if (aPlayer.getStatus() != PlayerStatus.LOUNGE && aPlayer.getStatus() != PlayerStatus.READY) {
@@ -621,7 +605,7 @@ public class PlayerListener implements Listener {
                                 .getArenaTeam().getColoredName()));
                     }
 
-                    if (arena.getArenaConfig().getBoolean(CFG.USES_EVENTEAMS)
+                    if (arena.getConfig().getBoolean(CFG.USES_EVENTEAMS)
                             && !TeamManager.checkEven(arena)) {
                         arena.msg(player,
                                 Language.parse(arena, MSG.NOTICE_WAITING_EQUAL));
@@ -647,7 +631,7 @@ public class PlayerListener implements Listener {
                 }
 
                 final Set<PASpawn> spawns = new HashSet<>();
-                if (arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+                if (arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                     final String arenaClass = aPlayer.getArenaClass().getName();
                     spawns.addAll(SpawnManager.getPASpawnsStartingWith(arena, team.getName() + arenaClass + "spawn"));
                 } else if (arena.isFreeForAll()) {
@@ -710,7 +694,7 @@ public class PlayerListener implements Listener {
                     }
 
 
-                    if (!event.isCancelled() && arena.getArenaConfig().getBoolean(CFG.PLAYER_QUICKLOOT)) {
+                    if (!event.isCancelled() && arena.getConfig().getBoolean(CFG.PLAYER_QUICKLOOT)) {
                         final Chest c = (Chest) block.getState();
                         InventoryManager.transferItems(player, c.getBlockInventory());
                     }
@@ -922,7 +906,7 @@ public class PlayerListener implements Listener {
     }
 
     private void maybeFixInvisibility(final Arena arena, final Player player) {
-        if (arena.getArenaConfig().getBoolean(CFG.USES_EVILINVISIBILITYFIX)) {
+        if (arena.getConfig().getBoolean(CFG.USES_EVILINVISIBILITYFIX)) {
             class RunLater implements Runnable {
 
                 @Override

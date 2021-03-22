@@ -30,7 +30,7 @@ public class DamageResetRunnable implements Runnable {
     @SuppressWarnings("deprecation")
     @Override
     public void run() {
-        if (!this.arena.getArenaConfig().getBoolean(CFG.DAMAGE_WEAPONS)) {
+        if (!this.arena.getConfig().getBoolean(CFG.DAMAGE_WEAPONS)) {
             try {
                 if (InventoryManager.receivesDamage(this.attacker.getItemInHand())) {
                     this.attacker.getItemInHand().setDurability((short) 0);
@@ -40,7 +40,7 @@ public class DamageResetRunnable implements Runnable {
             }
         }
 
-        if (!this.arena.getArenaConfig().getBoolean(CFG.DAMAGE_ARMOR)) {
+        if (!this.arena.getConfig().getBoolean(CFG.DAMAGE_ARMOR)) {
             try {
                 final ItemStack[] items = this.defender.getInventory().getArmorContents();
 

@@ -50,14 +50,14 @@ public class PAA_RegionClear extends AbstractArenaCommand {
         if (args.length < 1) {
             // usage: /pa {arenaname} regionclear | show region clearance exceptions
 
-            final List<String> list = arena.getArenaConfig().getStringList(CFG.GENERAL_REGIONCLEAREXCEPTIONS.getNode(), new ArrayList<String>());
+            final List<String> list = arena.getConfig().getStringList(CFG.GENERAL_REGIONCLEAREXCEPTIONS.getNode(), new ArrayList<String>());
             arena.msg(sender, Language.parse(arena, MSG.REGION_CLEAR_LIST, StringParser.joinList(list, ", ")));
             return;
         }
         if (args.length >= 2) {
             // usage: /pa {arenaname} regionclear [entitytype] {value} | toggle / set an exception
 
-            final List<String> list = arena.getArenaConfig().getStringList(CFG.GENERAL_REGIONCLEAREXCEPTIONS.getNode(), new ArrayList<String>());
+            final List<String> list = arena.getConfig().getStringList(CFG.GENERAL_REGIONCLEAREXCEPTIONS.getNode(), new ArrayList<String>());
 
             final List<String> valids = new ArrayList<>();
 
@@ -65,14 +65,14 @@ public class PAA_RegionClear extends AbstractArenaCommand {
                 if (type.name().equals(args[1].toUpperCase())) {
                     if (!list.contains(type.name()) || args.length>2 && StringParser.positive.contains(args[2])) {
                         list.add(type.name());
-                        arena.getArenaConfig().setManually(CFG.GENERAL_REGIONCLEAREXCEPTIONS.getNode(), list);
-                        arena.getArenaConfig().save();
+                        arena.getConfig().setManually(CFG.GENERAL_REGIONCLEAREXCEPTIONS.getNode(), list);
+                        arena.getConfig().save();
                         arena.msg(sender, Language.parse(arena, MSG.REGION_CLEAR_ADDED, type.name()));
                         return;
                     }
                     list.remove(type.name());
-                    arena.getArenaConfig().setManually(CFG.GENERAL_REGIONCLEAREXCEPTIONS.getNode(), list);
-                    arena.getArenaConfig().save();
+                    arena.getConfig().setManually(CFG.GENERAL_REGIONCLEAREXCEPTIONS.getNode(), list);
+                    arena.getConfig().save();
                     arena.msg(sender, Language.parse(arena, MSG.REGION_CLEAR_REMOVED, type.name()));
                     return;
                 }

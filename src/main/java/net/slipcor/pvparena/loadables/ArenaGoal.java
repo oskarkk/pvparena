@@ -190,7 +190,7 @@ public class ArenaGoal implements IArenaCommandHandler {
      */
     protected Set<String> checkForMissingFFASpawn(final Set<String> spawnNames) {
         final Set<String> errors = new HashSet<>();
-        int minPlayers = this.arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS);
+        int minPlayers = this.arena.getConfig().getInt(CFG.READY_MINPLAYERS);
         for (int i = 1; i <= minPlayers; i++) {
             if(!spawnNames.contains(SPAWN + i)){
                 errors.add(String.format("spawn%s", i));
@@ -260,8 +260,8 @@ public class ArenaGoal implements IArenaCommandHandler {
      * @param args   command arguments
      */
     public void checkJoin(final Player player, final String[] args) throws GameplayException {
-        final int maxPlayers = this.arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS);
-        final int maxTeamPlayers = this.arena.getArenaConfig().getInt(
+        final int maxPlayers = this.arena.getConfig().getInt(CFG.READY_MAXPLAYERS);
+        final int maxTeamPlayers = this.arena.getConfig().getInt(
                 CFG.READY_MAXTEAMPLAYERS);
 
         if (maxPlayers > 0 && this.arena.getFighters().size() >= maxPlayers) {
@@ -475,15 +475,6 @@ public class ArenaGoal implements IArenaCommandHandler {
     }
 
     /**
-     * check if the arena is ready
-     *
-     * @return null if ready, error message otherwise
-     */
-    public String ready() {
-        return null;
-    }
-
-    /**
      * hook into a player being refilled
      *
      * @param player the player being refilled
@@ -557,7 +548,7 @@ public class ArenaGoal implements IArenaCommandHandler {
     }
 
     protected void updateLives(final ArenaTeam team, final int value) {
-        if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_ADDLIVESPERPLAYER)) {
+        if (this.arena.getConfig().getBoolean(CFG.GENERAL_ADDLIVESPERPLAYER)) {
             this.getTeamLifeMap().put(team, team.getTeamMembers().size() * value);
         } else {
             this.getTeamLifeMap().put(team, value);
@@ -565,7 +556,7 @@ public class ArenaGoal implements IArenaCommandHandler {
     }
 
     protected void updateLives(final Player player, final int value) {
-        if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_ADDLIVESPERPLAYER)) {
+        if (this.arena.getConfig().getBoolean(CFG.GENERAL_ADDLIVESPERPLAYER)) {
             this.getPlayerLifeMap().put(player, this.arena.getFighters().size() * value);
         } else {
             this.getPlayerLifeMap().put(player, value);

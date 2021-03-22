@@ -66,16 +66,16 @@ public class PAA_Teams extends AbstractArenaCommand {
         if ("remove".equals(args[0])) {
             arena.msg(sender, Language.parse(arena, MSG.TEAMS_REMOVE, team.getColoredName()));
             arena.getTeams().remove(team);
-            arena.getArenaConfig().setManually("teams." + team.getName(), null);
-            arena.getArenaConfig().save();
+            arena.getConfig().setManually("teams." + team.getName(), null);
+            arena.getConfig().save();
         } else if ("add".equals(args[0])) {
             try {
 
                 final ChatColor color = ChatColor.valueOf(args[2].toUpperCase());
                 final ArenaTeam newTeam = new ArenaTeam(args[1], color.name());
                 arena.getTeams().add(newTeam);
-                arena.getArenaConfig().setManually("teams." + newTeam.getName(), color.name());
-                arena.getArenaConfig().save();
+                arena.getConfig().setManually("teams." + newTeam.getName(), color.name());
+                arena.getConfig().save();
 
                 arena.msg(sender, Language.parse(arena, MSG.TEAMS_ADD, newTeam.getColoredName()));
             } catch (final Exception e) {
@@ -87,8 +87,8 @@ public class PAA_Teams extends AbstractArenaCommand {
                 final ArenaTeam newTeam = new ArenaTeam(args[1], color.name());
                 arena.getTeams().remove(arena.getTeam(args[1]));
                 arena.getTeams().add(newTeam);
-                arena.getArenaConfig().setManually("teams." + newTeam.getName(), color.name());
-                arena.getArenaConfig().save();
+                arena.getConfig().setManually("teams." + newTeam.getName(), color.name());
+                arena.getConfig().save();
 
                 arena.msg(sender, Language.parse(arena, MSG.TEAMS_REMOVE, newTeam.getColoredName()));
             } catch (final Exception e) {

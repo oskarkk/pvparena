@@ -70,7 +70,7 @@ public class GoalBlockDestroy extends ArenaGoal {
 
     @Override
     public boolean allowsJoinInBattle() {
-        return this.arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE);
+        return this.arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE);
     }
 
     @Override
@@ -129,7 +129,7 @@ public class GoalBlockDestroy extends ArenaGoal {
             return false;
         }
 
-        if (block == null || block.getType() != this.arena.getArenaConfig().getMaterial(CFG.GOAL_BLOCKDESTROY_BLOCKTYPE)) {
+        if (block == null || block.getType() != this.arena.getConfig().getMaterial(CFG.GOAL_BLOCKDESTROY_BLOCKTYPE)) {
             return false;
         }
 
@@ -177,9 +177,9 @@ public class GoalBlockDestroy extends ArenaGoal {
                 return;
             }
 
-            this.arena.getArenaConfig().set(CFG.GOAL_BLOCKDESTROY_BLOCKTYPE,
+            this.arena.getConfig().set(CFG.GOAL_BLOCKDESTROY_BLOCKTYPE,
                     mat.name());
-            this.arena.getArenaConfig().save();
+            this.arena.getConfig().save();
             this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_BLOCKDESTROY_TYPESET,
                     CFG.GOAL_BLOCKDESTROY_BLOCKTYPE.toString()));
 
@@ -235,7 +235,7 @@ public class GoalBlockDestroy extends ArenaGoal {
         if (ArenaModuleManager.commitEnd(this.arena, aTeam)) {
             return;
         }
-        new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(
+        new EndRunnable(this.arena, this.arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -269,9 +269,9 @@ public class GoalBlockDestroy extends ArenaGoal {
     @Override
     public void displayInfo(final CommandSender sender) {
         sender.sendMessage("block type: " +
-                this.arena.getArenaConfig().getString(CFG.GOAL_BLOCKDESTROY_BLOCKTYPE));
+                this.arena.getConfig().getString(CFG.GOAL_BLOCKDESTROY_BLOCKTYPE));
         sender.sendMessage("lives: " +
-                this.arena.getArenaConfig().getInt(CFG.GOAL_BLOCKDESTROY_LIVES));
+                this.arena.getConfig().getInt(CFG.GOAL_BLOCKDESTROY_LIVES));
     }
 
     @Override
@@ -285,7 +285,7 @@ public class GoalBlockDestroy extends ArenaGoal {
                 return true;
             }
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 for (final ArenaClass aClass : this.arena.getClasses()) {
                     if (string.toLowerCase().startsWith(teamName.toLowerCase() +
                             aClass.getName().toLowerCase() + "spawn")) {
@@ -302,7 +302,7 @@ public class GoalBlockDestroy extends ArenaGoal {
         final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
         final ArenaTeam arenaTeam = arenaPlayer.getArenaTeam();
         if (!this.getTeamLifeMap().containsKey(arenaTeam)) {
-            this.getTeamLifeMap().put(arenaPlayer.getArenaTeam(), this.arena.getArenaConfig()
+            this.getTeamLifeMap().put(arenaPlayer.getArenaTeam(), this.arena.getConfig()
                     .getInt(CFG.GOAL_BLOCKDESTROY_LIVES));
 
             final Set<PABlockLocation> blocks = SpawnManager.getBlocksContaining(this.arena, BLOCK);
@@ -322,7 +322,7 @@ public class GoalBlockDestroy extends ArenaGoal {
                 // team is active
                 this.getTeamLifeMap().put(
                         arenaTeam,
-                        this.arena.getArenaConfig().getInt(
+                        this.arena.getConfig().getInt(
                                 CFG.GOAL_BLOCKDESTROY_LIVES, 1));
             }
             final Set<PABlockLocation> blocks = SpawnManager.getBlocksContaining(this.arena, BLOCK);
@@ -379,7 +379,7 @@ public class GoalBlockDestroy extends ArenaGoal {
         if (paBlockLocation == null) {
             return;
         }
-        Material blockDestroyType = Material.valueOf(this.arena.getArenaConfig().getString(CFG.GOAL_BLOCKDESTROY_BLOCKTYPE));
+        Material blockDestroyType = Material.valueOf(this.arena.getConfig().getString(CFG.GOAL_BLOCKDESTROY_BLOCKTYPE));
         if (ColorUtils.isColorableMaterial(blockDestroyType)) {
             paBlockLocation.toLocation()
                     .getBlock()
@@ -389,7 +389,7 @@ public class GoalBlockDestroy extends ArenaGoal {
                     .getBlock()
                     .setType(
                             Material.valueOf(
-                                    this.arena.getArenaConfig().getString(
+                                    this.arena.getConfig().getString(
                                             CFG.GOAL_BLOCKDESTROY_BLOCKTYPE)));
         }
     }
@@ -420,7 +420,7 @@ public class GoalBlockDestroy extends ArenaGoal {
     @Override
     public void checkBreak(BlockBreakEvent event) {
         final Player player = event.getPlayer();
-        final Material blockToBreak = this.arena.getArenaConfig().getMaterial(CFG.GOAL_BLOCKDESTROY_BLOCKTYPE);
+        final Material blockToBreak = this.arena.getConfig().getMaterial(CFG.GOAL_BLOCKDESTROY_BLOCKTYPE);
         final Material brokenBlock = event.getBlock().getType();
         if (!this.arena.hasPlayer(event.getPlayer()) || !ColorUtils.isSubType(brokenBlock, blockToBreak)) {
             debug(this.arena, player, "block destroy, ignoring");

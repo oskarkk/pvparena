@@ -120,7 +120,7 @@ public class BlockListener implements Listener {
                 .getArenaByRegionLocation(new PABlockLocation(event.getBlock()
                         .getLocation()));
 
-        final List<String> list = arena.getArenaConfig().getStringList(
+        final List<String> list = arena.getConfig().getStringList(
                 CFG.LISTS_WHITELIST.getNode() + ".break",
                 new ArrayList<String>());
 
@@ -145,7 +145,7 @@ public class BlockListener implements Listener {
             return;
         }
         list.clear();
-        list.addAll(arena.getArenaConfig().getStringList(
+        list.addAll(arena.getConfig().getStringList(
                 CFG.LISTS_BLACKLIST.getNode() + ".break",
                 new ArrayList<String>()));
 
@@ -346,7 +346,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        if (arena.getArenaConfig().getBoolean(CFG.PROTECT_ENABLED)
+        if (arena.getConfig().getBoolean(CFG.PROTECT_ENABLED)
                 && (isProtected(event.getBlock().getLocation(), event,
                 RegionProtection.FIRE))) {
             return;
@@ -413,7 +413,7 @@ public class BlockListener implements Listener {
         final Arena arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(block.getLocation()));
         final Block placedBlock = event.getBlockPlaced();
 
-        if (block.getType() == Material.TNT && arena.getArenaConfig().getBoolean(CFG.PLAYER_AUTOIGNITE)) {
+        if (block.getType() == Material.TNT && arena.getConfig().getBoolean(CFG.PLAYER_AUTOIGNITE)) {
             debug(arena, "autoignite tnt");
             placedBlock.setType(Material.AIR);
             block.getWorld().spawnEntity(Utils.getCenteredLocation(block.getLocation()), EntityType.PRIMED_TNT);
@@ -421,7 +421,7 @@ public class BlockListener implements Listener {
         }
 
 
-        List<String> list = arena.getArenaConfig().getStringList(
+        List<String> list = arena.getConfig().getStringList(
                 CFG.LISTS_WHITELIST.getNode() + ".place",
                 new ArrayList<>());
 
@@ -449,7 +449,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        list = arena.getArenaConfig().getStringList(
+        list = arena.getConfig().getStringList(
                 CFG.LISTS_BLACKLIST.getNode() + ".place",
                 new ArrayList<>());
 

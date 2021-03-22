@@ -38,8 +38,8 @@ public class PAA_Enable extends AbstractArenaCommand {
             return;
         }
 
-        arena.getArenaConfig().set(CFG.GENERAL_ENABLED, true);
-        arena.getArenaConfig().save();
+        arena.getConfig().set(CFG.GENERAL_ENABLED, true);
+        arena.getConfig().save();
         arena.setLocked(false);
 
         for (String key : ArenaManager.getShortcutDefinitions().keySet()) {

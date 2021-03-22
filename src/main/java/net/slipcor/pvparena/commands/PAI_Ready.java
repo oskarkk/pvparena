@@ -78,7 +78,7 @@ public class PAI_Ready extends AbstractArenaCommand {
                 arena.broadcast(Language.parse(arena, MSG.TEAM_READY, aPlayer.getArenaTeam().getColoredName()));
             }
 
-            if (arena.getArenaConfig().getBoolean(CFG.USES_EVENTEAMS)
+            if (arena.getConfig().getBoolean(CFG.USES_EVENTEAMS)
                     && !TeamManager.checkEven(arena)) {
                 arena.msg(sender,
                         Language.parse(arena, MSG.NOTICE_WAITING_EQUAL));

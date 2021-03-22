@@ -49,7 +49,7 @@ public class GoalTeamLives extends AbstractTeamKillGoal {
 
     @Override
     protected int getTeamLivesCfg() {
-        return this.arena.getArenaConfig().getInt(CFG.GOAL_TLIVES_LIVES);
+        return this.arena.getConfig().getInt(CFG.GOAL_TLIVES_LIVES);
     }
 
     @Override
@@ -77,8 +77,8 @@ public class GoalTeamLives extends AbstractTeamKillGoal {
         this.reduceLives(this.arena, respawnTeam);
 
         if (this.getTeamLives(respawnTeam) != null) {
-            if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
-                if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_SHOWREMAININGLIVES)) {
+            if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+                if (this.arena.getConfig().getBoolean(CFG.GENERAL_SHOWREMAININGLIVES)) {
                     this.broadcastDeathMessage(MSG.FIGHT_KILLED_BY_REMAINING_TEAM, respawnPlayer, event,
                             this.getTeamLives(respawnTeam));
                 } else {
@@ -88,7 +88,7 @@ public class GoalTeamLives extends AbstractTeamKillGoal {
 
             final List<ItemStack> returned;
 
-            if (this.arena.getArenaConfig().getBoolean(
+            if (this.arena.getConfig().getBoolean(
                     CFG.PLAYER_DROPSINVENTORY)) {
                 returned = InventoryManager.drop(respawnPlayer);
                 event.getDrops().clear();
@@ -99,7 +99,7 @@ public class GoalTeamLives extends AbstractTeamKillGoal {
             WorkflowManager.handleRespawn(this.arena,
                     ArenaPlayer.fromPlayer(respawnPlayer.getName()), returned);
 
-        } else if (this.arena.getArenaConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
+        } else if (this.arena.getConfig().getBoolean(CFG.PLAYER_PREVENTDEATH)) {
             debug(this.arena, respawnPlayer, "faking player death");
             ArenaPlayer.fromPlayer(respawnPlayer.getName()).setStatus(PlayerStatus.LOST);
             PlayerListener.finallyKillPlayer(this.arena, respawnPlayer, event);

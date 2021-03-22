@@ -44,16 +44,16 @@ public class PAA_Check extends AbstractArenaCommand {
             }
             try {
                 if ("string".equals(c.getType())) {
-                    final String value = arena.getArenaConfig().getString(c);
+                    final String value = arena.getConfig().getString(c);
                     arena.msg(sender, "correct " + c.getType() + ": " + value);
                 } else if ("boolean".equals(c.getType())) {
-                    final boolean value = arena.getArenaConfig().getBoolean(c);
+                    final boolean value = arena.getConfig().getBoolean(c);
                     arena.msg(sender, "correct " + c.getType() + ": " + value);
                 } else if ("int".equals(c.getType())) {
-                    final int value = arena.getArenaConfig().getInt(c);
+                    final int value = arena.getConfig().getInt(c);
                     arena.msg(sender, "correct " + c.getType() + ": " + value);
                 } else if ("double".equals(c.getType())) {
-                    final double value = arena.getArenaConfig().getDouble(c);
+                    final double value = arena.getConfig().getDouble(c);
                     arena.msg(sender, "correct " + c.getType() + ": " + value);
                 }
             } catch (final Exception e) {

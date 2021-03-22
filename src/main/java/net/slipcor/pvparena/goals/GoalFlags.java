@@ -58,7 +58,7 @@ public class GoalFlags extends AbstractFlagGoal {
 
     @Override
     protected boolean hasWoolHead() {
-        return this.arena.getArenaConfig().getBoolean(CFG.GOAL_FLAGS_WOOLFLAGHEAD);
+        return this.arena.getConfig().getBoolean(CFG.GOAL_FLAGS_WOOLFLAGHEAD);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class GoalFlags extends AbstractFlagGoal {
                 if (this.getFlagMap().containsKey(arenaTeam) || this.getFlagMap().containsKey(this.touchdownTeam)) {
                     debug(this.arena, player, "the flag of the own team is taken!");
 
-                    if (this.arena.getArenaConfig().getBoolean(
+                    if (this.arena.getConfig().getBoolean(
                             CFG.GOAL_FLAGS_MUSTBESAFE)
                             && !this.getFlagMap().containsKey(this.touchdownTeam)) {
                         debug(this.arena, player, "cancelling");
@@ -301,7 +301,7 @@ public class GoalFlags extends AbstractFlagGoal {
 
     @Override
     public void displayInfo(final CommandSender sender) {
-        Config cfg = this.arena.getArenaConfig();
+        Config cfg = this.arena.getConfig();
         sender.sendMessage("flageffect: " + cfg.getString(CFG.GOAL_FLAGS_FLAGEFFECT));
         sender.sendMessage("flagtype: " + cfg.getString(CFG.GOAL_FLAGS_FLAGTYPE));
         sender.sendMessage("lives: " + cfg.getInt(CFG.GOAL_FLAGS_LIVES));
@@ -315,7 +315,7 @@ public class GoalFlags extends AbstractFlagGoal {
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         final ArenaTeam team = aPlayer.getArenaTeam();
         if (!this.getTeamLifeMap().containsKey(team)) {
-            this.getTeamLifeMap().put(aPlayer.getArenaTeam(), this.arena.getArenaConfig()
+            this.getTeamLifeMap().put(aPlayer.getArenaTeam(), this.arena.getConfig()
                     .getInt(CFG.GOAL_FLAGS_LIVES));
 
             this.releaseFlag(team.getColor(), this.getTeamFlagLoc(team));
@@ -370,7 +370,7 @@ public class GoalFlags extends AbstractFlagGoal {
                 debug(this.arena, "adding team " + team.getName());
                 // team is active
                 this.getTeamLifeMap().put(team,
-                        this.arena.getArenaConfig().getInt(CFG.GOAL_FLAGS_LIVES, 3));
+                        this.arena.getConfig().getInt(CFG.GOAL_FLAGS_LIVES, 3));
             }
             this.releaseFlag(team.getColor(), this.getTeamFlagLoc(team));
         }
@@ -409,7 +409,7 @@ public class GoalFlags extends AbstractFlagGoal {
             return;
         }
 
-        if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_FLAGS_ALTERONCATCH)) {
+        if (this.arena.getConfig().getBoolean(CFG.GOAL_FLAGS_ALTERONCATCH)) {
             Block flagBlock = paBlockLocation.toLocation().getBlock();
 
             if (ColorUtils.isColorableMaterial(flagBlock.getType())) {
@@ -430,7 +430,7 @@ public class GoalFlags extends AbstractFlagGoal {
             return;
         }
 
-        if (this.arena.getArenaConfig().getBoolean(CFG.GOAL_FLAGS_ALTERONCATCH)) {
+        if (this.arena.getConfig().getBoolean(CFG.GOAL_FLAGS_ALTERONCATCH)) {
             Block flagBlock = paBlockLocation.toLocation().getBlock();
 
             if (ColorUtils.isColorableMaterial(flagBlock.getType())) {

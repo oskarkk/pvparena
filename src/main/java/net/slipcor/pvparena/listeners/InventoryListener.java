@@ -38,7 +38,7 @@ public class InventoryListener implements Listener {
 
         debug(arena, player, "InventoryClick: arena player");
 
-        if (!arena.getArenaConfig().getBoolean(CFG.PLAYER_MAYCHANGEARMOR)) {
+        if (!arena.getConfig().getBoolean(CFG.PLAYER_MAYCHANGEARMOR)) {
             if (event.getSlotType() == InventoryType.SlotType.ARMOR) {
                 event.setCancelled(true);
                 return;
@@ -50,7 +50,7 @@ public class InventoryListener implements Listener {
             if (event.getRawSlot() != 5) {
                 return;
             }
-            if (arena.getArenaConfig().getBoolean(CFG.USES_WOOLHEAD)) {
+            if (arena.getConfig().getBoolean(CFG.USES_WOOLHEAD)) {
                 event.setCancelled(true);
                 return;
             }

@@ -45,7 +45,7 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
 
     @Override
     public boolean allowsJoinInBattle() {
-        return this.arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE);
+        return this.arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
 
     @Override
     protected int getTeamLivesCfg() {
-        return this.arena.getArenaConfig().getInt(CFG.GOAL_TDC_LIVES);
+        return this.arena.getConfig().getInt(CFG.GOAL_TDC_LIVES);
     }
 
     @Override
@@ -84,12 +84,12 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
 
         this.drop(respawnPlayer, respawnTeam);
 
-        if (this.arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+        if (this.arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
             this.broadcastSimpleDeathMessage(respawnPlayer, event);
         }
 
         final List<ItemStack> returned;
-        if (this.arena.getArenaConfig().getBoolean(
+        if (this.arena.getConfig().getBoolean(
                 CFG.PLAYER_DROPSINVENTORY)) {
             returned = InventoryManager.drop(respawnPlayer);
             event.getDrops().clear();
@@ -101,7 +101,7 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
     }
 
     private void drop(final Player player, final ArenaTeam team) {
-        Material material = this.arena.getArenaConfig().getMaterial(CFG.GOAL_TDC_ITEM);
+        Material material = this.arena.getConfig().getMaterial(CFG.GOAL_TDC_ITEM);
         ItemStack item = new ItemStack(material);
 
         ItemMeta meta = item.getItemMeta();
@@ -116,7 +116,7 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
     public void onPlayerPickUp(final EntityPickupItemEvent event) {
         final ItemStack item = event.getItem().getItemStack();
 
-        final Material check = this.arena.getArenaConfig().getMaterial(CFG.GOAL_TDC_ITEM);
+        final Material check = this.arena.getConfig().getMaterial(CFG.GOAL_TDC_ITEM);
 
         final ArenaPlayer player = ArenaPlayer.fromPlayer(event.getEntity().getName());
 

@@ -40,8 +40,8 @@ public class PAA_SetOwner extends AbstractArenaCommand {
         // usage: /pa {arenaname} setowner [playername]
 
         arena.setOwner(args[0]);
-        arena.getArenaConfig().set(CFG.GENERAL_OWNER, args[0]);
-        arena.getArenaConfig().save();
+        arena.getConfig().set(CFG.GENERAL_OWNER, args[0]);
+        arena.getConfig().save();
         arena.msg(sender, Language.parse(arena, MSG.SETOWNER_DONE, args[0], arena.getName()));
     }
 

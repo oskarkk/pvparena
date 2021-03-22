@@ -72,18 +72,18 @@ public final class InventoryManager {
             exclude = new ArrayList<>();
             keep = new ArrayList<>();
         } else {
-            final ItemStack[] items = ap.getArena().getArenaConfig().getItems(CFG.ITEMS_EXCLUDEFROMDROPS);
+            final ItemStack[] items = ap.getArena().getConfig().getItems(CFG.ITEMS_EXCLUDEFROMDROPS);
             exclude = new ArrayList<>();
             for (final ItemStack item : items) {
                 if (item != null) {
                     exclude.add(item.getType());
                 }
             }
-            keepAll = ap.getArena().getArenaConfig().getBoolean(CFG.ITEMS_KEEPALLONRESPAWN);
+            keepAll = ap.getArena().getConfig().getBoolean(CFG.ITEMS_KEEPALLONRESPAWN);
             if (keepAll) {
                 keep = new ArrayList<>();
             } else {
-                keep = Arrays.asList(ap.getArena().getArenaConfig().getItems(CFG.ITEMS_KEEPONRESPAWN));
+                keep = Arrays.asList(ap.getArena().getConfig().getItems(CFG.ITEMS_KEEPONRESPAWN));
             }
         }
 

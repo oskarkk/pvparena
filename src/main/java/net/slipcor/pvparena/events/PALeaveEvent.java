@@ -34,7 +34,7 @@ public class PALeaveEvent extends Event {
         this.arena = arena;
         this.player = player;
         this.spectator = isSpectator;
-        player.setNoDamageTicks(arena.getArenaConfig().getInt(CFG.TIME_TELEPORTPROTECT) * 20);
+        player.setNoDamageTicks(arena.getConfig().getInt(CFG.TIME_TELEPORTPROTECT) * 20);
     }
 
     /**

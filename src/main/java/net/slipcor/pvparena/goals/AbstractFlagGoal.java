@@ -62,12 +62,12 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
     protected abstract boolean hasWoolHead();
 
     protected Material getFlagType() {
-        return this.arena.getArenaConfig().getMaterial(this.getFlagTypeCfg());
+        return this.arena.getConfig().getMaterial(this.getFlagTypeCfg());
     }
 
     @Override
     public boolean allowsJoinInBattle() {
-        return this.arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE);
+        return this.arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE);
     }
 
     @Override
@@ -121,7 +121,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
 
 
     protected void applyEffects(final Player player) {
-        final String value = this.arena.getArenaConfig().getDefinedString(this.getFlagEffectCfg());
+        final String value = this.arena.getConfig().getDefinedString(this.getFlagEffectCfg());
 
         if (value == null) {
             return;
@@ -193,9 +193,9 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
                 return;
             }
 
-            this.arena.getArenaConfig().set(this.getFlagTypeCfg(), mat.name());
+            this.arena.getConfig().set(this.getFlagTypeCfg(), mat.name());
 
-            this.arena.getArenaConfig().save();
+            this.arena.getConfig().save();
             this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_FLAGS_TYPESET, this.getFlagTypeCfg().toString()));
 
         } else if ("flageffect".equalsIgnoreCase(args[0])) {
@@ -210,9 +210,9 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
             }
 
             if ("none".equalsIgnoreCase(args[1])) {
-                this.arena.getArenaConfig().set(this.getFlagEffectCfg(), args[1]);
+                this.arena.getConfig().set(this.getFlagEffectCfg(), args[1]);
 
-                this.arena.getArenaConfig().save();
+                this.arena.getConfig().save();
                 this.arena.msg(
                         sender,
                         Language.parse(this.arena, MSG.SET_DONE,
@@ -250,9 +250,9 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
                 }
             }
             final String value = args[1] + 'x' + amp;
-            this.arena.getArenaConfig().set(this.getFlagEffectCfg(), value);
+            this.arena.getConfig().set(this.getFlagEffectCfg(), value);
 
-            this.arena.getArenaConfig().save();
+            this.arena.getConfig().save();
             this.arena.msg(
                     sender,
                     Language.parse(this.arena, MSG.SET_DONE,
@@ -315,7 +315,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
         if (ArenaModuleManager.commitEnd(this.arena, aTeam)) {
             return;
         }
-        new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(CFG.TIME_ENDCOUNTDOWN));
+        new EndRunnable(this.arena, this.arena.getConfig().getInt(CFG.TIME_ENDCOUNTDOWN));
     }
 
     @Override
@@ -350,14 +350,14 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
     }
 
     protected Material getFlagOverrideTeamMaterial(final Arena arena, final ArenaTeam team) {
-        if (arena.getArenaConfig().getUnsafe("flagColors." + team.getName()) == null) {
+        if (arena.getConfig().getUnsafe("flagColors." + team.getName()) == null) {
             if (this.touchdownTeam.equals(team)) {
                 return ColorUtils.getWoolMaterialFromChatColor(ChatColor.BLACK);
             }
             return ColorUtils.getWoolMaterialFromChatColor(team.getColor());
         }
         return ColorUtils.getWoolMaterialFromDyeColor(
-                (String) arena.getArenaConfig().getUnsafe("flagColors." + team));
+                (String) arena.getConfig().getUnsafe("flagColors." + team));
     }
 
     protected Map<ArenaPlayer, ItemStack> getHeadGearMap() {
@@ -398,7 +398,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
                 return true;
             }
 
-            if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+            if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
                 for (final ArenaClass aClass : this.arena.getClasses()) {
                     if (string.toLowerCase().startsWith(teamName.toLowerCase() +
                             aClass.getName().toLowerCase() + "spawn")) {
@@ -411,7 +411,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
     }
 
     protected void removeEffects(final Player player) {
-        final String value = this.arena.getArenaConfig().getDefinedString(this.getFlagEffectCfg());
+        final String value = this.arena.getConfig().getDefinedString(this.getFlagEffectCfg());
 
         if (value == null) {
             return;
@@ -501,7 +501,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
             }
 
             this.getTeamLifeMap().clear();
-            new EndRunnable(arena, arena.getArenaConfig().getInt(CFG.TIME_ENDCOUNTDOWN));
+            new EndRunnable(arena, arena.getConfig().getInt(CFG.TIME_ENDCOUNTDOWN));
         } else {
             debug(arena, "[CTF] already ending");
         }

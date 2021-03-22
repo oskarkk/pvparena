@@ -49,7 +49,7 @@ public class GoalCheckPoints extends ArenaGoal {
 
     @Override
     public boolean allowsJoinInBattle() {
-        return this.arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE);
+        return this.arena.getConfig().getBoolean(CFG.PERMS_JOININBATTLE);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class GoalCheckPoints extends ArenaGoal {
         debug(this.arena, "  GCP checkMove();");
         debug(this.arena, "------------------");
 
-        final int checkDistance = this.arena.getArenaConfig().getInt(CFG.GOAL_CHECKPOINTS_CLAIMRANGE);
+        final int checkDistance = this.arena.getConfig().getInt(CFG.GOAL_CHECKPOINTS_CLAIMRANGE);
 
         for (final PASpawn spawn : SpawnManager.getPASpawnsStartingWith(this.arena, CHECKPOINT)) {
             final PALocation paLoc = spawn.getLocation();
@@ -133,7 +133,7 @@ public class GoalCheckPoints extends ArenaGoal {
         }
 
 
-        final int max = this.arena.getArenaConfig().getInt(CFG.GOAL_CHECKPOINTS_LIVES);
+        final int max = this.arena.getConfig().getInt(CFG.GOAL_CHECKPOINTS_LIVES);
 
         final int position = max - this.getPlayerLifeMap().get(arenaPlayer.getPlayer()) + 1;
 
@@ -177,7 +177,7 @@ public class GoalCheckPoints extends ArenaGoal {
         }
 
         this.getPlayerLifeMap().clear();
-        new EndRunnable(arena, arena.getArenaConfig().getInt(
+        new EndRunnable(arena, arena.getConfig().getInt(
                 CFG.TIME_ENDCOUNTDOWN));
     }
 
@@ -191,7 +191,7 @@ public class GoalCheckPoints extends ArenaGoal {
         }
 
         ArenaPlayer ap = ArenaPlayer.fromPlayer((Player) sender);
-        int cpLives = this.arena.getArenaConfig().getInt(CFG.GOAL_CHECKPOINTS_LIVES);
+        int cpLives = this.arena.getConfig().getInt(CFG.GOAL_CHECKPOINTS_LIVES);
 
         if (args.length < 2 && this.arena.getFighters().contains(ap)) {
             ap.setTelePass(true);
@@ -259,17 +259,17 @@ public class GoalCheckPoints extends ArenaGoal {
         if (arenaPlayer != null && ArenaModuleManager.commitEnd(this.arena, arenaPlayer.getArenaTeam())) {
             return;
         }
-        new EndRunnable(this.arena, this.arena.getArenaConfig().getInt(CFG.TIME_ENDCOUNTDOWN));
+        new EndRunnable(this.arena, this.arena.getConfig().getInt(CFG.TIME_ENDCOUNTDOWN));
     }
 
     @Override
     public void displayInfo(final CommandSender sender) {
         sender.sendMessage("needed points: " +
-                this.arena.getArenaConfig().getInt(CFG.GOAL_CHECKPOINTS_LIVES));
+                this.arena.getConfig().getInt(CFG.GOAL_CHECKPOINTS_LIVES));
         sender.sendMessage("claim range: " +
-                this.arena.getArenaConfig().getInt(CFG.GOAL_CHECKPOINTS_CLAIMRANGE));
+                this.arena.getConfig().getInt(CFG.GOAL_CHECKPOINTS_CLAIMRANGE));
         sender.sendMessage("tick interval (ticks): " +
-                this.arena.getArenaConfig().getInt(CFG.GOAL_CHECKPOINTS_TICKINTERVAL));
+                this.arena.getConfig().getInt(CFG.GOAL_CHECKPOINTS_TICKINTERVAL));
     }
 
     @Override
@@ -277,7 +277,7 @@ public class GoalCheckPoints extends ArenaGoal {
         if (string.startsWith(CHECKPOINT) || string.startsWith(SPAWN)) {
             return true;
         }
-        if (this.arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+        if (this.arena.getConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
             for (final ArenaClass aClass : this.arena.getClasses()) {
                 if (string.toLowerCase().contains(aClass.getName().toLowerCase() + SPAWN)) {
                     return true;
@@ -291,7 +291,7 @@ public class GoalCheckPoints extends ArenaGoal {
     public void initiate(final Player player) {
         final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
         if (!this.getPlayerLifeMap().containsKey(arenaPlayer.getPlayer())) {
-            this.getPlayerLifeMap().put(arenaPlayer.getPlayer(), this.arena.getArenaConfig()
+            this.getPlayerLifeMap().put(arenaPlayer.getPlayer(), this.arena.getConfig()
                     .getInt(CFG.GOAL_CHECKPOINTS_LIVES));
         }
     }
@@ -307,11 +307,11 @@ public class GoalCheckPoints extends ArenaGoal {
         for (final ArenaPlayer arenaPlayer : this.arena.getFighters()) {
             debug(this.arena, "adding player " + arenaPlayer.getName());
             this.getPlayerLifeMap().put(arenaPlayer.getPlayer(),
-                    this.arena.getArenaConfig().getInt(CFG.GOAL_CHECKPOINTS_LIVES, 3));
+                    this.arena.getConfig().getInt(CFG.GOAL_CHECKPOINTS_LIVES, 3));
         }
 
         final CheckPointsMainRunnable cpMainRunner = new CheckPointsMainRunnable(this.arena, this);
-        final int tickInterval = this.arena.getArenaConfig().getInt(CFG.GOAL_CHECKPOINTS_TICKINTERVAL);
+        final int tickInterval = this.arena.getConfig().getInt(CFG.GOAL_CHECKPOINTS_TICKINTERVAL);
         cpMainRunner.runTaskTimer(PVPArena.getInstance(), tickInterval, tickInterval);
     }
 
@@ -338,7 +338,7 @@ public class GoalCheckPoints extends ArenaGoal {
     public Map<String, Double> timedEnd(final Map<String, Double> scores) {
 
         for (final ArenaPlayer arenaPlayer : this.arena.getFighters()) {
-            double score = this.arena.getArenaConfig().getInt(CFG.GOAL_CHECKPOINTS_LIVES)
+            double score = this.arena.getConfig().getInt(CFG.GOAL_CHECKPOINTS_LIVES)
                     - (this.getPlayerLifeMap()
                     .getOrDefault(arenaPlayer.getPlayer(), 0));
             if (scores.containsKey(arenaPlayer.getName())) {

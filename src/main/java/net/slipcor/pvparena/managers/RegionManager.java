@@ -53,7 +53,7 @@ public final class RegionManager {
             this.joinRegionsCache.stream()
                     .filter(rg -> rg.getShape().contains(pLoc))
                     .findFirst()
-                    .filter(rg -> !rg.getArena().isLocked() && rg.getArena().getArenaConfig().getBoolean(Config.CFG.JOIN_FORCE))
+                    .filter(rg -> !rg.getArena().isLocked() && rg.getArena().getConfig().getBoolean(Config.CFG.JOIN_FORCE))
                     .filter(rg -> !rg.getArena().isFightInProgress() || (rg.getArena().isFightInProgress() && rg.getArena().getGoal().allowsJoinInBattle()))
                     .ifPresent(joinRegion -> {
                         final PAG_Join cmd = new PAG_Join();
@@ -125,7 +125,7 @@ public final class RegionManager {
             debug(player, "escaping BATTLE, loc : {}", pLoc);
             Arena.pmsg(player, Language.parse(arena, Language.MSG.NOTICE_YOU_ESCAPED));
 
-            if (arena.getArenaConfig().getBoolean(Config.CFG.GENERAL_LEAVEDEATH)) {
+            if (arena.getConfig().getBoolean(Config.CFG.GENERAL_LEAVEDEATH)) {
                 player.setLastDamageCause(new EntityDamageEvent(player, EntityDamageEvent.DamageCause.CUSTOM, 1004.0));
                 player.damage(1000);
             } else {
