@@ -18,7 +18,9 @@ import org.bukkit.scoreboard.Team;
 
 import java.util.Optional;
 
+import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
+import static net.slipcor.pvparena.arena.PlayerStatus.*;
 import static net.slipcor.pvparena.config.Debugger.debug;
 
 public class ArenaScoreboard {
@@ -159,7 +161,7 @@ public class ArenaScoreboard {
                 if (this.arena.isFreeForAll()) {
                     for (ArenaPlayer arenaPlayer : this.arena.getEveryone()) {
                         int value = WorkflowManager.handleGetLives(this.arena, arenaPlayer);
-                        if (value >= 0) {
+                        if (value >= 0 && asList(FIGHT, DEAD, LOST).contains(arenaPlayer.getStatus())) {
                             ofNullable(this.getLivesObjective()).ifPresent(objective ->
                                     objective.getScore(arenaPlayer.getName()).setScore(value)
                             );
