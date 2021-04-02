@@ -23,3 +23,6 @@ update:
   plugin: announce
   modules: announce
 globalPrefix: 'PVP Arena'
+signHeaders:
+  - '[arena]'
+  - '[PVP Arena]'
