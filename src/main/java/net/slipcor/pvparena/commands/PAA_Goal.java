@@ -2,7 +2,6 @@ package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -44,8 +43,8 @@ public class PAA_Goal extends AbstractArenaCommand {
         final Loadable<?> loadableGoal = goalManager.getLoadableByName(args[0].toLowerCase());
 
         if (loadableGoal == null) {
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_GOAL_NOTFOUND, args[0], StringParser.joinSet(goalManager.getAllGoalNames(), " ")));
-            arena.msg(sender, Language.parse(arena, MSG.GOAL_INSTALLING));
+            arena.msg(sender, MSG.ERROR_GOAL_NOTFOUND, args[0], StringParser.joinSet(goalManager.getAllGoalNames(), " "));
+            arena.msg(sender, MSG.GOAL_INSTALLING);
             return;
         }
 
@@ -53,15 +52,15 @@ public class PAA_Goal extends AbstractArenaCommand {
             // toggle
             ArenaGoal goal = goalManager.getNewInstance(loadableGoal.getName());
             arena.setGoal(goal, true);
-            arena.msg(sender, Language.parse(arena, MSG.GOAL_SET, args[0]));
+            arena.msg(sender, MSG.GOAL_SET, args[0]);
             return;
         }
 
         // usage: /pa {arenaname} loadableGoal [loadableGoal] {value}
 
-        arena.msg(sender, Language.parse(arena, MSG.ERROR_INVALID_VALUE, args[1]));
-        arena.msg(sender, Language.parse(arena, MSG.ERROR_POSITIVES, StringParser.joinSet(StringParser.positive, " | ")));
-        arena.msg(sender, Language.parse(arena, MSG.ERROR_NEGATIVES, StringParser.joinSet(StringParser.negative, " | ")));
+        arena.msg(sender, MSG.ERROR_INVALID_VALUE, args[1]);
+        arena.msg(sender, MSG.ERROR_POSITIVES, StringParser.joinSet(StringParser.positive, " | "));
+        arena.msg(sender, MSG.ERROR_NEGATIVES, StringParser.joinSet(StringParser.negative, " | "));
     }
 
     @Override
@@ -71,7 +70,7 @@ public class PAA_Goal extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.GOAL));
+        Arena.pmsg(sender, HELP.GOAL);
     }
 
     @Override

@@ -4,7 +4,6 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
-import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loader.Loadable;
 import net.slipcor.pvparena.updater.ModulesUpdater;
@@ -72,7 +71,7 @@ public class PAA_Modules extends AbstractGlobalCommand {
                     break;
                 case "install":
                 case "uninstall":
-                    Arena.pmsg(sender, Language.parse(MSG.ERROR_INVALID_ARGUMENT_COUNT, "1", "2"));
+                    Arena.pmsg(sender, MSG.ERROR_INVALID_ARGUMENT_COUNT, "1", "2");
                     break;
                 default:
                     // Show specific help
@@ -83,7 +82,7 @@ public class PAA_Modules extends AbstractGlobalCommand {
             } else if ("uninstall".equalsIgnoreCase(args[0])) {
                 uninstallModule(sender, args[1]);
             } else {
-                Arena.pmsg(sender, Language.parse(MSG.ERROR_INVALID_ARGUMENT_COUNT, "2", "1"));
+                Arena.pmsg(sender, MSG.ERROR_INVALID_ARGUMENT_COUNT, "2", "1");
             }
         }
     }
@@ -115,12 +114,12 @@ public class PAA_Modules extends AbstractGlobalCommand {
 
             if (copyFile("pa_m_" + modName + ".jar")) {
                 PVPArena.getInstance().getAmm().reload();
-                Arena.pmsg(sender, Language.parse(MSG.INSTALL_DONE, modName));
+                Arena.pmsg(sender, MSG.INSTALL_DONE, modName);
             } else {
-                Arena.pmsg(sender, Language.parse(MSG.ERROR_INSTALL, modName));
+                Arena.pmsg(sender, MSG.ERROR_INSTALL, modName);
             }
         } else {
-            Arena.pmsg(sender, Language.parse(MSG.ERROR_UNKNOWN_MODULE, name));
+            Arena.pmsg(sender, MSG.ERROR_UNKNOWN_MODULE, name);
         }
     }
 
@@ -137,15 +136,15 @@ public class PAA_Modules extends AbstractGlobalCommand {
             String jarName = "pa_m_" + modName.toLowerCase() + ".jar";
             if (remove(jarName)) {
                 PVPArena.getInstance().getAmm().reload();
-                Arena.pmsg(sender, Language.parse(MSG.UNINSTALL_DONE, modName));
+                Arena.pmsg(sender, MSG.UNINSTALL_DONE, modName);
             } else {
-                Arena.pmsg(sender, Language.parse(MSG.ERROR_UNINSTALL, modName));
+                Arena.pmsg(sender, MSG.ERROR_UNINSTALL, modName);
                 FileConfiguration cfg = PVPArena.getInstance().getConfig();
                 List<String> toDelete = cfg.getStringList("todelete");
                 toDelete.add(jarName);
                 cfg.set("todelete", toDelete);
                 PVPArena.getInstance().saveConfig();
-                Arena.pmsg(sender, Language.parse(MSG.ERROR_UNINSTALL2));
+                Arena.pmsg(sender, MSG.ERROR_UNINSTALL2);
             }
         }
     }
@@ -257,7 +256,7 @@ public class PAA_Modules extends AbstractGlobalCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.INSTALL));
+        Arena.pmsg(sender, HELP.INSTALL);
     }
 
     @Override

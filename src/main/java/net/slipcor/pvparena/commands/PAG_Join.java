@@ -4,7 +4,6 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -48,7 +47,7 @@ public class PAG_Join extends AbstractArenaCommand {
         }
 
         if (!(sender instanceof Player)) {
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+            arena.msg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
 
@@ -59,23 +58,23 @@ public class PAG_Join extends AbstractArenaCommand {
                         arena.getConfig().getBoolean(CFG.JOIN_ONLYIFHASPLAYED)
                                 && !arena.hasAlreadyPlayed(sender.getName()))) {
 
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_FIGHT_IN_PROGRESS));
+            arena.msg(sender, MSG.ERROR_FIGHT_IN_PROGRESS);
             return;
         }
 
         if (!PVPArena.hasPerms(sender, arena)) {
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_NOPERM_JOIN));
+            arena.msg(sender, MSG.ERROR_NOPERM_JOIN);
             return;
         }
 
         final String error = ConfigurationManager.isSetup(arena);
         if (error != null) {
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_ERROR, error));
+            arena.msg(sender, MSG.ERROR_ERROR, error);
             return;
         }
 
         if (ArenaRegion.tooFarAway(arena, (Player) sender)) {
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_JOIN_RANGE));
+            arena.msg(sender, MSG.ERROR_JOIN_RANGE);
             return;
         }
 
@@ -86,14 +85,14 @@ public class PAG_Join extends AbstractArenaCommand {
                     !arena.getConfig().getBoolean(CFG.JOIN_ONLYIFHASPLAYED) &&
                     arena.hasAlreadyPlayed(aPlayer.getName())) {
                 debug(arena, aPlayer.getPlayer(), "Join_2");
-                arena.msg(aPlayer.getPlayer(), Language.parse(arena, MSG.ERROR_ARENA_ALREADY_PART_OF, ArenaManager.getIndirectArenaName(arena)));
+                arena.msg(aPlayer.getPlayer(), MSG.ERROR_ARENA_ALREADY_PART_OF, ArenaManager.getIndirectArenaName(arena));
             } else {
                 WorkflowManager.handleJoin(arena, aPlayer.getPlayer(), args);
             }
         } else {
             final Arena pArena = aPlayer.getArena();
             debug(arena, sender, "Join_1");
-            pArena.msg(sender, Language.parse(arena, MSG.ERROR_ARENA_ALREADY_PART_OF, ArenaManager.getIndirectArenaName(pArena)));
+            pArena.msg(sender, MSG.ERROR_ARENA_ALREADY_PART_OF, ArenaManager.getIndirectArenaName(pArena));
         }
 
     }
@@ -105,7 +104,7 @@ public class PAG_Join extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.JOIN));
+        Arena.pmsg(sender, HELP.JOIN);
     }
 
     @Override

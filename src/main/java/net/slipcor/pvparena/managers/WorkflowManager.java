@@ -68,7 +68,7 @@ public class WorkflowManager {
             }
             debug(arena, "FALSE");
         } catch (GameplayException e) {
-            arena.msg(Bukkit.getConsoleSender(), Language.parse(arena, MSG.ERROR_ERROR, e.getMessage()));
+            arena.msg(Bukkit.getConsoleSender(), MSG.ERROR_ERROR, e.getMessage());
         }
 
         return false;
@@ -113,12 +113,12 @@ public class WorkflowManager {
             }
 
             if(joinModule == null && !ArenaManager.checkJoin(player, arena)) {
-                throw new GameplayException(Language.parse(arena, MSG.ERROR_JOIN_REGION));
+                throw new GameplayException(Language.parse(MSG.ERROR_JOIN_REGION));
             }
         } catch (GameplayExceptionNotice e) {
-            arena.msg(player, Language.parse(arena, MSG.NOTICE_NOTICE, e.getMessage()));
+            arena.msg(player, MSG.NOTICE_NOTICE, e.getMessage());
         } catch (GameplayException e) {
-            arena.msg(player, Language.parse(arena, MSG.ERROR_ERROR, e.getMessage()));
+            arena.msg(player, MSG.ERROR_ERROR, e.getMessage());
         }
 
         ArenaGoal joinGoal = arena.getGoal();
@@ -126,15 +126,15 @@ public class WorkflowManager {
         try {
             joinGoal.checkJoin(player, args);
         } catch (GameplayException e) {
-            arena.msg(player, Language.parse(arena, MSG.ERROR_ERROR, e.getMessage()));
+            arena.msg(player, MSG.ERROR_ERROR, e.getMessage());
             return false;
         } catch (NullPointerException e) {
-            arena.msg(player, Language.parse(arena, MSG.ERROR_NO_GOAL));
+            arena.msg(player, MSG.ERROR_NO_GOAL);
             return false;
         }
 
         if(TeamManager.isArenaFull(arena)){
-            arena.msg(player, Language.parse(arena, MSG.ERROR_JOIN_ARENA_FULL));
+            arena.msg(player, MSG.ERROR_JOIN_ARENA_FULL);
             return false;
         }
 
@@ -143,13 +143,13 @@ public class WorkflowManager {
             // usage: /pa {arenaname} join | join an arena
             arenaTeam = TeamManager.getRandomTeam(arena);
             if(arenaTeam == null){
-                arena.msg(player, Language.parse(arena, MSG.ERROR_NO_TEAM_AVAILABLE));
+                arena.msg(player, MSG.ERROR_NO_TEAM_AVAILABLE);
                 return false;
             }
         } else {
             arenaTeam = arena.getTeam(args[0]);
             if(arenaTeam == null) {
-                arena.msg(player, Language.parse(arena, MSG.ERROR_TEAMNOTFOUND, args[0]));
+                arena.msg(player, MSG.ERROR_TEAMNOTFOUND, args[0]);
                 return false;
             }
         }
@@ -280,7 +280,7 @@ public class WorkflowManager {
                     player.getName()).getArenaTeam();
 
             if (arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
-                arena.broadcast(Language.parse(arena, MSG.FIGHT_KILLED_BY,
+                arena.broadcast(Language.parse(MSG.FIGHT_KILLED_BY,
                         respawnTeam.colorizePlayer(player) + ChatColor.YELLOW,
                         arena.parseDeathCause(player, event.getEntity()
                                 .getLastDamageCause().getCause(), event
@@ -391,7 +391,7 @@ public class WorkflowManager {
                 }
             }
         } catch (GameplayException e) {
-            arena.msg(player, Language.parse(arena, MSG.ERROR_ERROR, e.getMessage()));
+            arena.msg(player, MSG.ERROR_ERROR, e.getMessage());
             return false;
         }
 
@@ -439,7 +439,7 @@ public class WorkflowManager {
 
         debug(arena, sender, "teleported everyone!");
 
-        arena.broadcast(Language.parse(arena, MSG.FIGHT_BEGINS));
+        arena.broadcast(Language.parse(MSG.FIGHT_BEGINS));
         arena.setFightInProgress(true);
 
         goal.parseStart();

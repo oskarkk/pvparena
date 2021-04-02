@@ -79,7 +79,7 @@ public class ModulesUpdater extends AbstractUpdater {
             String onlineVersion = getOnlineVersionFromJson(versionJson);
             String filename = getFilenameFromJson(versionJson);
 
-            Arena.pmsg(sender, Language.parse(MSG.UPDATER_DOWNLOADING, Language.parse(MSG.UPDATER_MODULES)));
+            Arena.pmsg(sender, MSG.UPDATER_DOWNLOADING, Language.parse(MSG.UPDATER_MODULES));
             downloadAndUnpackModules(getDownloadUrlFromJson(versionJson), filename);
             String updateSuccess = getSuccessMessage(MSG.UPDATER_MODULES.toString(), onlineVersion);
             LOG.info(updateSuccess);

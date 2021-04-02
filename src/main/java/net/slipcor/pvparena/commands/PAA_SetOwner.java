@@ -2,7 +2,6 @@ package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -42,7 +41,7 @@ public class PAA_SetOwner extends AbstractArenaCommand {
         arena.setOwner(args[0]);
         arena.getConfig().set(CFG.GENERAL_OWNER, args[0]);
         arena.getConfig().save();
-        arena.msg(sender, Language.parse(arena, MSG.SETOWNER_DONE, args[0], arena.getName()));
+        arena.msg(sender, MSG.SETOWNER_DONE, args[0], arena.getName());
     }
 
     @Override
@@ -52,7 +51,7 @@ public class PAA_SetOwner extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.SETOWNER));
+        Arena.pmsg(sender, HELP.SETOWNER);
     }
 
     @Override

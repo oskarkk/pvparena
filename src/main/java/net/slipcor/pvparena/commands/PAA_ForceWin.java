@@ -4,7 +4,6 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.arena.PlayerStatus;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -37,12 +36,12 @@ public class PAA_ForceWin extends AbstractArenaCommand {
         // /pa {arenaname} forcewin [teamname]
 
         if (Bukkit.getPlayer(args[0]) == null && arena.isFreeForAll()) {
-            arena.msg(sender, Language.parse(MSG.ERROR_PLAYER_NOTFOUND, args[0]));
+            arena.msg(sender, MSG.ERROR_PLAYER_NOTFOUND, args[0]);
         } else if (Bukkit.getPlayer(args[0]) == null) {
             ArenaTeam aTeam = arena.getTeam(args[0]);
             if (aTeam == null) {
-                arena.msg(sender, Language.parse(MSG.ERROR_PLAYER_NOTFOUND, args[0]));
-                arena.msg(sender, Language.parse(MSG.ERROR_TEAMNOTFOUND, args[0]));
+                arena.msg(sender, MSG.ERROR_PLAYER_NOTFOUND, args[0]);
+                arena.msg(sender, MSG.ERROR_TEAMNOTFOUND, args[0]);
                 return;
             }
             // existing team
@@ -64,7 +63,7 @@ public class PAA_ForceWin extends AbstractArenaCommand {
             // existing player name
             ArenaPlayer aplayer = ArenaPlayer.fromPlayer(args[0]);
             if (!arena.equals(aplayer.getArena())) {
-                arena.msg(sender, Language.parse(MSG.ERROR_PLAYER_NOTFOUND, args[0]));
+                arena.msg(sender, MSG.ERROR_PLAYER_NOTFOUND, args[0]);
                 return;
             }
             if (arena.isFreeForAll()) {
@@ -105,7 +104,7 @@ public class PAA_ForceWin extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.FORCEWIN));
+        Arena.pmsg(sender, HELP.FORCEWIN);
     }
 
     @Override

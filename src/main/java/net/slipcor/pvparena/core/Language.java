@@ -750,14 +750,12 @@ public final class Language {
      */
     public static void init(final String langString) {
         PVPArena.getInstance().getDataFolder().mkdir();
-        final File configFile = new File(PVPArena.getInstance().getDataFolder().getPath()
-                + "/lang_" + langString + ".yml");
+        final File configFile = new File(PVPArena.getInstance().getDataFolder().getPath(), String.format("/lang_%s.yml", langString));
         if (!configFile.exists()) {
             try {
                 configFile.createNewFile();
             } catch (final Exception e) {
-                Bukkit.getLogger().severe(
-                        "[PVP Arena] Error when creating language file.");
+                Bukkit.getLogger().severe("[PVP Arena] Error when creating language file.");
             }
         }
         final YamlConfiguration config = new YamlConfiguration();
@@ -826,7 +824,6 @@ public final class Language {
     public static void logInfo(final MSG message, final String arg) {
         final String var = message.toString();
         PVPArena.getInstance().getLogger().info(var.replace("%1%", arg));
-        // log replaced map value
     }
 
     /**
@@ -866,43 +863,6 @@ public final class Language {
             result = result.replace("%" + ++i + '%', word);
         }
 
-        return StringParser.colorize(result);
-    }
-
-    /**
-     * read a node from the config and return its value
-     *
-     * @param message the node name
-     * @return the node string
-     */
-    public static String parse(final Arena arena, final MSG message) {
-        if (arena != null && arena.getLanguage().get(message.getNode()) != null) {
-            trace(arena, "MSG: {}", message.name());
-            return StringParser.colorize((String) arena.getLanguage().get(message.getNode()));
-        }
-        return StringParser.colorize(message.toString());
-    }
-
-    /**
-     * read a node from the config and return its value after replacing
-     *
-     * @param message   the node name
-     * @param args strings to replace
-     * @return the replaced node string
-     */
-    public static String parse(final Arena arena, final MSG message, final String... args) {
-        if (arena != null) {
-            trace(arena, "MSG: {}", message.name());
-        }
-
-        String result = message.toString();
-        if (arena != null && arena.getLanguage().get(message.getNode()) != null) {
-            result = (String) arena.getLanguage().get(message.getNode());
-        }
-        int i = 0;
-        for (final String word : args) {
-            result = result.replace("%" + ++i + '%', word);
-        }
         return StringParser.colorize(result);
     }
 

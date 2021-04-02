@@ -147,11 +147,11 @@ public class GoalSabotage extends ArenaGoal {
                 debug(this.arena, player, "vFlag: " + vFlag);
 
                 if (aTeam.equals(pTeam.getName())) {
-                    this.arena.msg(aPlayer.getPlayer(), Language.parse(arena, MSG.ERROR_ERROR));
+                    this.arena.msg(aPlayer.getPlayer(), MSG.ERROR_ERROR);
                     continue;
                 }
 
-                this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_SABOTAGE_IGNITED,
+                this.arena.broadcast(Language.parse(MSG.GOAL_SABOTAGE_IGNITED,
                         pTeam.colorizePlayer(player) + ChatColor.YELLOW,
                         team.getColoredName() + ChatColor.YELLOW));
 
@@ -219,11 +219,11 @@ public class GoalSabotage extends ArenaGoal {
             ArenaModuleManager
                     .announce(
                             arena,
-                            Language.parse(arena, MSG.TEAM_HAS_WON,
+                            Language.parse(MSG.TEAM_HAS_WON,
                                     arena.getTeam(winteam).getColor()
                                             + winteam + ChatColor.YELLOW),
                             "WINNER");
-            arena.broadcast(Language.parse(arena, MSG.TEAM_HAS_WON,
+            arena.broadcast(Language.parse(MSG.TEAM_HAS_WON,
                     arena.getTeam(winteam).getColor() + winteam
                             + ChatColor.YELLOW));
         }
@@ -241,8 +241,7 @@ public class GoalSabotage extends ArenaGoal {
                     this.flagName = args[0];
                     PAA_Region.activeSelections.put(sender.getName(), this.arena);
 
-                    this.arena.msg(sender, Language.parse(this.arena,
-                            MSG.GOAL_SABOTAGE_TOSETTNT, this.flagName));
+                    this.arena.msg(sender, MSG.GOAL_SABOTAGE_TOSETTNT, this.flagName);
                 }
             }
         }
@@ -270,13 +269,13 @@ public class GoalSabotage extends ArenaGoal {
         if (aTeam != null && !force) {
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+                    Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                             + aTeam.getName() + ChatColor.YELLOW), "END");
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+                    Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                             + aTeam.getName() + ChatColor.YELLOW), "WINNER");
-            this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+            this.arena.broadcast(Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                     + aTeam.getName() + ChatColor.YELLOW));
         }
 
@@ -296,7 +295,7 @@ public class GoalSabotage extends ArenaGoal {
         // location: red1tnt:
 
         SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), this.flagName);
-        this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_SABOTAGE_SETTNT, this.flagName));
+        this.arena.msg(player, MSG.GOAL_SABOTAGE_SETTNT, this.flagName);
 
         PAA_Region.activeSelections.remove(player.getName());
         this.flagName = null;
@@ -328,7 +327,7 @@ public class GoalSabotage extends ArenaGoal {
                 this.getFlagMap().put(team.getName(), ap.getName());
                 ap.getPlayer().getInventory()
                         .addItem(new ItemStack(Material.FLINT_AND_STEEL, 1));
-                this.arena.msg(ap.getPlayer(), Language.parse(this.arena, MSG.GOAL_SABOTAGE_YOUTNT));
+                this.arena.msg(ap.getPlayer(), MSG.GOAL_SABOTAGE_YOUTNT);
                 return;
             }
         }

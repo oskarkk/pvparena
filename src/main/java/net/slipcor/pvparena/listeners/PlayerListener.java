@@ -231,8 +231,7 @@ public class PlayerListener implements Listener {
         }
 
         debug(arena, player, "command blocked: " + event.getMessage());
-        arena.msg(player,
-                Language.parse(arena, MSG.ERROR_COMMAND_BLOCKED, event.getMessage()));
+        arena.msg(player, MSG.ERROR_COMMAND_BLOCKED, event.getMessage());
         event.setCancelled(true);
     }
 
@@ -278,7 +277,7 @@ public class PlayerListener implements Listener {
         if (aPlayer.getStatus() == PlayerStatus.READY
                 || aPlayer.getStatus() == PlayerStatus.LOUNGE) {
             event.setCancelled(true);
-            arena.msg(player, Language.parse(arena, MSG.NOTICE_NO_DROP_ITEM));
+            arena.msg(player, MSG.NOTICE_NO_DROP_ITEM);
             return;
         }
 
@@ -300,7 +299,7 @@ public class PlayerListener implements Listener {
         }
 
         debug(arena, player, "onPlayerDropItem: fighting player");
-        arena.msg(player, Language.parse(arena, MSG.NOTICE_NO_DROP_ITEM));
+        arena.msg(player, MSG.NOTICE_NO_DROP_ITEM);
         event.setCancelled(true);
         // cancel the drop event for fighting players, with message
     }
@@ -358,7 +357,7 @@ public class PlayerListener implements Listener {
 
         final String playerName = (team == null) ? player.getName() : team.colorizePlayer(player);
         if (arena.getConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
-            arena.broadcast(Language.parse(arena,
+            arena.broadcast(Language.parse(
                     MSG.FIGHT_KILLED_BY,
                     playerName + ChatColor.YELLOW,
                     arena.parseDeathCause(
@@ -567,7 +566,7 @@ public class PlayerListener implements Listener {
                     return; // double event
                 }
                 if (aPlayer.getArenaClass() == null || aPlayer.getArenaClass().getName() != null && aPlayer.getArenaClass().getName().isEmpty()) {
-                    arena.msg(player, Language.parse(arena, MSG.ERROR_READY_NOCLASS));
+                    arena.msg(player, MSG.ERROR_READY_NOCLASS);
                     return; // not chosen class => OUT
                 }
                 if (arena.startRunner != null) {
@@ -593,28 +592,26 @@ public class PlayerListener implements Listener {
 
                 if (!arena.isFightInProgress()) {
                     if (aPlayer.getStatus() != PlayerStatus.READY) {
-                        arena.msg(player, Language.parse(arena, MSG.READY_DONE));
+                        arena.msg(player, MSG.READY_DONE);
                         if (!alreadyReady) {
-                            arena.broadcast(Language.parse(arena, MSG.PLAYER_READY, aPlayer
+                            arena.broadcast(Language.parse(MSG.PLAYER_READY, aPlayer
                                     .getArenaTeam().colorizePlayer(aPlayer.getPlayer())));
                         }
                     }
                     aPlayer.setStatus(PlayerStatus.READY);
                     if (!alreadyReady && aPlayer.getArenaTeam().isEveryoneReady()) {
-                        arena.broadcast(Language.parse(arena, MSG.TEAM_READY, aPlayer
+                        arena.broadcast(Language.parse(MSG.TEAM_READY, aPlayer
                                 .getArenaTeam().getColoredName()));
                     }
 
                     if (arena.getConfig().getBoolean(CFG.USES_EVENTEAMS)
                             && !TeamManager.checkEven(arena)) {
-                        arena.msg(player,
-                                Language.parse(arena, MSG.NOTICE_WAITING_EQUAL));
+                        arena.msg(player, MSG.NOTICE_WAITING_EQUAL);
                         return; // even teams desired, not done => announce
                     }
 
                     if (!ArenaRegion.checkRegions(arena)) {
-                        arena.msg(player,
-                                Language.parse(arena, MSG.NOTICE_WAITING_FOR_ARENA));
+                        arena.msg(player, MSG.NOTICE_WAITING_FOR_ARENA);
                         return;
                     }
 
@@ -889,7 +886,7 @@ public class PlayerListener implements Listener {
                     if (r.getProtections().contains(RegionProtection.TELEPORT)) {
                         debug(arena, player, "onPlayerTeleport: protected region, cancelling!");
                         event.setCancelled(true); // cancel and tell
-                        arena.msg(player, Language.parse(arena, MSG.NOTICE_NO_TELEPORT));
+                        arena.msg(player, MSG.NOTICE_NO_TELEPORT);
                         return;
                     }
                 }

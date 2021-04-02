@@ -61,13 +61,13 @@ public class GoalPlayerLives extends AbstractPlayerLivesGoal {
         for (final ArenaPlayer arenaPlayer : teamToCheck.getTeamMembers()) {
             if (arenaPlayer.getStatus() == PlayerStatus.FIGHT) {
                 ArenaModuleManager.announce(this.arena,
-                        Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
+                        Language.parse(MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
                         "END");
                 ArenaModuleManager.announce(this.arena,
-                        Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
+                        Language.parse(MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
                         "WINNER");
 
-                this.arena.broadcast(Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()));
+                this.arena.broadcast(Language.parse(MSG.PLAYER_HAS_WON, arenaPlayer.getName()));
             }
         }
     }

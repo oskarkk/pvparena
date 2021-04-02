@@ -4,13 +4,12 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.regions.ArenaRegion;
 import net.slipcor.pvparena.managers.TeamManager;
+import net.slipcor.pvparena.regions.ArenaRegion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -45,7 +44,7 @@ public class PAI_Ready extends AbstractArenaCommand {
         }
 
         if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
 
@@ -53,7 +52,7 @@ public class PAI_Ready extends AbstractArenaCommand {
 
         if (!arena.hasPlayer(aPlayer.getPlayer())) {
 
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_NOT_IN_ARENA));
+            arena.msg(sender, MSG.ERROR_NOT_IN_ARENA);
             return;
         }
 
@@ -64,30 +63,28 @@ public class PAI_Ready extends AbstractArenaCommand {
             }
 
             if (aPlayer.getArenaClass() == null) {
-                arena.msg(sender, Language.parse(arena, MSG.ERROR_READY_NOCLASS));
+                arena.msg(sender, MSG.ERROR_READY_NOCLASS);
                 return;
             }
 
             if (aPlayer.getStatus() != PlayerStatus.READY) {
-                arena.msg(sender, Language.parse(arena, MSG.READY_DONE));
-                arena.broadcast(Language.parse(arena, MSG.PLAYER_READY, aPlayer.getArenaTeam().colorizePlayer(aPlayer.getPlayer())));
+                arena.msg(sender, MSG.READY_DONE);
+                arena.broadcast(Language.parse(MSG.PLAYER_READY, aPlayer.getArenaTeam().colorizePlayer(aPlayer.getPlayer())));
             }
 
             aPlayer.setStatus(PlayerStatus.READY);
             if (aPlayer.getArenaTeam().isEveryoneReady()) {
-                arena.broadcast(Language.parse(arena, MSG.TEAM_READY, aPlayer.getArenaTeam().getColoredName()));
+                arena.broadcast(Language.parse(MSG.TEAM_READY, aPlayer.getArenaTeam().getColoredName()));
             }
 
             if (arena.getConfig().getBoolean(CFG.USES_EVENTEAMS)
                     && !TeamManager.checkEven(arena)) {
-                arena.msg(sender,
-                        Language.parse(arena, MSG.NOTICE_WAITING_EQUAL));
+                arena.msg(sender, MSG.NOTICE_WAITING_EQUAL);
                 return; // even teams desired, not done => announce
             }
 
             if (!ArenaRegion.checkRegions(arena)) {
-                arena.msg(sender,
-                        Language.parse(arena, MSG.NOTICE_WAITING_FOR_ARENA));
+                arena.msg(sender, MSG.NOTICE_WAITING_FOR_ARENA);
                 return;
             }
 
@@ -112,7 +109,7 @@ public class PAI_Ready extends AbstractArenaCommand {
                 names.add("&a" + player.getName() + "&r");
             }
         }
-        arena.msg(sender, Language.parse(arena, MSG.READY_LIST, StringParser.joinSet(names, ", ")));
+        arena.msg(sender, MSG.READY_LIST, StringParser.joinSet(names, ", "));
     }
 
     @Override
@@ -122,7 +119,7 @@ public class PAI_Ready extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.READY));
+        Arena.pmsg(sender, HELP.READY);
     }
 
     @Override

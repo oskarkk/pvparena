@@ -125,8 +125,7 @@ public class GoalFlags extends AbstractFlagGoal {
                             && !this.getFlagMap().containsKey(this.touchdownTeam)) {
                         debug(this.arena, player, "cancelling");
 
-                        this.arena.msg(player,
-                                Language.parse(this.arena, MSG.GOAL_FLAGS_NOTSAFE));
+                        this.arena.msg(player, MSG.GOAL_FLAGS_NOTSAFE);
                         return false;
                     }
                 }
@@ -137,14 +136,14 @@ public class GoalFlags extends AbstractFlagGoal {
 
                 try {
                     if (this.touchdownTeam.equals(flagTeam)) {
-                        this.arena.broadcast(Language.parse(this.arena,
+                        this.arena.broadcast(Language.parse(
                                 MSG.GOAL_FLAGS_TOUCHHOME, arenaTeam
                                         .colorizePlayer(player)
                                         + ChatColor.YELLOW, String
                                         .valueOf(this.getTeamLifeMap().get(arenaPlayer
                                                 .getArenaTeam()) - 1)));
                     } else {
-                        this.arena.broadcast(Language.parse(this.arena,
+                        this.arena.broadcast(Language.parse(
                                 MSG.GOAL_FLAGS_BROUGHTHOME, arenaTeam.colorizePlayer(player)
                                         + ChatColor.YELLOW,
                                 flagTeam.getColoredName()
@@ -228,13 +227,13 @@ public class GoalFlags extends AbstractFlagGoal {
 
                     if (TOUCHDOWN.equals(arenaTeam.getName())) {
 
-                        this.arena.broadcast(Language.parse(this.arena,
+                        this.arena.broadcast(Language.parse(
                                 MSG.GOAL_FLAGS_GRABBEDTOUCH,
                                 pTeam.colorizePlayer(player) + ChatColor.YELLOW));
                     } else {
 
                         this.arena.broadcast(Language
-                                .parse(this.arena, MSG.GOAL_FLAGS_GRABBED,
+                                .parse(MSG.GOAL_FLAGS_GRABBED,
                                         pTeam.colorizePlayer(player)
                                                 + ChatColor.YELLOW,
                                         arenaTeam.getColoredName()
@@ -269,7 +268,7 @@ public class GoalFlags extends AbstractFlagGoal {
         final ArenaTeam flagTeam = this.getHeldFlagTeam(arenaPlayer.getPlayer());
 
         if (flagTeam.equals(this.touchdownTeam)) {
-            this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer
+            this.arena.broadcast(Language.parse(MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer
                     .getArenaTeam().getColorCodeString()
                     + arenaPlayer.getName()
                     + ChatColor.YELLOW));
@@ -285,7 +284,7 @@ public class GoalFlags extends AbstractFlagGoal {
 
             return;
         }
-        this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPED, arenaPlayer
+        this.arena.broadcast(Language.parse(MSG.GOAL_FLAGS_DROPPED, arenaPlayer
                 .getArenaTeam().getColorCodeString()
                 + arenaPlayer.getName()
                 + ChatColor.YELLOW, flagTeam.getName() + ChatColor.YELLOW));
@@ -335,7 +334,7 @@ public class GoalFlags extends AbstractFlagGoal {
         final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
 
         if (flagTeam == null) {
-            this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer
+            this.arena.broadcast(Language.parse(MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer
                     .getArenaTeam().getColorCodeString()
                     + arenaPlayer.getName()
                     + ChatColor.YELLOW));
@@ -350,7 +349,7 @@ public class GoalFlags extends AbstractFlagGoal {
             this.releaseFlag(ChatColor.BLACK, this.getTeamFlagLoc(this.touchdownTeam));
             return;
         }
-        this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPED, arenaPlayer
+        this.arena.broadcast(Language.parse(MSG.GOAL_FLAGS_DROPPED, arenaPlayer
                         .getArenaTeam().colorizePlayer(player) + ChatColor.YELLOW,
                 flagTeam.getColoredName() + ChatColor.YELLOW));
         this.getFlagMap().remove(flagTeam);

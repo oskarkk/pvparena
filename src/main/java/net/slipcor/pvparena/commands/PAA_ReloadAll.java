@@ -47,7 +47,7 @@ public class PAA_ReloadAll extends AbstractGlobalCommand {
         Help.init(config.getString("language", "en"));
 
         if (args.length > 1 && args[1].equalsIgnoreCase("ymls")) {
-            Arena.pmsg(sender, Language.parse(Language.MSG.RELOAD_YMLS_DONE));
+            Arena.pmsg(sender, Language.MSG.RELOAD_YMLS_DONE);
             return;
         }
 
@@ -73,7 +73,7 @@ public class PAA_ReloadAll extends AbstractGlobalCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.DEBUG));
+        Arena.pmsg(sender, HELP.DEBUG);
     }
 
     @Override

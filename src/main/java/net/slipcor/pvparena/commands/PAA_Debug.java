@@ -61,7 +61,7 @@ public class PAA_Debug extends AbstractGlobalCommand {
             {
                 Debugger.disable(sender);
             } else {
-                Arena.pmsg(sender, Language.parse(Language.MSG.ERROR_INVALID_VALUE, args[0]));
+                Arena.pmsg(sender, Language.MSG.ERROR_INVALID_VALUE, args[0]);
             }
         }
         else if (args.length == 2)
@@ -72,7 +72,7 @@ public class PAA_Debug extends AbstractGlobalCommand {
                     Debugger.setOutputMode(newDebugOutputMode);
                     Arena.pmsg(sender, String.format("debugging output was set to %s", newDebugOutputMode));
                 } else {
-                    Arena.pmsg(sender, Language.parse(Language.MSG.ERROR_INVALID_VALUE, args[1]));
+                    Arena.pmsg(sender, Language.MSG.ERROR_INVALID_VALUE, args[1]);
                 }
             } else if ("level".equalsIgnoreCase(args[0])) {
                 if (asList(FINE.getName(), FINER.getName()).contains(args[1].toUpperCase())) {
@@ -84,7 +84,7 @@ public class PAA_Debug extends AbstractGlobalCommand {
                                 "recommended! That may flood your console.", ChatColor.RED));
                     }
                 } else {
-                    Arena.pmsg(sender, Language.parse(Language.MSG.ERROR_INVALID_VALUE, args[1]));
+                    Arena.pmsg(sender, Language.MSG.ERROR_INVALID_VALUE, args[1]);
                 }
             }
         }
@@ -97,7 +97,7 @@ public class PAA_Debug extends AbstractGlobalCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.DEBUG));
+        Arena.pmsg(sender, HELP.DEBUG);
     }
 
     @Override

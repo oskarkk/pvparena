@@ -4,7 +4,6 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.classes.PASpawn;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -50,7 +49,7 @@ public class PAA_Spawn extends AbstractArenaCommand {
         }
 
         if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
 
@@ -72,7 +71,7 @@ public class PAA_Spawn extends AbstractArenaCommand {
             }
 
             if (arena.getGoal() == null) {
-                arena.msg(sender, Language.parse(arena, MSG.ERROR_NO_GOAL));
+                arena.msg(sender, MSG.ERROR_NO_GOAL);
                 return;
             }
 
@@ -81,49 +80,49 @@ public class PAA_Spawn extends AbstractArenaCommand {
                 return;
             }
 
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_SPAWN_UNKNOWN, args[0]));
+            arena.msg(sender, MSG.ERROR_SPAWN_UNKNOWN, args[0]);
 
         } else if ("remove".equalsIgnoreCase(args[1])) {
             // usage: /pa {arenaname} spawn [spawnname] remove | remove a spawn
             final PALocation loc = SpawnManager.getSpawnByExactName(arena, args[0]);
             if (loc == null) {
-                arena.msg(sender, Language.parse(arena, MSG.SPAWN_NOTSET, args[0]));
+                arena.msg(sender, MSG.SPAWN_NOTSET, args[0]);
             } else {
-                arena.msg(sender, Language.parse(arena, MSG.SPAWN_REMOVED, args[0]));
+                arena.msg(sender, MSG.SPAWN_REMOVED, args[0]);
                 arena.spawnUnset(args[0]);
             }
         } else if ("offset".equalsIgnoreCase(args[1]) && args.length>4) {
             // usage: /pa {arenaname} spawn [spawnname] offset X Y Z | offset a spawn
             final PALocation loc = SpawnManager.getSpawnByExactName(arena, args[0]);
             if (loc == null) {
-                arena.msg(sender, Language.parse(arena, MSG.SPAWN_UNKNOWN, args[0]));
+                arena.msg(sender, MSG.SPAWN_UNKNOWN, args[0]);
             } else {
                 double x,y,z;
 
                 try {
                     x = Double.parseDouble(args[2]);
                 } catch (Exception e) {
-                    arena.msg(sender, Language.parse(arena, MSG.ERROR_ARGUMENT_TYPE, args[2], "decimal"));
+                    arena.msg(sender, MSG.ERROR_ARGUMENT_TYPE, args[2], "decimal");
                     return;
                 }
 
                 try {
                     y = Double.parseDouble(args[3]);
                 } catch (Exception e) {
-                    arena.msg(sender, Language.parse(arena, MSG.ERROR_ARGUMENT_TYPE, args[3], "decimal"));
+                    arena.msg(sender, MSG.ERROR_ARGUMENT_TYPE, args[3], "decimal");
                     return;
                 }
 
                 try {
                     z = Double.parseDouble(args[4]);
                 } catch (Exception e) {
-                    arena.msg(sender, Language.parse(arena, MSG.ERROR_ARGUMENT_TYPE, args[4], "decimal"));
+                    arena.msg(sender, MSG.ERROR_ARGUMENT_TYPE, args[4], "decimal");
                     return;
                 }
 
                 arena.getConfig().setOffset(args[0], x, y, z);
 
-                arena.msg(sender, Language.parse(arena, MSG.SPAWN_OFFSET, args[0],
+                arena.msg(sender, Language.parse(MSG.SPAWN_OFFSET, args[0],
                         String.format("%.1f", x)+", "+String.format("%.1f", y)+", "+String.format("%.1f", z)+" (x, y, z)"));
             }
         } else {
@@ -133,7 +132,7 @@ public class PAA_Spawn extends AbstractArenaCommand {
 
     private void commitSet(final Arena arena, final CommandSender sender, final PALocation loc, final String name) {
         arena.spawnSet(name, loc);
-        arena.msg(sender, Language.parse(arena, MSG.SPAWN_SET, name));
+        arena.msg(sender, MSG.SPAWN_SET, name);
     }
 
     @Override
@@ -143,7 +142,7 @@ public class PAA_Spawn extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.SPAWN));
+        Arena.pmsg(sender, HELP.SPAWN);
     }
 
     @Override

@@ -2,6 +2,7 @@ package net.slipcor.pvparena.core;
 
 import net.slipcor.pvparena.PVPArena;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -434,6 +435,13 @@ public final class Help {
         public List<String> get() {
             return this.value;
         }
+
+        public void print(CommandSender sender) {
+            String prefix = PVPArena.getInstance().getConfig().getString("globalPrefix", "PVP Arena");
+            this.value.forEach(line ->
+                sender.sendMessage(Language.parse(Language.MSG.MESSAGES_GENERAL, prefix, StringParser.colorize(line)))
+            );
+        }
     }
 
     /**
@@ -487,15 +495,5 @@ public final class Help {
         } catch (final Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * read a node from the config and return its value
-     *
-     * @param help the node name
-     * @return the node string
-     */
-    public static String[] parse(final HELP help) {
-        return StringParser.colorize(help.get());
     }
 }

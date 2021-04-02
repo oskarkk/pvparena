@@ -108,19 +108,19 @@ public class GoalTank extends ArenaGoal {
                 }
                 if (tanks.containsValue(ap)) {
                     ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.GOAL_TANK_TANKWON, ap.getName()), "END");
+                            Language.parse(MSG.GOAL_TANK_TANKWON, ap.getName()), "END");
                     ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.GOAL_TANK_TANKWON, ap.getName()), "WINNER");
+                            Language.parse(MSG.GOAL_TANK_TANKWON, ap.getName()), "WINNER");
 
-                    this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_TANK_TANKWON, ap.getName()));
+                    this.arena.broadcast(Language.parse(MSG.GOAL_TANK_TANKWON, ap.getName()));
                 } else {
 
                     ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.GOAL_TANK_TANKDOWN), "END");
+                            Language.parse(MSG.GOAL_TANK_TANKDOWN), "END");
                     ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.GOAL_TANK_TANKDOWN), "LOSER");
+                            Language.parse(MSG.GOAL_TANK_TANKDOWN), "LOSER");
 
-                    this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_TANK_TANKDOWN));
+                    this.arena.broadcast(Language.parse(MSG.GOAL_TANK_TANKDOWN));
                 }
             }
 
@@ -284,7 +284,7 @@ public class GoalTank extends ArenaGoal {
             }
         }
 
-        this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_TANK_TANKMODE, tank.getName()));
+        this.arena.broadcast(Language.parse(MSG.GOAL_TANK_TANKMODE, tank.getName()));
 
         final Set<PASpawn> spawns = new HashSet<>(SpawnManager.getPASpawnsStartingWith(this.arena, "tank"));
 

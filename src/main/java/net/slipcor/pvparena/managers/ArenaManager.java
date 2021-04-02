@@ -338,7 +338,7 @@ public final class ArenaManager {
         debug("loading arena {}", arena);
 
         if (!arena.isValid()) {
-            Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(arena, MSG.ERROR_ARENACONFIG, arena.getName()));
+            Arena.pmsg(Bukkit.getConsoleSender(), MSG.ERROR_ARENACONFIG, arena.getName());
             return false;
         }
 
@@ -386,8 +386,7 @@ public final class ArenaManager {
                         newArgs[0] = sign.getLine(2);
                     }
                     if (arena == null) {
-                        Arena.pmsg(player,
-                                Language.parse(MSG.ERROR_ARENA_NOTFOUND, sName));
+                        Arena.pmsg(player, MSG.ERROR_ARENA_NOTFOUND, sName);
                         return;
                     }
                     final AbstractArenaCommand command = new PAG_Join();

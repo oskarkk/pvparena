@@ -5,7 +5,6 @@ import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PAClassSign;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -56,12 +55,12 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
                 }
                 classes.add(ChatColor.GREEN + ac.getName() + ChatColor.WHITE);
             }
-            arena.msg(sender, Language.parse(arena, MSG.CLASS_LIST, StringParser.joinSet(classes, ", ")));
+            arena.msg(sender, MSG.CLASS_LIST, StringParser.joinSet(classes, ", "));
             return;
         }
 
         if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
 
@@ -74,14 +73,13 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
 
         final ArenaClass arenaClass = arena.getClass(args[0]);
         if (arenaClass == null) {
-            sender.sendMessage(Language.parse(arena, MSG.ERROR_CLASS_NOT_FOUND, args[0]));
+            sender.sendMessage(Language.parse(MSG.ERROR_CLASS_NOT_FOUND, args[0]));
             return;
         }
 
         if (arena.getConfig().getBoolean(CFG.PERMS_EXPLICITCLASS)
                 && !sender.hasPermission("pvparena.class." + arenaClass.getName())) {
-            arena.msg(sender,
-                    Language.parse(arena, MSG.ERROR_NOPERM_CLASS, arenaClass.getName()));
+            arena.msg(sender, MSG.ERROR_NOPERM_CLASS, arenaClass.getName());
             return;
         }
 
@@ -113,8 +111,7 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
             if (oldSign != null) {
                 oldSign.add((Player) sender);
             }
-            arena.msg(sender,
-                    Language.parse(arena, MSG.ERROR_CLASS_FULL, arenaClass.getName()));
+            arena.msg(sender, MSG.ERROR_CLASS_FULL, arenaClass.getName());
             return;
         }
 
@@ -124,12 +121,10 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
             if (arenaPlayer.getArenaClass() != null) {
                 ArenaPlayer.givePlayerFightItems(arena, arenaPlayer.getPlayer());
 
-                arena.msg(sender,
-                        Language.parse(arena, MSG.CLASS_SELECTED, arenaClass.getName()));
+                arena.msg(sender, MSG.CLASS_SELECTED, arenaClass.getName());
             }
         } else if (arenaPlayer.getArenaClass() != null) {
-            arena.msg(sender,
-                    Language.parse(arena, MSG.CLASS_SELECTED_RESPAWN, arenaClass.getName()));
+            arena.msg(sender, MSG.CLASS_SELECTED_RESPAWN, arenaClass.getName());
             arenaPlayer.setNextArenaClass(arenaClass);
         }
     }
@@ -141,7 +136,7 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.ARENACLASS));
+        Arena.pmsg(sender, HELP.ARENACLASS);
     }
 
     @Override

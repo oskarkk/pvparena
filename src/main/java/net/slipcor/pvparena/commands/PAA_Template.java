@@ -2,7 +2,6 @@ package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -56,7 +55,7 @@ public class PAA_Template extends AbstractArenaCommand {
             } catch (final IOException e) {
                 e.printStackTrace();
             }
-            arena.msg(sender, Language.parse(MSG.TEMPLATE_SAVE_DONE, args[1]));
+            arena.msg(sender, MSG.TEMPLATE_SAVE_DONE, args[1]);
         } else if ("load".equalsIgnoreCase(args[0])) {
             final YamlConfiguration cfg = YamlConfiguration.loadConfiguration(output);
 
@@ -64,9 +63,9 @@ public class PAA_Template extends AbstractArenaCommand {
                 arena.getConfig().getYamlConfiguration().set(key, cfg.get(key));
             }
             arena.getConfig().save();
-            arena.msg(sender, Language.parse(MSG.TEMPLATE_LOAD_DONE, args[1]));
+            arena.msg(sender, MSG.TEMPLATE_LOAD_DONE, args[1]);
         } else {
-            arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[0], "load | save"));
+            arena.msg(sender, MSG.ERROR_ARGUMENT, args[0], "load | save");
         }
     }
 
@@ -77,7 +76,7 @@ public class PAA_Template extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.TEMPLATE));
+        Arena.pmsg(sender, HELP.TEMPLATE);
     }
 
     @Override

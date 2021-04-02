@@ -108,7 +108,7 @@ public abstract class ArenaRunnable extends BukkitRunnable {
             PVPArena.getInstance().getLogger().warning("MSG not found: " + this.message);
             return;
         }
-        final String message = this.seconds > 5 ? Language.parse(this.arena, msg, MESSAGES.get(this.seconds)) : MESSAGES.get(this.seconds);
+        final String message = this.seconds > 5 ? Language.parse(msg, MESSAGES.get(this.seconds)) : MESSAGES.get(this.seconds);
         if (this.global) {
             final Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 

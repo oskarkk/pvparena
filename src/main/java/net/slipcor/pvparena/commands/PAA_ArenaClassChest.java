@@ -3,7 +3,6 @@ package net.slipcor.pvparena.commands;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.classes.PABlockLocation;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -32,13 +31,13 @@ public class PAA_ArenaClassChest extends AbstractArenaCommand {
         }
 
         if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
         final ArenaClass aClass = arena.getClass(args[0]);
 
         if (aClass == null) {
-            sender.sendMessage(Language.parse(arena, MSG.ERROR_CLASS_NOT_FOUND, args[0]));
+            sender.sendMessage(Language.parse(MSG.ERROR_CLASS_NOT_FOUND, args[0]));
             return;
         }
 
@@ -46,8 +45,7 @@ public class PAA_ArenaClassChest extends AbstractArenaCommand {
 
         Block b = player.getTargetBlock(null, 10);
         if (b.getType() != Material.CHEST && b.getType() != Material.TRAPPED_CHEST) {
-            arena.msg(sender,
-                    Language.parse(arena, MSG.ERROR_NO_CHEST));
+            arena.msg(sender, MSG.ERROR_NO_CHEST);
             return;
         }
         PABlockLocation loc = new PABlockLocation(b.getLocation());
@@ -55,7 +53,7 @@ public class PAA_ArenaClassChest extends AbstractArenaCommand {
         arena.getConfig().setManually("classchests."+aClass.getName(), loc.toString());
         arena.getConfig().save();
 
-        sender.sendMessage(Language.parse(arena, MSG.CLASSCHEST, aClass.getName(), loc.toString()));
+        sender.sendMessage(Language.parse(MSG.CLASSCHEST, aClass.getName(), loc.toString()));
     }
 
     @Override
@@ -65,7 +63,7 @@ public class PAA_ArenaClassChest extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.CLASSCHEST));
+        Arena.pmsg(sender, HELP.CLASSCHEST);
     }
 
     @Override

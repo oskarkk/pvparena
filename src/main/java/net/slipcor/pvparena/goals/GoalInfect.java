@@ -120,14 +120,14 @@ public class GoalInfect extends ArenaGoal {
                     this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.BREAK
             )) {
                 event.setCancelled(true);
-                this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_BREAK));
+                this.arena.msg(event.getPlayer(), MSG.PLAYER_PREVENTED_BREAK);
                 throw new GameplayException("BREAK not allowed");
             } else if (event.getBlock().getType() == Material.TNT &&
                     PlayerPrevention.has(
                             this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.TNTBREAK
                     )) {
                 event.setCancelled(true);
-                this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_TNTBREAK));
+                this.arena.msg(event.getPlayer(), MSG.PLAYER_PREVENTED_TNTBREAK);
                 throw new GameplayException("TNTBREAK not allowed");
             }
         }
@@ -142,7 +142,7 @@ public class GoalInfect extends ArenaGoal {
                 && PlayerPrevention.has(this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.CRAFT)
         ) {
             event.setCancelled(true);
-            this.arena.msg(event.getWhoClicked(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_CRAFT));
+            this.arena.msg(event.getWhoClicked(), MSG.PLAYER_PREVENTED_CRAFT);
             throw new GameplayException("CRAFT not allowed");
         }
     }
@@ -156,7 +156,7 @@ public class GoalInfect extends ArenaGoal {
                 && PlayerPrevention.has(this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.DROP)
         ) {
             event.setCancelled(true);
-            this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_DROP));
+            this.arena.msg(event.getPlayer(), MSG.PLAYER_PREVENTED_DROP);
             throw new GameplayException("DROP not allowed");
         }
     }
@@ -171,7 +171,7 @@ public class GoalInfect extends ArenaGoal {
         ) {
             event.setCancelled(true);
             event.getWhoClicked().closeInventory();
-            this.arena.msg(event.getWhoClicked(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_INVENTORY));
+            this.arena.msg(event.getWhoClicked(), MSG.PLAYER_PREVENTED_INVENTORY);
             throw new GameplayException("INVENTORY not allowed");
         }
     }
@@ -199,14 +199,14 @@ public class GoalInfect extends ArenaGoal {
                     this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.PLACE
             )) {
                 event.setCancelled(true);
-                this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_PLACE));
+                this.arena.msg(event.getPlayer(), MSG.PLAYER_PREVENTED_PLACE);
                 throw new GameplayException("PLACE not allowed");
             } else if (event.getBlock().getType() == Material.TNT &&
                     PlayerPrevention.has(
                             this.arena.getConfig().getInt(CFG.GOAL_INFECTED_PPROTECTS), PlayerPrevention.TNT
                     )) {
                 event.setCancelled(true);
-                this.arena.msg(event.getPlayer(), Language.parse(this.arena, MSG.PLAYER_PREVENTED_TNT));
+                this.arena.msg(event.getPlayer(), MSG.PLAYER_PREVENTED_TNT);
                 throw new GameplayException("TNT not allowed");
             }
         }
@@ -243,15 +243,12 @@ public class GoalInfect extends ArenaGoal {
                 values.add((PlayerPrevention.has(value, pp) ?
                         ChatColor.GREEN.toString() : ChatColor.RED.toString()) + pp.name());
             }
-            this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_INFECTED_IPROTECT, StringParser.joinList(values, (ChatColor.WHITE + ", "))));
+            this.arena.msg(sender, MSG.GOAL_INFECTED_IPROTECT, StringParser.joinList(values, (ChatColor.WHITE + ", ")));
 
         } else if (SETPROTECT.equalsIgnoreCase(args[0])) {
             // setprotect [value] {true|false}
             if (args.length < 2) {
-                this.arena.msg(
-                        sender,
-                        Language.parse(this.arena, MSG.ERROR_INVALID_ARGUMENT_COUNT,
-                                String.valueOf(args.length), "2|3"));
+                this.arena.msg(sender, MSG.ERROR_INVALID_ARGUMENT_COUNT, String.valueOf(args.length), "2|3");
                 return;
             }
 
@@ -277,13 +274,13 @@ public class GoalInfect extends ArenaGoal {
                     value = value | (int) Math.pow(2, pp.ordinal());
                     this.arena.msg(
                             sender,
-                            Language.parse(this.arena, MSG.GOAL_INFECTED_IPROTECT_SET,
+                            Language.parse(MSG.GOAL_INFECTED_IPROTECT_SET,
                                     pp.name(), ChatColor.GREEN + "true") + ChatColor.YELLOW);
                 } else {
                     value = value ^ (int) Math.pow(2, pp.ordinal());
                     this.arena.msg(
                             sender,
-                            Language.parse(this.arena, MSG.GOAL_INFECTED_IPROTECT_SET,
+                            Language.parse(MSG.GOAL_INFECTED_IPROTECT_SET,
                                     pp.name(), ChatColor.RED + "false") + ChatColor.YELLOW);
                 }
                 this.arena.getConfig().set(CFG.GOAL_INFECTED_PPROTECTS, value);
@@ -294,8 +291,7 @@ public class GoalInfect extends ArenaGoal {
                 for (PlayerPrevention pp : PlayerPrevention.values()) {
                     values.add(pp.name());
                 }
-                this.arena.msg(sender,
-                        Language.parse(this.arena, MSG.ERROR_ARGUMENT, args[1], StringParser.joinList(values, ", ")));
+                this.arena.msg(sender, MSG.ERROR_ARGUMENT, args[1], StringParser.joinList(values, ", "));
                 return;
             }
             this.arena.getConfig().save();
@@ -322,21 +318,21 @@ public class GoalInfect extends ArenaGoal {
                 }
                 if (INFECTED.equals(arenaPlayer.getArenaTeam().getName())) {
                     ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.GOAL_INFECTED_WON), "END");
+                            Language.parse(MSG.GOAL_INFECTED_WON), "END");
 
                     ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.GOAL_INFECTED_WON), "WINNER");
+                            Language.parse(MSG.GOAL_INFECTED_WON), "WINNER");
 
-                    this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_INFECTED_WON));
+                    this.arena.broadcast(Language.parse(MSG.GOAL_INFECTED_WON));
                     break;
                 } else {
 
                     ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.GOAL_INFECTED_LOST), "END");
+                            Language.parse(MSG.GOAL_INFECTED_LOST), "END");
                     ArenaModuleManager.announce(this.arena,
-                            Language.parse(this.arena, MSG.GOAL_INFECTED_LOST), "LOSER");
+                            Language.parse(MSG.GOAL_INFECTED_LOST), "LOSER");
 
-                    this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_INFECTED_LOST));
+                    this.arena.broadcast(Language.parse(MSG.GOAL_INFECTED_LOST));
                     break;
                 }
             }
@@ -378,8 +374,8 @@ public class GoalInfect extends ArenaGoal {
                 Bukkit.getPluginManager().callEvent(gEvent);
                 // dying player -> infected
                 this.getPlayerLifeMap().put(player.getPlayer(), this.arena.getConfig().getInt(CFG.GOAL_INFECTED_ILIVES));
-                this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_INFECTED_YOU));
-                this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_INFECTED_PLAYER, player.getName()));
+                this.arena.msg(player, MSG.GOAL_INFECTED_YOU);
+                this.arena.broadcast(Language.parse(MSG.GOAL_INFECTED_PLAYER, player.getName()));
 
                 final ArenaTeam oldTeam = aPlayer.getArenaTeam();
                 final ArenaTeam respawnTeam = this.arena.getTeam(INFECTED);
@@ -569,8 +565,8 @@ public class GoalInfect extends ArenaGoal {
             }
         }
 
-        this.arena.msg(infected.getPlayer(), Language.parse(this.arena, MSG.GOAL_INFECTED_YOU, infected.getName()));
-        this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_INFECTED_PLAYER, infected.getName()));
+        this.arena.msg(infected.getPlayer(), MSG.GOAL_INFECTED_YOU, infected.getName());
+        this.arena.broadcast(Language.parse(MSG.GOAL_INFECTED_PLAYER, infected.getName()));
 
         final Set<PASpawn> spawns = new HashSet<>(SpawnManager.getPASpawnsStartingWith(this.arena, INFECTED));
 

@@ -43,7 +43,7 @@ public class PAI_Stats extends AbstractArenaCommand {
         final Type statType = Type.getByString(args[0]);
 
         if (statType == null) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.STATS_TYPENOTFOUND, StringParser.joinArray(Type.values(), ", ").replace("NULL, ", "")));
+            Arena.pmsg(sender, MSG.STATS_TYPENOTFOUND, StringParser.joinArray(Type.values(), ", ").replace("NULL, ", ""));
             return;
         }
 
@@ -58,9 +58,9 @@ public class PAI_Stats extends AbstractArenaCommand {
             }
         }
 
-        final String s2 = Language.parse(arena, MSG.getByName("STATTYPE_" + statType.name()));
+        final String s2 = Language.parse(MSG.getByName("STATTYPE_" + statType.name()));
 
-        final String s1 = Language.parse(arena, MSG.STATS_HEAD, String.valueOf(max), s2);
+        final String s1 = Language.parse(MSG.STATS_HEAD, String.valueOf(max), s2);
 
 
         Arena.pmsg(sender, s1);
@@ -78,7 +78,7 @@ public class PAI_Stats extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.STATS));
+        Arena.pmsg(sender, HELP.STATS);
     }
 
     @Override

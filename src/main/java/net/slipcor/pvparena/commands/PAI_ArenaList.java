@@ -49,7 +49,7 @@ public class PAI_ArenaList extends AbstractGlobalCommand {
             }
         }
 
-        Arena.pmsg(sender, Language.parse(MSG.ARENA_LIST, StringParser.joinList(names, ", ")));
+        Arena.pmsg(sender, MSG.ARENA_LIST, StringParser.joinList(names, ", "));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class PAI_ArenaList extends AbstractGlobalCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.ARENALIST));
+        Arena.pmsg(sender, HELP.ARENALIST);
     }
 
     @Override

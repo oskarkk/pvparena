@@ -162,26 +162,21 @@ public class GoalBlockDestroy extends ArenaGoal {
     public void commitCommand(final CommandSender sender, final String[] args) {
         if (BLOCK_TYPE.equalsIgnoreCase(args[0])) {
             if (args.length < 2) {
-                this.arena.msg(
-                        sender,
-                        Language.parse(this.arena, MSG.ERROR_INVALID_ARGUMENT_COUNT,
-                                String.valueOf(args.length), "2"));
+                this.arena.msg(sender, MSG.ERROR_INVALID_ARGUMENT_COUNT, String.valueOf(args.length), "2");
                 return;
             }
 
             final Material mat = Material.getMaterial(args[1].toUpperCase());
 
             if (mat == null) {
-                this.arena.msg(sender,
-                        Language.parse(this.arena, MSG.ERROR_MAT_NOT_FOUND, args[1]));
+                this.arena.msg(sender, MSG.ERROR_MAT_NOT_FOUND, args[1]);
                 return;
             }
 
             this.arena.getConfig().set(CFG.GOAL_BLOCKDESTROY_BLOCKTYPE,
                     mat.name());
             this.arena.getConfig().save();
-            this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_BLOCKDESTROY_TYPESET,
-                    CFG.GOAL_BLOCKDESTROY_BLOCKTYPE.toString()));
+            this.arena.msg(sender, MSG.GOAL_BLOCKDESTROY_TYPESET, CFG.GOAL_BLOCKDESTROY_BLOCKTYPE.toString());
 
         } else if (args[0].contains(BLOCK)) {
             for (final ArenaTeam team : this.arena.getTeams()) {
@@ -190,7 +185,7 @@ public class GoalBlockDestroy extends ArenaGoal {
                     this.blockTeamName = args[0];
                     PAA_Region.activeSelections.put(sender.getName(), this.arena);
 
-                    this.arena.msg(sender, Language.parse(this.arena,
+                    this.arena.msg(sender, Language.parse(
                             MSG.GOAL_BLOCKDESTROY_TOSET, this.blockTeamName));
                 }
             }
@@ -221,14 +216,14 @@ public class GoalBlockDestroy extends ArenaGoal {
         if (aTeam != null && !force) {
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+                    Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                             + aTeam.getName() + ChatColor.YELLOW), "END");
 
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+                    Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                             + aTeam.getName() + ChatColor.YELLOW), "WINNER");
-            this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+            this.arena.broadcast(Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                     + aTeam.getName() + ChatColor.YELLOW));
         }
 
@@ -248,7 +243,7 @@ public class GoalBlockDestroy extends ArenaGoal {
         // location: red1block:
 
         SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), this.blockTeamName);
-        this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_BLOCKDESTROY_SET, this.blockTeamName));
+        this.arena.msg(player, MSG.GOAL_BLOCKDESTROY_SET, this.blockTeamName);
 
         PAA_Region.activeSelections.remove(player.getName());
         this.blockTeamName = null;
@@ -471,7 +466,7 @@ public class GoalBlockDestroy extends ArenaGoal {
                 final String sTeam = pTeam.getName();
 
                 try {
-                    this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_BLOCKDESTROY_SCORE,
+                    this.arena.broadcast(Language.parse(MSG.GOAL_BLOCKDESTROY_SCORE,
                             this.arena.getTeam(sTeam).colorizePlayer(player)
                                     + ChatColor.YELLOW, arenaTeam.getColoredName()
                                     + ChatColor.YELLOW, String
@@ -548,8 +543,8 @@ public class GoalBlockDestroy extends ArenaGoal {
                             .getTeam(paBlock.getName().split(BLOCK)[0]);
 
                     try {
-                        this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_BLOCKDESTROY_SCORE,
-                                Language.parse(this.arena, MSG.DEATHCAUSE_BLOCK_EXPLOSION)
+                        this.arena.broadcast(Language.parse(MSG.GOAL_BLOCKDESTROY_SCORE,
+                                Language.parse(MSG.DEATHCAUSE_BLOCK_EXPLOSION)
                                         + ChatColor.YELLOW, blockTeam.getColoredName()
                                         + ChatColor.YELLOW, String
                                         .valueOf(this.getTeamLifeMap().get(blockTeam) - 1)));

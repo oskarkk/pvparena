@@ -96,7 +96,7 @@ public final class RegionManager {
 
         if (!isInRegion) {
             debug(arenaPlayer, "escaping LOUNGE, loc : {}", pLoc);
-            Arena.pmsg(arenaPlayer.getPlayer(), Language.parse(arena, Language.MSG.NOTICE_YOU_ESCAPED));
+            Arena.pmsg(arenaPlayer.getPlayer(), Language.MSG.NOTICE_YOU_ESCAPED);
             arena.playerLeave(arenaPlayer.getPlayer(), Config.CFG.TP_EXIT, false, false, false);
         }
     }
@@ -109,7 +109,7 @@ public final class RegionManager {
 
         if (!isInRegion) {
             debug(arenaPlayer, "escaping WATCH, loc : {}", pLoc);
-            Arena.pmsg(arenaPlayer.getPlayer(), Language.parse(arena, Language.MSG.NOTICE_YOU_ESCAPED));
+            Arena.pmsg(arenaPlayer.getPlayer(), Language.MSG.NOTICE_YOU_ESCAPED);
             arena.playerLeave(arenaPlayer.getPlayer(), Config.CFG.TP_EXIT, false, false, false);
         }
     }
@@ -123,7 +123,7 @@ public final class RegionManager {
 
             Player player = arenaPlayer.getPlayer();
             debug(player, "escaping BATTLE, loc : {}", pLoc);
-            Arena.pmsg(player, Language.parse(arena, Language.MSG.NOTICE_YOU_ESCAPED));
+            Arena.pmsg(player, Language.MSG.NOTICE_YOU_ESCAPED);
 
             if (arena.getConfig().getBoolean(Config.CFG.GENERAL_LEAVEDEATH)) {
                 player.setLastDamageCause(new EntityDamageEvent(player, EntityDamageEvent.DamageCause.CUSTOM, 1004.0));

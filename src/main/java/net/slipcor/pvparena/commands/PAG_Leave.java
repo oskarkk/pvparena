@@ -3,7 +3,6 @@ package net.slipcor.pvparena.commands;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -40,7 +39,7 @@ public class PAG_Leave extends AbstractArenaCommand {
         }
 
         if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
 
@@ -57,7 +56,7 @@ public class PAG_Leave extends AbstractArenaCommand {
             if(PAA_Edit.activeEdits.containsKey(sender.getName())) {
                 new PAA_Edit().commit(arena, sender, args);
             } else {
-                arena.msg(sender, Language.parse(arena, MSG.ERROR_NOT_IN_ARENA));
+                arena.msg(sender, MSG.ERROR_NOT_IN_ARENA);
             }
             return;
         }
@@ -72,7 +71,7 @@ public class PAG_Leave extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.LEAVE));
+        Arena.pmsg(sender, HELP.LEAVE);
     }
 
     @Override

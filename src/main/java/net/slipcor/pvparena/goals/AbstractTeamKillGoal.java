@@ -76,13 +76,13 @@ public abstract class AbstractTeamKillGoal extends ArenaGoal {
         if (aTeam != null && !force) {
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+                    Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                             + aTeam.getName() + ChatColor.YELLOW), "END");
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+                    Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                             + aTeam.getName() + ChatColor.YELLOW), "WINNER");
-            this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+            this.arena.broadcast(Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                     + aTeam.getName() + ChatColor.YELLOW));
         }
 

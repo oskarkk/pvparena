@@ -302,20 +302,20 @@ public final class ConfigurationManager {
         //arena.getArenaConfig().load();
 
         if (arena.getConfig().getUnsafe("spawns") == null) {
-            return Language.parse(arena, MSG.ERROR_NO_SPAWNS);
+            return Language.parse(MSG.ERROR_NO_SPAWNS);
         }
 
         for (final String editor : PAA_Edit.activeEdits.keySet()) {
             if (PAA_Edit.activeEdits.get(editor).getName().equals(
                     arena.getName())) {
-                return Language.parse(arena, MSG.ERROR_EDIT_MODE);
+                return Language.parse(MSG.ERROR_EDIT_MODE);
             }
         }
 
         for (final String setter : PAA_Setup.activeSetups.keySet()) {
             if (PAA_Setup.activeSetups.get(setter).getName().equals(
                     arena.getName())) {
-                return Language.parse(arena, MSG.ERROR_SETUP_MODE);
+                return Language.parse(MSG.ERROR_SETUP_MODE);
             }
         }
 
@@ -325,7 +325,7 @@ public final class ConfigurationManager {
     private static String isSpawnsSetup(Arena arena) {
 
         if (arena.getConfig().getUnsafe(SPAWNS) == null) {
-            return Language.parse(arena, MSG.ERROR_NO_SPAWNS);
+            return Language.parse(MSG.ERROR_NO_SPAWNS);
         }
 
         ConfigurationSection spawnConfigurationSection = arena.getConfig().getYamlConfiguration()
@@ -362,7 +362,7 @@ public final class ConfigurationManager {
 
         // display all missings spawn in one message
         if (CollectionUtils.isNotEmpty(errors)) {
-            return Language.parse(arena, MSG.ERROR_MISSING_SPAWN, String.join(", ", errors));
+            return Language.parse(MSG.ERROR_MISSING_SPAWN, String.join(", ", errors));
         }
         return null;
     }

@@ -4,7 +4,6 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -43,7 +42,7 @@ public class PAA_Teleport extends AbstractArenaCommand {
         }
 
         if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
 
@@ -52,7 +51,7 @@ public class PAA_Teleport extends AbstractArenaCommand {
         final PALocation loc = SpawnManager.getSpawnByExactName(arena, args[0]);
 
         if (loc == null) {
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_SPAWN_UNKNOWN, args[0]));
+            arena.msg(sender, MSG.ERROR_SPAWN_UNKNOWN, args[0]);
             return;
         }
 
@@ -67,7 +66,7 @@ public class PAA_Teleport extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.TELEPORT));
+        Arena.pmsg(sender, HELP.TELEPORT);
     }
 
     @Override

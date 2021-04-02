@@ -174,7 +174,7 @@ public class GoalLiberation extends ArenaGoal {
                 if (success) {
 
                     this.arena.broadcast(ChatColor.YELLOW + Language
-                            .parse(this.arena, MSG.GOAL_LIBERATION_LIBERATED,
+                            .parse(MSG.GOAL_LIBERATION_LIBERATED,
                                     playerArenaTeam.getColoredName()
                                             + ChatColor.YELLOW));
 
@@ -237,7 +237,7 @@ public class GoalLiberation extends ArenaGoal {
                     this.flagName = args[0];
                     PAA_Region.activeSelections.put(sender.getName(), this.arena);
 
-                    this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_LIBERATION_TOSET, this.flagName));
+                    this.arena.msg(sender, MSG.GOAL_LIBERATION_TOSET, this.flagName);
                 }
             }
         }
@@ -262,10 +262,10 @@ public class GoalLiberation extends ArenaGoal {
                 }
                 ArenaModuleManager.announce(
                         this.arena,
-                        Language.parse(this.arena, MSG.TEAM_HAS_WON,
+                        Language.parse(MSG.TEAM_HAS_WON,
                                 arenaTeam.getColoredName()), "WINNER");
 
-                this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON,
+                this.arena.broadcast(Language.parse(MSG.TEAM_HAS_WON,
                         arenaTeam.getColoredName()));
                 break;
             }
@@ -394,7 +394,7 @@ public class GoalLiberation extends ArenaGoal {
         // location: redbutton1:
 
         SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), this.flagName);
-        this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_LIBERATION_SET, this.flagName));
+        this.arena.msg(player, MSG.GOAL_LIBERATION_SET, this.flagName);
 
         PAA_Region.activeSelections.remove(player.getName());
         this.flagName = null;
@@ -463,8 +463,8 @@ public class GoalLiberation extends ArenaGoal {
             }
         }
         if (this.arena.getConfig().getBoolean(CFG.GOAL_LIBERATION_JAILEDSCOREBOARD)) {
-            this.arena.getScoreboard().addCustomEntry(null, Language.parse(this.arena, MSG.GOAL_LIBERATION_SCOREBOARD_HEADING), 102);
-            this.arena.getScoreboard().addCustomEntry(null, Language.parse(this.arena, MSG.GOAL_LIBERATION_SCOREBOARD_SEPARATOR), 100);
+            this.arena.getScoreboard().addCustomEntry(null, Language.parse(MSG.GOAL_LIBERATION_SCOREBOARD_HEADING), 102);
+            this.arena.getScoreboard().addCustomEntry(null, Language.parse(MSG.GOAL_LIBERATION_SCOREBOARD_SEPARATOR), 100);
         }
     }
 

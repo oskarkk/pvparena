@@ -94,13 +94,13 @@ public class GoalPlayerDeathMatch extends ArenaGoal {
                     continue;
                 }
                 ArenaModuleManager.announce(this.arena,
-                        Language.parse(this.arena, MSG.PLAYER_HAS_WON, ap.getName()),
+                        Language.parse(MSG.PLAYER_HAS_WON, ap.getName()),
                         "END");
                 ArenaModuleManager.announce(this.arena,
-                        Language.parse(this.arena, MSG.PLAYER_HAS_WON, ap.getName()),
+                        Language.parse(MSG.PLAYER_HAS_WON, ap.getName()),
                         "WINNER");
 
-                this.arena.broadcast(Language.parse(this.arena, MSG.PLAYER_HAS_WON, ap.getName()));
+                this.arena.broadcast(Language.parse(MSG.PLAYER_HAS_WON, ap.getName()));
             }
             if (ArenaModuleManager.commitEnd(this.arena, team)) {
                 return;

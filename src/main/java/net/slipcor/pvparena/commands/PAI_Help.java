@@ -46,7 +46,7 @@ public class PAI_Help extends AbstractGlobalCommand {
 
         if (args.length > 0) {
             if ("admin".equals(args[0])) {
-                Arena.pmsg(sender, Language.parse(MSG.HELP_HEADLINE, "admin"));
+                Arena.pmsg(sender, MSG.HELP_HEADLINE, "admin");
                 Arena.pmsg(sender, "/pa help check");
                 Arena.pmsg(sender, "/pa help debug");
                 Arena.pmsg(sender, "/pa help disable");
@@ -57,7 +57,7 @@ public class PAI_Help extends AbstractGlobalCommand {
                 Arena.pmsg(sender, "/pa help teleport");
 
             } else if ("setup".equals(args[0])) {
-                Arena.pmsg(sender, Language.parse(MSG.HELP_HEADLINE, "setup"));
+                Arena.pmsg(sender, MSG.HELP_HEADLINE, "setup");
                 Arena.pmsg(sender, "/pa help autosetup");
                 Arena.pmsg(sender, "/pa help class");
                 Arena.pmsg(sender, "/pa help create");
@@ -68,7 +68,7 @@ public class PAI_Help extends AbstractGlobalCommand {
                 Arena.pmsg(sender, "/pa help spawn");
 
             } else if ("custom".equals(args[0])) {
-                Arena.pmsg(sender, Language.parse(MSG.HELP_HEADLINE, "custom"));
+                Arena.pmsg(sender, MSG.HELP_HEADLINE, "custom");
                 Arena.pmsg(sender, "/pa help blacklist");
                 Arena.pmsg(sender, "/pa help edit");
                 Arena.pmsg(sender, "/pa help install");
@@ -83,14 +83,14 @@ public class PAI_Help extends AbstractGlobalCommand {
                 Arena.pmsg(sender, "/pa help whitelist");
 
             } else if ("game".equals(args[0])) {
-                Arena.pmsg(sender, Language.parse(MSG.HELP_HEADLINE, "game"));
+                Arena.pmsg(sender, MSG.HELP_HEADLINE, "game");
 
                 Arena.pmsg(sender, "/pa help chat");
                 Arena.pmsg(sender, "/pa help join");
                 Arena.pmsg(sender, "/pa help leave");
                 Arena.pmsg(sender, "/pa help spectate");
             } else if ("info".equals(args[0])) {
-                Arena.pmsg(sender, Language.parse(MSG.HELP_HEADLINE, "info"));
+                Arena.pmsg(sender, MSG.HELP_HEADLINE, "info");
 
                 Arena.pmsg(sender, "/pa help arenalist");
                 Arena.pmsg(sender, "/pa help help");
@@ -121,12 +121,12 @@ public class PAI_Help extends AbstractGlobalCommand {
             return;
         }
 
-        Arena.pmsg(sender, Language.parse(MSG.HELP_HEADLINE, ""));
-        Arena.pmsg(sender, Language.parse(MSG.HELP_ADMIN, "/pvparena help admin"));
-        Arena.pmsg(sender, Language.parse(MSG.HELP_SETUP, "/pvparena help setup"));
-        Arena.pmsg(sender, Language.parse(MSG.HELP_CUSTOM, "/pvparena help custom"));
-        Arena.pmsg(sender, Language.parse(MSG.HELP_GAME, "/pvparena help game"));
-        Arena.pmsg(sender, Language.parse(MSG.HELP_INFO, "/pvparena help info"));
+        Arena.pmsg(sender, MSG.HELP_HEADLINE, "");
+        Arena.pmsg(sender, MSG.HELP_ADMIN, "/pvparena help admin");
+        Arena.pmsg(sender, MSG.HELP_SETUP, "/pvparena help setup");
+        Arena.pmsg(sender, MSG.HELP_CUSTOM, "/pvparena help custom");
+        Arena.pmsg(sender, MSG.HELP_GAME, "/pvparena help game");
+        Arena.pmsg(sender, MSG.HELP_INFO, "/pvparena help info");
     }
 
     @Override
@@ -136,7 +136,7 @@ public class PAI_Help extends AbstractGlobalCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.HELP));
+        Arena.pmsg(sender, HELP.HELP);
     }
 
     @Override

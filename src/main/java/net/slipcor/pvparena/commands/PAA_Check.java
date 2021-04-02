@@ -2,7 +2,6 @@ package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -57,13 +56,13 @@ public class PAA_Check extends AbstractArenaCommand {
                     arena.msg(sender, "correct " + c.getType() + ": " + value);
                 }
             } catch (final Exception e) {
-                arena.msg(sender, Language.parse(arena, MSG.ERROR_ERROR, c.getNode()));
+                arena.msg(sender, MSG.ERROR_ERROR, c.getNode());
                 hasError = true;
             }
         }
 
         if (!hasError) {
-            arena.msg(sender, Language.parse(arena, MSG.CHECK_DONE));
+            arena.msg(sender, MSG.CHECK_DONE);
         }
     }
 
@@ -74,7 +73,7 @@ public class PAA_Check extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.CHECK));
+        Arena.pmsg(sender, HELP.CHECK);
     }
 
     @Override

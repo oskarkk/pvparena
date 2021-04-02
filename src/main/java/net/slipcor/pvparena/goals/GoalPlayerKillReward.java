@@ -114,16 +114,15 @@ public class GoalPlayerKillReward extends ArenaGoal {
         try {
             value = Integer.parseInt(args[1]);
         } catch (final Exception e) {
-            this.arena.msg(sender, Language.parse(this.arena, MSG.ERROR_NOT_NUMERIC, args[1]));
+            this.arena.msg(sender, MSG.ERROR_NOT_NUMERIC, args[1]);
             return;
         }
         if (args.length > 2) {
             this.getItemMap().remove(value);
-            this.arena.msg(sender,
-                    Language.parse(this.arena, MSG.GOAL_KILLREWARD_REMOVED, args[1]));
+            this.arena.msg(sender, MSG.GOAL_KILLREWARD_REMOVED, args[1]);
         } else {
             if (!(sender instanceof Player)) {
-                Arena.pmsg(sender, Language.parse(this.arena, MSG.ERROR_ONLY_PLAYERS));
+                Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
                 return;
             }
             final Player player = (Player) sender;
@@ -135,8 +134,7 @@ public class GoalPlayerKillReward extends ArenaGoal {
             };
 
             this.getItemMap().put(value, content);
-            this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_KILLREWARD_ADDED,
-                    args[1]));
+            this.arena.msg(sender, MSG.GOAL_KILLREWARD_ADDED, args[1]);
 
         }
 
@@ -161,14 +159,14 @@ public class GoalPlayerKillReward extends ArenaGoal {
                     continue;
                 }
                 ArenaModuleManager.announce(this.arena,
-                        Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
+                        Language.parse(MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
                         "END");
 
                 ArenaModuleManager.announce(this.arena,
-                        Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
+                        Language.parse(MSG.PLAYER_HAS_WON, arenaPlayer.getName()),
                         "WINNER");
 
-                this.arena.broadcast(Language.parse(this.arena, MSG.PLAYER_HAS_WON,
+                this.arena.broadcast(Language.parse(MSG.PLAYER_HAS_WON,
                         arenaPlayer.getName()));
             }
 

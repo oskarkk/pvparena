@@ -70,7 +70,7 @@ public class StandardSpectate extends ArenaModule {
         arenaPlayer.setStatus(PlayerStatus.WATCH);
 
         this.arena.tpPlayerToCoordNameForJoin(arenaPlayer, SPECTATOR, true);
-        this.arena.msg(player, Language.parse(this.arena, MSG.NOTICE_WELCOME_SPECTATOR));
+        this.arena.msg(player, MSG.NOTICE_WELCOME_SPECTATOR);
 
         if (arenaPlayer.getState() == null) {
 

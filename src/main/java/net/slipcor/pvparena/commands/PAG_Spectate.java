@@ -39,13 +39,13 @@ public class PAG_Spectate extends AbstractArenaCommand {
         }
 
         if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
 
         final String error = ConfigurationManager.isSetup(arena);
         if (error != null) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ERROR, error));
+            Arena.pmsg(sender, MSG.ERROR_ERROR, error);
             return;
         }
 
@@ -59,7 +59,7 @@ public class PAG_Spectate extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.SPECTATE));
+        Arena.pmsg(sender, HELP.SPECTATE);
     }
 
     @Override

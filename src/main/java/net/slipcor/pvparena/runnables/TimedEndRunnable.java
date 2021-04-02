@@ -204,8 +204,8 @@ public class TimedEndRunnable extends ArenaRunnable {
 
                             ArenaModuleManager.announce(
                                     this.arena,
-                                    Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()), WINNER);
-                            this.arena.broadcast(Language.parse(this.arena, MSG.PLAYER_HAS_WON,
+                                    Language.parse(MSG.PLAYER_HAS_WON, arenaPlayer.getName()), WINNER);
+                            this.arena.broadcast(Language.parse(MSG.PLAYER_HAS_WON,
                                     arenaPlayer.getName()));
                         } else {
                             if (arenaPlayer.getStatus() != PlayerStatus.FIGHT) {
@@ -218,8 +218,8 @@ public class TimedEndRunnable extends ArenaRunnable {
                 }
             }
             if (winners.isEmpty()) {
-                ArenaModuleManager.announce(this.arena, Language.parse(this.arena, MSG.FIGHT_DRAW), WINNER);
-                this.arena.broadcast(Language.parse(this.arena, MSG.FIGHT_DRAW));
+                ArenaModuleManager.announce(this.arena, Language.parse(MSG.FIGHT_DRAW), WINNER);
+                this.arena.broadcast(Language.parse(MSG.FIGHT_DRAW));
             }
         } else if (!winners.isEmpty()) {
 
@@ -229,9 +229,9 @@ public class TimedEndRunnable extends ArenaRunnable {
                     if (!hasBroadcasted) {
                         ArenaModuleManager.announce(
                                 this.arena,
-                                Language.parse(this.arena, MSG.TEAM_HAS_WON,
+                                Language.parse(MSG.TEAM_HAS_WON,
                                         team.getName()), WINNER);
-                        this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON,
+                        this.arena.broadcast(Language.parse(MSG.TEAM_HAS_WON,
                                 team.getColor() + team.getName()));
                         hasBroadcasted = true;
                     }
@@ -246,12 +246,12 @@ public class TimedEndRunnable extends ArenaRunnable {
                         if (!hasBroadcasted) {
                             for (final String winTeam : winners) {
                                 ArenaModuleManager.announce(this.arena, Language
-                                        .parse(this.arena, MSG.TEAM_HAS_WON, winTeam), WINNER);
+                                        .parse(MSG.TEAM_HAS_WON, winTeam), WINNER);
 
                                 final ArenaTeam winningTeam = this.arena.getTeam(winTeam);
 
                                 if (winningTeam != null) {
-                                    this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON,
+                                    this.arena.broadcast(Language.parse(MSG.TEAM_HAS_WON,
                                             winningTeam.getColor() + winTeam));
                                 } else {
                                     PVPArena.getInstance().getLogger().severe("Winning team is NULL: " + winTeam);
@@ -265,8 +265,8 @@ public class TimedEndRunnable extends ArenaRunnable {
                 }
             }
         } else {
-            ArenaModuleManager.announce(this.arena, Language.parse(this.arena, MSG.FIGHT_DRAW), WINNER);
-            this.arena.broadcast(Language.parse(this.arena, MSG.FIGHT_DRAW));
+            ArenaModuleManager.announce(this.arena, Language.parse(MSG.FIGHT_DRAW), WINNER);
+            this.arena.broadcast(Language.parse(MSG.FIGHT_DRAW));
             this.arena.reset(true);
             return;
         }

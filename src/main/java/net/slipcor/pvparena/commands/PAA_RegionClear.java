@@ -2,7 +2,6 @@ package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -43,7 +42,7 @@ public class PAA_RegionClear extends AbstractArenaCommand {
         }
 
         if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
 
@@ -51,7 +50,7 @@ public class PAA_RegionClear extends AbstractArenaCommand {
             // usage: /pa {arenaname} regionclear | show region clearance exceptions
 
             final List<String> list = arena.getConfig().getStringList(CFG.GENERAL_REGIONCLEAREXCEPTIONS.getNode(), new ArrayList<String>());
-            arena.msg(sender, Language.parse(arena, MSG.REGION_CLEAR_LIST, StringParser.joinList(list, ", ")));
+            arena.msg(sender, MSG.REGION_CLEAR_LIST, StringParser.joinList(list, ", "));
             return;
         }
         if (args.length >= 2) {
@@ -67,19 +66,19 @@ public class PAA_RegionClear extends AbstractArenaCommand {
                         list.add(type.name());
                         arena.getConfig().setManually(CFG.GENERAL_REGIONCLEAREXCEPTIONS.getNode(), list);
                         arena.getConfig().save();
-                        arena.msg(sender, Language.parse(arena, MSG.REGION_CLEAR_ADDED, type.name()));
+                        arena.msg(sender, MSG.REGION_CLEAR_ADDED, type.name());
                         return;
                     }
                     list.remove(type.name());
                     arena.getConfig().setManually(CFG.GENERAL_REGIONCLEAREXCEPTIONS.getNode(), list);
                     arena.getConfig().save();
-                    arena.msg(sender, Language.parse(arena, MSG.REGION_CLEAR_REMOVED, type.name()));
+                    arena.msg(sender, MSG.REGION_CLEAR_REMOVED, type.name());
                     return;
                 }
                 valids.add(type.name());
             }
 
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_ARGUMENT, args[1], StringParser.joinList(valids, ", ")));
+            arena.msg(sender, MSG.ERROR_ARGUMENT, args[1], StringParser.joinList(valids, ", "));
         }
     }
 
@@ -90,7 +89,7 @@ public class PAA_RegionClear extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.REGION));
+        Arena.pmsg(sender, HELP.REGION);
     }
 
     @Override

@@ -4,7 +4,6 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PAStatMap;
-import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.events.PADeathEvent;
 import net.slipcor.pvparena.events.PAKillEvent;
@@ -220,9 +219,9 @@ public final class StatisticsManager {
         if (!playersFile.exists()) {
             try {
                 playersFile.createNewFile();
-                Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.STATS_FILE_DONE));
+                Arena.pmsg(Bukkit.getConsoleSender(), MSG.STATS_FILE_DONE);
             } catch (final Exception e) {
-                Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.ERROR_STATS_FILE));
+                Arena.pmsg(Bukkit.getConsoleSender(), MSG.ERROR_STATS_FILE);
                 e.printStackTrace();
             }
         }
@@ -230,7 +229,7 @@ public final class StatisticsManager {
         try {
             config.load(playersFile);
         } catch (final Exception e) {
-            Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.ERROR_STATS_FILE));
+            Arena.pmsg(Bukkit.getConsoleSender(), MSG.ERROR_STATS_FILE);
             e.printStackTrace();
         }
     }

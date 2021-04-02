@@ -2,7 +2,6 @@ package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -52,7 +51,7 @@ public class PAA_Disable extends AbstractArenaCommand {
             }
         }
 
-        arena.msg(sender, Language.parse(arena, MSG.ARENA_DISABLE_DONE));
+        arena.msg(sender, MSG.ARENA_DISABLE_DONE);
     }
 
     @Override
@@ -62,7 +61,7 @@ public class PAA_Disable extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.DISABLE));
+        Arena.pmsg(sender, HELP.DISABLE);
     }
 
     @Override

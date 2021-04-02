@@ -35,11 +35,7 @@ public abstract class AbstractGlobalCommand implements IArenaCommandHandler {
             }
         }
 
-        Arena.pmsg(
-                sender,
-                Language.parse(MSG.ERROR_INVALID_ARGUMENT_COUNT,
-                        String.valueOf(args.length),
-                        StringParser.joinArray(validCounts, "|")));
+        Arena.pmsg(sender, MSG.ERROR_INVALID_ARGUMENT_COUNT, String.valueOf(args.length), StringParser.joinArray(validCounts, "|"));
         return false;
     }
 
@@ -87,25 +83,16 @@ public abstract class AbstractGlobalCommand implements IArenaCommandHandler {
                 if (split.length > 2) {
                     permString = split[1]+"."+split[2];
                 }
-                Arena.pmsg(
-                        sender,
-                        Language.parse(MSG.ERROR_NOPERM,
-                                Language.parse(MSG.getByNode("nulang.nopermto." + permString))));
+                Arena.pmsg(sender, MSG.ERROR_NOPERM, Language.parse(MSG.getByNode("nulang.nopermto." + permString)));
             } catch (final Exception e) {
                 PVPArena.getInstance().getLogger().warning("Unknown MSG for pvparena." + permString);
-                Arena.pmsg(
-                        sender,
-                        Language.parse(MSG.ERROR_NOPERM,
-                                Language.parse(MSG.ERROR_NOPERM_X_USER)));
+                Arena.pmsg(sender, MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_USER));
             }
             done = true;
         }
 
         if (!done) {
-            Arena.pmsg(
-                    sender,
-                    Language.parse(MSG.ERROR_NOPERM,
-                            MSG.ERROR_NOPERM_X_ADMIN.toString()));
+            Arena.pmsg(sender, MSG.ERROR_NOPERM, MSG.ERROR_NOPERM_X_ADMIN.toString());
         }
 
         return false;

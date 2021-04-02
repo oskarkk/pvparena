@@ -3,7 +3,6 @@ package net.slipcor.pvparena.commands;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -40,7 +39,7 @@ public class PAG_Chat extends AbstractArenaCommand {
         }
 
         if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
 
@@ -50,13 +49,13 @@ public class PAG_Chat extends AbstractArenaCommand {
             // toggle
             if (aPlayer.isPublicChatting()) {
                 aPlayer.setPublicChatting(false);
-                arena.msg(sender, Language.parse(arena, MSG.MESSAGES_TOTEAM));
+                arena.msg(sender, MSG.MESSAGES_TOTEAM);
             } else {
                 aPlayer.setPublicChatting(true);
                 if (arena.getConfig().getBoolean(CFG.CHAT_ONLYPRIVATE)) {
-                    arena.msg(sender, Language.parse(arena, MSG.MESSAGES_TOARENA));
+                    arena.msg(sender, MSG.MESSAGES_TOARENA);
                 } else {
-                    arena.msg(sender, Language.parse(arena, MSG.MESSAGES_TOPUBLIC));
+                    arena.msg(sender, MSG.MESSAGES_TOPUBLIC);
                 }
             }
             return;
@@ -65,24 +64,24 @@ public class PAG_Chat extends AbstractArenaCommand {
         if (StringParser.isPositiveValue(args[0])) {
             aPlayer.setPublicChatting(true);
             if (arena.getConfig().getBoolean(CFG.CHAT_ONLYPRIVATE)) {
-                arena.msg(sender, Language.parse(arena, MSG.MESSAGES_TOARENA));
+                arena.msg(sender, MSG.MESSAGES_TOARENA);
             } else {
-                arena.msg(sender, Language.parse(arena, MSG.MESSAGES_TOPUBLIC));
+                arena.msg(sender, MSG.MESSAGES_TOPUBLIC);
             }
             return;
         }
 
         if (StringParser.isNegativeValue(args[0])) {
             aPlayer.setPublicChatting(false);
-            arena.msg(sender, Language.parse(arena, MSG.MESSAGES_TOTEAM));
+            arena.msg(sender, MSG.MESSAGES_TOTEAM);
             return;
         }
 
         // usage: /pa {arenaname} chat {value}
 
-        arena.msg(sender, Language.parse(arena, MSG.ERROR_INVALID_VALUE, args[0]));
-        arena.msg(sender, Language.parse(arena, MSG.ERROR_POSITIVES, StringParser.joinSet(StringParser.positive, " | ")));
-        arena.msg(sender, Language.parse(arena, MSG.ERROR_NEGATIVES, StringParser.joinSet(StringParser.negative, " | ")));
+        arena.msg(sender, MSG.ERROR_INVALID_VALUE, args[0]);
+        arena.msg(sender, MSG.ERROR_POSITIVES, StringParser.joinSet(StringParser.positive, " | "));
+        arena.msg(sender, MSG.ERROR_NEGATIVES, StringParser.joinSet(StringParser.negative, " | "));
 
     }
 
@@ -93,7 +92,7 @@ public class PAG_Chat extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.CHAT));
+        Arena.pmsg(sender, HELP.CHAT);
     }
 
     @Override

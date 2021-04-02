@@ -178,34 +178,27 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
     public void commitCommand(final CommandSender sender, final String[] args) {
         if ("flagtype".equalsIgnoreCase(args[0])) {
             if (args.length < 2) {
-                this.arena.msg(
-                        sender,
-                        Language.parse(this.arena, MSG.ERROR_INVALID_ARGUMENT_COUNT,
-                                String.valueOf(args.length), "2"));
+                this.arena.msg(sender, MSG.ERROR_INVALID_ARGUMENT_COUNT, String.valueOf(args.length), "2");
                 return;
             }
 
             final Material mat = Material.getMaterial(args[1].toUpperCase());
 
             if (mat == null) {
-                this.arena.msg(sender,
-                        Language.parse(this.arena, MSG.ERROR_MAT_NOT_FOUND, args[1]));
+                this.arena.msg(sender, MSG.ERROR_MAT_NOT_FOUND, args[1]);
                 return;
             }
 
             this.arena.getConfig().set(this.getFlagTypeCfg(), mat.name());
 
             this.arena.getConfig().save();
-            this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_FLAGS_TYPESET, this.getFlagTypeCfg().toString()));
+            this.arena.msg(sender, MSG.GOAL_FLAGS_TYPESET, this.getFlagTypeCfg().toString());
 
         } else if ("flageffect".equalsIgnoreCase(args[0])) {
 
             // /pa [arena] flageffect SLOW 2
             if (args.length < 2) {
-                this.arena.msg(
-                        sender,
-                        Language.parse(this.arena, MSG.ERROR_INVALID_ARGUMENT_COUNT,
-                                String.valueOf(args.length), "2"));
+                this.arena.msg(sender, MSG.ERROR_INVALID_ARGUMENT_COUNT, String.valueOf(args.length), "2");
                 return;
             }
 
@@ -213,10 +206,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
                 this.arena.getConfig().set(this.getFlagEffectCfg(), args[1]);
 
                 this.arena.getConfig().save();
-                this.arena.msg(
-                        sender,
-                        Language.parse(this.arena, MSG.SET_DONE,
-                                this.getFlagEffectCfg().getNode(), args[1]));
+                this.arena.msg(sender, MSG.SET_DONE, this.getFlagEffectCfg().getNode(), args[1]);
                 return;
             }
 
@@ -233,7 +223,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
             }
 
             if (pet == null) {
-                this.arena.msg(sender, Language.parse(this.arena,
+                this.arena.msg(sender, Language.parse(
                         MSG.ERROR_POTIONEFFECTTYPE_NOTFOUND, args[1]));
                 return;
             }
@@ -244,8 +234,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
                 try {
                     amp = Integer.parseInt(args[2]);
                 } catch (final Exception e) {
-                    this.arena.msg(sender,
-                            Language.parse(this.arena, MSG.ERROR_NOT_NUMERIC, args[2]));
+                    this.arena.msg(sender, MSG.ERROR_NOT_NUMERIC, args[2]);
                     return;
                 }
             }
@@ -253,10 +242,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
             this.arena.getConfig().set(this.getFlagEffectCfg(), value);
 
             this.arena.getConfig().save();
-            this.arena.msg(
-                    sender,
-                    Language.parse(this.arena, MSG.SET_DONE,
-                            this.getFlagEffectCfg().getNode(), value));
+            this.arena.msg(sender, MSG.SET_DONE, this.getFlagEffectCfg().getNode(), value);
 
         } else if (args[0].contains("flag")) {
             for (final ArenaTeam team : this.arena.getTeams()) {
@@ -265,15 +251,14 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
                     this.flagName = args[0];
                     PAA_Region.activeSelections.put(sender.getName(), this.arena);
 
-                    this.arena.msg(sender,
-                            Language.parse(this.arena, MSG.GOAL_FLAGS_TOSET, this.flagName));
+                    this.arena.msg(sender, MSG.GOAL_FLAGS_TOSET, this.flagName);
                 }
             }
         } else if (TOUCHDOWN.equalsIgnoreCase(args[0])) {
             this.flagName = args[0] + "flag";
             PAA_Region.activeSelections.put(sender.getName(), this.arena);
 
-            this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_FLAGS_TOSET, this.flagName));
+            this.arena.msg(sender, MSG.GOAL_FLAGS_TOSET, this.flagName);
         }
     }
 
@@ -301,14 +286,14 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
         if (aTeam != null && !force) {
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+                    Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                             + aTeam.getName() + ChatColor.YELLOW), "END");
 
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+                    Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                             + aTeam.getName() + ChatColor.YELLOW), "WINNER");
-            this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+            this.arena.broadcast(Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                     + aTeam.getName() + ChatColor.YELLOW));
         }
 
@@ -327,10 +312,10 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
         // location: red1flag:
 
         if(StringUtils.isBlank(this.flagName)) {
-            this.arena.msg(player, Language.parse(this.arena, MSG.ERROR_ERROR, "Flag you are trying to set has no name."));
+            this.arena.msg(player, MSG.ERROR_ERROR, "Flag you are trying to set has no name.");
         } else {
             SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), this.flagName);
-            this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_FLAGS_SET, this.flagName));
+            this.arena.msg(player, MSG.GOAL_FLAGS_SET, this.flagName);
         }
 
         PAA_Region.activeSelections.remove(player.getName());
@@ -484,11 +469,11 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
                 ArenaModuleManager
                         .announce(
                                 arena,
-                                Language.parse(arena, MSG.TEAM_HAS_WON,
+                                Language.parse(MSG.TEAM_HAS_WON,
                                         winTeam.getColor()
                                                 + winTeam.getName() + ChatColor.YELLOW),
                                 "WINNER");
-                arena.broadcast(Language.parse(arena, MSG.TEAM_HAS_WON,
+                arena.broadcast(Language.parse(MSG.TEAM_HAS_WON,
                         winTeam.getColor() + winTeam.getName()
                                 + ChatColor.YELLOW));
             }

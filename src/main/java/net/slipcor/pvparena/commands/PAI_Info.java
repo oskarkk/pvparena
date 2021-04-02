@@ -4,9 +4,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
-import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
@@ -49,10 +47,9 @@ public class PAI_Info extends AbstractArenaCommand {
             displayMode = args[0];
         }
 
-        arena.msg(sender, Language.parse(arena, MSG.INFO_HEAD_HEADLINE, arena.getName(), arena.getPrefix()));
+        arena.msg(sender, MSG.INFO_HEAD_HEADLINE, arena.getName(), arena.getPrefix());
 
-        arena.msg(sender, Language.parse(arena, MSG.INFO_HEAD_TEAMS,
-                StringParser.joinSet(arena.getTeamNamesColored(), ChatColor.COLOR_CHAR + "r, ")));
+        arena.msg(sender, MSG.INFO_HEAD_TEAMS, StringParser.joinSet(arena.getTeamNamesColored(), ChatColor.COLOR_CHAR + "r, "));
 
         arena.msg(sender, StringParser.colorVar("fighting", arena.isFightInProgress()) + " | " +
                 StringParser.colorVar("enabled", !arena.isLocked()));
@@ -64,12 +61,12 @@ public class PAI_Info extends AbstractArenaCommand {
             }
         }
 
-        arena.msg(sender, Language.parse(arena, MSG.INFO_CLASSES, StringParser.joinSet(classes, ", ")));
-        arena.msg(sender, Language.parse(arena, MSG.INFO_OWNER, arena.getOwner() == null ? "server" : arena.getOwner()));
+        arena.msg(sender, MSG.INFO_CLASSES, StringParser.joinSet(classes, ", "));
+        arena.msg(sender, MSG.INFO_OWNER, arena.getOwner() == null ? "server" : arena.getOwner());
 
         Config cfg = arena.getConfig();
         if (displayMode == null || "chat".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "chat"));
+            arena.msg(sender, MSG.INFO_SECTION, "chat");
             arena.msg(sender,
                     StringParser.colorVar("colorNick", cfg.getBoolean(CFG.CHAT_COLORNICK)) + " | " +
                     StringParser.colorVar("defaultTeam", cfg.getBoolean(CFG.CHAT_DEFAULTTEAM)) + " | " +
@@ -78,12 +75,12 @@ public class PAI_Info extends AbstractArenaCommand {
         }
 
         if (displayMode == null || "command".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "command"));
+            arena.msg(sender, MSG.INFO_SECTION, "command");
             arena.msg(sender, StringParser.colorVar("defaultjoin", cfg.getBoolean(CFG.CMDS_DEFAULTJOIN)));
         }
 
         if (displayMode == null || "damage".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "damage"));
+            arena.msg(sender, MSG.INFO_SECTION, "damage");
             arena.msg(sender, StringParser.colorVar("armor",
                     cfg.getBoolean(CFG.DAMAGE_ARMOR)) + " | " +
                     "spawnCamp: " + cfg.getInt(CFG.DAMAGE_SPAWNCAMP) + " | " +
@@ -91,7 +88,7 @@ public class PAI_Info extends AbstractArenaCommand {
         }
 
         if (displayMode == null || "general".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "general"));
+            arena.msg(sender, MSG.INFO_SECTION, "general");
             arena.msg(sender,
                     StringParser.colorVar("classspawn", cfg.getBoolean(CFG.GENERAL_CLASSSPAWN)) + " | " +
                     StringParser.colorVar("leavedeath", cfg.getBoolean(CFG.GENERAL_LEAVEDEATH)) + " | " +
@@ -106,12 +103,12 @@ public class PAI_Info extends AbstractArenaCommand {
         }
 
         if (displayMode == null || "command".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "goal"));
+            arena.msg(sender, MSG.INFO_SECTION, "goal");
             arena.msg(sender, StringParser.colorVar("addLivesPerPlayer", cfg.getBoolean(CFG.GENERAL_ADDLIVESPERPLAYER)));
         }
 
         if (displayMode == null || "item".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "item"));
+            arena.msg(sender, MSG.INFO_SECTION, "item");
             arena.msg(sender, "minplayers: " + cfg.getInt(CFG.ITEMS_MINPLAYERS) + " | " +
                     "rewards: " + StringParser.getItems(cfg.getItems(CFG.ITEMS_REWARDS)) + " | " +
                     StringParser.colorVar("random", cfg.getBoolean(CFG.ITEMS_RANDOM)));
@@ -119,14 +116,14 @@ public class PAI_Info extends AbstractArenaCommand {
         }
 
         if (displayMode == null || "join".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "join"));
+            arena.msg(sender, MSG.INFO_SECTION, "join");
             arena.msg(sender, "range: " + cfg.getInt(CFG.JOIN_RANGE) + " | " +
                     StringParser.colorVar("forceregionjoin", cfg.getBoolean(CFG.JOIN_FORCE)));
 
         }
 
         if (displayMode == null || "perms".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "perms"));
+            arena.msg(sender, MSG.INFO_SECTION, "perms");
             arena.msg(sender,
                     StringParser.colorVar("explicitarena", cfg.getBoolean(CFG.PERMS_EXPLICITARENA)) + " | " +
                     StringParser.colorVar("explicitclass", cfg.getBoolean(CFG.PERMS_EXPLICITCLASS)) + " | " +
@@ -136,7 +133,7 @@ public class PAI_Info extends AbstractArenaCommand {
         }
 
         if (displayMode == null || "player".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "player"));
+            arena.msg(sender, MSG.INFO_SECTION, "player");
             arena.msg(sender,
                     StringParser.colorVar("autoIgniteTNT", cfg.getBoolean(CFG.PLAYER_AUTOIGNITE)) + " | " +
                     StringParser.colorVar("dropsInventory", cfg.getBoolean(CFG.PLAYER_DROPSINVENTORY)) + " | " +
@@ -156,7 +153,7 @@ public class PAI_Info extends AbstractArenaCommand {
         }
 
         if (displayMode == null || "protect".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "protect"));
+            arena.msg(sender, MSG.INFO_SECTION, "protect");
             arena.msg(sender, StringParser.colorVar("enabled", cfg.getBoolean(CFG.PROTECT_ENABLED)) + " | " +
                     StringParser.colorVar("punish", cfg.getBoolean(CFG.PROTECT_PUNISH)) + " | " +
                     "spawn: " + cfg.getInt(CFG.PROTECT_SPAWN));
@@ -164,7 +161,7 @@ public class PAI_Info extends AbstractArenaCommand {
         }
 
         if (displayMode == null || "ready".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "ready"));
+            arena.msg(sender, MSG.INFO_SECTION, "ready");
             arena.msg(sender,
                     StringParser.colorVar("checkEachPlayer", cfg.getBoolean(CFG.READY_CHECKEACHPLAYER)) + " | " +
                     StringParser.colorVar("checkEachTeam", cfg.getBoolean(CFG.READY_CHECKEACHTEAM)) + " | " +
@@ -180,7 +177,7 @@ public class PAI_Info extends AbstractArenaCommand {
         }
 
         if (displayMode == null || "time".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "time"));
+            arena.msg(sender, MSG.INFO_SECTION, "time");
             arena.msg(sender,
                     "endCountDown: " + cfg.getInt(CFG.TIME_ENDCOUNTDOWN) + " | " +
                             "startCountDown: " + cfg.getInt(CFG.TIME_STARTCOUNTDOWN) + " | " +
@@ -193,7 +190,7 @@ public class PAI_Info extends AbstractArenaCommand {
         }
 
         if (displayMode == null || "tp".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "tp"));
+            arena.msg(sender, MSG.INFO_SECTION, "tp");
             arena.msg(sender,
                     "death: " + cfg.getString(CFG.TP_DEATH) + " | " +
                             "exit: " + cfg.getString(CFG.TP_EXIT) + " | " +
@@ -203,7 +200,7 @@ public class PAI_Info extends AbstractArenaCommand {
         }
 
         if (displayMode == null || displayMode.isEmpty() || "chat".equals(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_SECTION, "chat"));
+            arena.msg(sender, MSG.INFO_SECTION, "chat");
             arena.msg(sender,
                     StringParser.colorVar("classSignsDisplay", cfg.getBoolean(CFG.USES_CLASSSIGNSDISPLAY)) + " | " +
                     StringParser.colorVar("deathMessages", cfg.getBoolean(CFG.USES_DEATHMESSAGES)) + " | " +
@@ -223,19 +220,19 @@ public class PAI_Info extends AbstractArenaCommand {
                     regions.add(ar.getRegionName());
                 }
 
-                arena.msg(sender, Language.parse(arena, MSG.INFO_REGIONS, StringParser.joinSet(regions, ", ")));
+                arena.msg(sender, MSG.INFO_REGIONS, StringParser.joinSet(regions, ", "));
             }
         }
 
 
         if (displayMode == null || "goal".equalsIgnoreCase(displayMode)) {
-            arena.msg(sender, Language.parse(arena, MSG.INFO_GOAL_ACTIVE, arena.getGoal().getName()));
+            arena.msg(sender, MSG.INFO_GOAL_ACTIVE, arena.getGoal().getName());
             arena.getGoal().displayInfo(sender);
         }
 
         if (displayMode == null || "mod".equalsIgnoreCase(displayMode)) {
             for (final ArenaModule mod : arena.getMods()) {
-                arena.msg(sender, Language.parse(arena, MSG.INFO_MOD_ACTIVE, mod.getName()));
+                arena.msg(sender, MSG.INFO_MOD_ACTIVE, mod.getName());
                 mod.displayInfo(sender);
             }
         }
@@ -254,7 +251,7 @@ public class PAI_Info extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.INFO));
+        Arena.pmsg(sender, HELP.INFO);
     }
 
     @Override

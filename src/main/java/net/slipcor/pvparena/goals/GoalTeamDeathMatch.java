@@ -157,7 +157,7 @@ public class GoalTeamDeathMatch extends AbstractTeamKillGoal {
                     }
                 }
             }
-            arena.broadcast(Language.parse(arena,
+            arena.broadcast(Language.parse(
                     MSG.FIGHT_KILLED_BY,
                     arenaTeam.colorizePlayer(respawnPlayer)
                             + ChatColor.YELLOW, arena.parseDeathCause(

@@ -4,7 +4,6 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.arena.PlayerStatus;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -63,11 +62,11 @@ public class PAI_List extends AbstractArenaCommand {
                 }
 
                 if (arena.isFreeForAll() && "free".equals(teams.getName())) {
-                    arena.msg(sender, Language.parse(arena, MSG.LIST_PLAYERS, StringParser.joinSet(names, ", ")));
+                    arena.msg(sender, MSG.LIST_PLAYERS, StringParser.joinSet(names, ", "));
                 } else {
                     final int count = teams.getTeamMembers().size();
                     final String sCount = " &r(" + count + ')';
-                    arena.msg(sender, Language.parse(arena, MSG.LIST_TEAM, teams.getColoredName() + sCount, StringParser.joinSet(names, ", ")));
+                    arena.msg(sender, MSG.LIST_TEAM, teams.getColoredName() + sCount, StringParser.joinSet(names, ", "));
                 }
             }
             return;
@@ -83,7 +82,7 @@ public class PAI_List extends AbstractArenaCommand {
         }
 
         for (final Map.Entry<PlayerStatus, Set<String>> statusSetEntry : stats.entrySet()) {
-            arena.msg(sender, Language.parse(arena, MSG.getByNode("LIST_" + statusSetEntry.getKey().name()), "&" + colorMap.get(statusSetEntry.getKey()) + StringParser.joinSet(statusSetEntry.getValue(), ", ")));
+            arena.msg(sender, Language.parse(MSG.getByNode("LIST_" + statusSetEntry.getKey().name()), "&" + colorMap.get(statusSetEntry.getKey()) + StringParser.joinSet(statusSetEntry.getValue(), ", ")));
         }
 
     }
@@ -95,7 +94,7 @@ public class PAI_List extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.LIST));
+        Arena.pmsg(sender, HELP.LIST);
     }
 
     @Override

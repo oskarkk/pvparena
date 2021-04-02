@@ -130,12 +130,12 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
 
                     if (team.equals(player.getArenaTeam())) {
                         // denied a kill
-                        this.arena.broadcastExcept(event.getEntity(), Language.parse(this.arena, MSG.GOAL_TEAMDEATHCONFIRM_DENIED, player.toString()));
-                        this.arena.msg(event.getEntity(), Language.parse(this.arena, MSG.GOAL_TEAMDEATHCONFIRM_YOUDENIED, player.toString()));
+                        this.arena.broadcastExcept(event.getEntity(), Language.parse(MSG.GOAL_TEAMDEATHCONFIRM_DENIED, player.toString()));
+                        this.arena.msg(event.getEntity(), MSG.GOAL_TEAMDEATHCONFIRM_YOUDENIED, player.toString());
                     } else {
                         // scored a kill
-                        this.arena.broadcastExcept(event.getEntity(), Language.parse(this.arena, MSG.GOAL_TEAMDEATHCONFIRM_SCORED, player.toString()));
-                        this.arena.msg(event.getEntity(), Language.parse(this.arena, MSG.GOAL_TEAMDEATHCONFIRM_YOUSCORED, player.toString()));
+                        this.arena.broadcastExcept(event.getEntity(), Language.parse(MSG.GOAL_TEAMDEATHCONFIRM_SCORED, player.toString()));
+                        this.arena.msg(event.getEntity(), MSG.GOAL_TEAMDEATHCONFIRM_YOUSCORED, player.toString());
                         this.reduceLives(this.arena, team);
                     }
                     return;
@@ -167,7 +167,7 @@ public class GoalTeamDeathConfirm extends AbstractTeamKillGoal {
             WorkflowManager.handleEnd(arena, false);
             return true;
         }
-        arena.broadcast(Language.parse(arena, MSG.GOAL_TEAMDEATHCONFIRM_REMAINING, String.valueOf(iLives - 1), team.getColoredName()));
+        arena.broadcast(Language.parse(MSG.GOAL_TEAMDEATHCONFIRM_REMAINING, String.valueOf(iLives - 1), team.getColoredName()));
 
         this.getTeamLifeMap().put(team, iLives - 1);
         arena.getScoreboard().refresh();

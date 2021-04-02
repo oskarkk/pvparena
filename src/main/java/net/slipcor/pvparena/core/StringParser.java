@@ -34,15 +34,6 @@ public final class StringParser {
                 .replace("&&", "&").replace("%%&%%", "&");
     }
 
-    public static String[] colorize(final List<String> stringList) {
-        final String[] result = new String[stringList.size()];
-
-        for (int i = 0; i < stringList.size(); i++) {
-            result[i] = colorize(stringList.get(i));
-        }
-        return result;
-    }
-
     /**
      * color an integer if bigger than 0
      *

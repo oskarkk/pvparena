@@ -1,7 +1,6 @@
 package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -38,7 +37,7 @@ public class PAA_Stop extends AbstractArenaCommand {
         final boolean force = args.length < 1 || !"soft".equalsIgnoreCase(args[1]);
 
         arena.stop(force);
-        arena.msg(sender, Language.parse(arena, MSG.ARENA_STOP_DONE));
+        arena.msg(sender, MSG.ARENA_STOP_DONE);
     }
 
     @Override
@@ -48,7 +47,7 @@ public class PAA_Stop extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.STOP));
+        Arena.pmsg(sender, HELP.STOP);
     }
 
     @Override

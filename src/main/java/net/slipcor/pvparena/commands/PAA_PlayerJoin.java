@@ -2,7 +2,6 @@ package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -44,7 +43,7 @@ public class PAA_PlayerJoin extends AbstractArenaCommand {
         final Player player = Bukkit.getPlayer(args[0]);
 
         if (player == null) {
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_PLAYER_NOTFOUND, args[0]));
+            arena.msg(sender, MSG.ERROR_PLAYER_NOTFOUND, args[0]);
             return;
         }
 
@@ -60,7 +59,7 @@ public class PAA_PlayerJoin extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.TELEPORT));
+        Arena.pmsg(sender, HELP.TELEPORT);
     }
 
     @Override

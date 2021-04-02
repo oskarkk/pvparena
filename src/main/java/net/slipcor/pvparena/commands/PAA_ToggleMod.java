@@ -2,7 +2,6 @@ package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -46,19 +45,19 @@ public class PAA_ToggleMod extends AbstractArenaCommand {
         ArenaModuleManager moduleManager = PVPArena.getInstance().getAmm();
         if (moduleManager.hasLoadable(name)) {
             boolean isEnabling = !arena.hasMod(name);
-            arena.msg(sender, Language.parse(arena, MSG.SET_DONE, name, String.valueOf(isEnabling)));
+            arena.msg(sender, MSG.SET_DONE, name, String.valueOf(isEnabling));
             if(isEnabling) {
                 ArenaModule module = moduleManager.getNewInstance(name);
                 arena.addModule(module, true);
                 if (module.isMissingBattleRegion(arena)) {
-                    arena.msg(sender, Language.parse(arena, MSG.TOGGLEMOD_NOTICE));
+                    arena.msg(sender, MSG.TOGGLEMOD_NOTICE);
                 }
             } else {
                 arena.removeModule(name);
             }
             return;
         }
-        arena.msg(sender, Language.parse(arena, MSG.ERROR_UNKNOWN_MODULE, args[0]));
+        arena.msg(sender, MSG.ERROR_UNKNOWN_MODULE, args[0]);
     }
 
     @Override
@@ -68,7 +67,7 @@ public class PAA_ToggleMod extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.TOGGLEMOD));
+        Arena.pmsg(sender, HELP.TOGGLEMOD);
     }
 
     @Override

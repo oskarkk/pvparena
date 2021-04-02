@@ -50,9 +50,9 @@ public class PAA_Duty extends AbstractGlobalCommand {
         sender.recalculatePermissions();
 
         if (perm) {
-            Arena.pmsg(sender, Language.parse(MSG.DUTY_TRUE));
+            Arena.pmsg(sender, MSG.DUTY_TRUE);
         } else {
-            Arena.pmsg(sender, Language.parse(MSG.DUTY_FALSE));
+            Arena.pmsg(sender, MSG.DUTY_FALSE);
         }
     }
 
@@ -63,7 +63,7 @@ public class PAA_Duty extends AbstractGlobalCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.DUTY));
+        Arena.pmsg(sender, HELP.DUTY);
     }
 
     @Override

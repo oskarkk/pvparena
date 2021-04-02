@@ -2,7 +2,6 @@ package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -47,7 +46,7 @@ public class PAA_Teams extends AbstractArenaCommand {
 
         if (args.length == 0) {
             // show teams
-            arena.msg(sender, Language.parse(arena, MSG.TEAMS_LIST, StringParser.joinSet(arena.getTeamNamesColored(), ChatColor.COLOR_CHAR + "f,")));
+            arena.msg(sender, MSG.TEAMS_LIST, StringParser.joinSet(arena.getTeamNamesColored(), ChatColor.COLOR_CHAR + "f,"));
             return;
         }
 
@@ -59,12 +58,12 @@ public class PAA_Teams extends AbstractArenaCommand {
         final ArenaTeam team = arena.getTeam(args[1]);
 
         if (team == null && !"add".equals(args[0])) {
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_TEAMNOTFOUND, args[1]));
+            arena.msg(sender, MSG.ERROR_TEAMNOTFOUND, args[1]);
             return;
         }
 
         if ("remove".equals(args[0])) {
-            arena.msg(sender, Language.parse(arena, MSG.TEAMS_REMOVE, team.getColoredName()));
+            arena.msg(sender, MSG.TEAMS_REMOVE, team.getColoredName());
             arena.getTeams().remove(team);
             arena.getConfig().setManually("teams." + team.getName(), null);
             arena.getConfig().save();
@@ -77,9 +76,9 @@ public class PAA_Teams extends AbstractArenaCommand {
                 arena.getConfig().setManually("teams." + newTeam.getName(), color.name());
                 arena.getConfig().save();
 
-                arena.msg(sender, Language.parse(arena, MSG.TEAMS_ADD, newTeam.getColoredName()));
+                arena.msg(sender, MSG.TEAMS_ADD, newTeam.getColoredName());
             } catch (final Exception e) {
-                arena.msg(sender, Language.parse(arena, MSG.ERROR_ARGUMENT, args[2], StringParser.joinArray(ChatColor.values(), ",")));
+                arena.msg(sender, MSG.ERROR_ARGUMENT, args[2], StringParser.joinArray(ChatColor.values(), ","));
             }
         } else if ("set".equals(args[0])) {
             try {
@@ -90,9 +89,9 @@ public class PAA_Teams extends AbstractArenaCommand {
                 arena.getConfig().setManually("teams." + newTeam.getName(), color.name());
                 arena.getConfig().save();
 
-                arena.msg(sender, Language.parse(arena, MSG.TEAMS_REMOVE, newTeam.getColoredName()));
+                arena.msg(sender, MSG.TEAMS_REMOVE, newTeam.getColoredName());
             } catch (final Exception e) {
-                arena.msg(sender, Language.parse(arena, MSG.ERROR_ARGUMENT, args[2], StringParser.joinArray(ChatColor.values(), ",")));
+                arena.msg(sender, MSG.ERROR_ARGUMENT, args[2], StringParser.joinArray(ChatColor.values(), ","));
             }
         } else {
             this.displayHelp(sender);
@@ -106,7 +105,7 @@ public class PAA_Teams extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.TEAMS));
+        Arena.pmsg(sender, HELP.TEAMS);
     }
 
     @Override

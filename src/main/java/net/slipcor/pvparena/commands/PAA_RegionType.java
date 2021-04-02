@@ -1,7 +1,6 @@
 package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -42,7 +41,7 @@ public class PAA_RegionType extends AbstractArenaCommand {
         final ArenaRegion region = arena.getRegion(args[0]);
 
         if (region == null) {
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_REGION_NOTFOUND, args[0]));
+            arena.msg(sender, MSG.ERROR_REGION_NOTFOUND, args[0]);
             return;
         }
 
@@ -51,7 +50,7 @@ public class PAA_RegionType extends AbstractArenaCommand {
         try {
             regionType = RegionType.valueOf(args[1].toUpperCase());
         } catch (final Exception e) {
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_REGION_TYPE_NOTFOUND, args[1], StringParser.joinArray(RegionType.values(), " ")));
+            arena.msg(sender, MSG.ERROR_REGION_TYPE_NOTFOUND, args[1], StringParser.joinArray(RegionType.values(), " "));
             return;
         }
 
@@ -62,7 +61,7 @@ public class PAA_RegionType extends AbstractArenaCommand {
             RegionManager.getInstance().reloadCache();
         }
         region.saveToConfig();
-        arena.msg(sender, Language.parse(arena, MSG.REGION_TYPE_SET, regionType.name()));
+        arena.msg(sender, MSG.REGION_TYPE_SET, regionType.name());
 
     }
 
@@ -73,7 +72,7 @@ public class PAA_RegionType extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.REGIONTYPE));
+        Arena.pmsg(sender, HELP.REGIONTYPE);
     }
 
     @Override

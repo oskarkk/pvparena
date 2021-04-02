@@ -143,11 +143,11 @@ public class GoalCheckPoints extends ArenaGoal {
         final int position = max - this.getPlayerLifeMap().get(arenaPlayer.getPlayer()) + 1;
 
         if (checkpoint == position) {
-            this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_CHECKPOINTS_SCORE,
+            this.arena.broadcast(Language.parse(MSG.GOAL_CHECKPOINTS_SCORE,
                     arenaPlayer.getName(), position + "/" + max));
             this.reduceLivesCheckEndAndCommit(this.arena, arenaPlayer);
         } else if (checkpoint > position) {
-            this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_CHECKPOINTS_YOUMISSED,
+            this.arena.broadcast(Language.parse(MSG.GOAL_CHECKPOINTS_YOUMISSED,
                     String.valueOf(position), String.valueOf(checkpoint)));
         }
 
@@ -174,10 +174,10 @@ public class GoalCheckPoints extends ArenaGoal {
             ArenaModuleManager
                     .announce(
                             arena,
-                            Language.parse(arena, MSG.PLAYER_HAS_WON,
+                            Language.parse(MSG.PLAYER_HAS_WON,
                                     winner.getName()),
                             "WINNER");
-            arena.broadcast(Language.parse(arena, MSG.PLAYER_HAS_WON,
+            arena.broadcast(Language.parse(MSG.PLAYER_HAS_WON,
                     winner.getName()));
         }
 
@@ -191,7 +191,7 @@ public class GoalCheckPoints extends ArenaGoal {
         // 0 = checkpoint , [1 = number]
 
         if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, Language.parse(this.arena, MSG.ERROR_ONLY_PLAYERS));
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
 
@@ -217,16 +217,16 @@ public class GoalCheckPoints extends ArenaGoal {
         try {
             value = Integer.parseInt(args[1]);
         } catch (Exception e) {
-            this.arena.msg(sender, Language.parse(this.arena, MSG.ERROR_NOT_NUMERIC, args[1]));
+            this.arena.msg(sender, MSG.ERROR_NOT_NUMERIC, args[1]);
             return;
         }
         Player player = (Player) sender;
         String spawnName = CHECKPOINT + value;
         if (value > 0 && value <= cpLives) {
             this.arena.spawnSet(spawnName, new PALocation(player.getLocation()));
-            this.arena.msg(sender, Language.parse(this.arena, MSG.SPAWN_SET, spawnName));
+            this.arena.msg(sender, MSG.SPAWN_SET, spawnName);
         } else {
-            this.arena.msg(sender, Language.parse(this.arena, MSG.SPAWN_UNKNOWN, spawnName));
+            this.arena.msg(sender, MSG.SPAWN_UNKNOWN, spawnName);
         }
     }
 
@@ -253,12 +253,12 @@ public class GoalCheckPoints extends ArenaGoal {
         if (arenaPlayer != null && !force) {
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()), "END");
+                    Language.parse(MSG.PLAYER_HAS_WON, arenaPlayer.getName()), "END");
 
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()), "WINNER");
-            this.arena.broadcast(Language.parse(this.arena, MSG.PLAYER_HAS_WON, arenaPlayer.getName()));
+                    Language.parse(MSG.PLAYER_HAS_WON, arenaPlayer.getName()), "WINNER");
+            this.arena.broadcast(Language.parse(MSG.PLAYER_HAS_WON, arenaPlayer.getName()));
         }
 
         if (arenaPlayer != null && ArenaModuleManager.commitEnd(this.arena, arenaPlayer.getArenaTeam())) {

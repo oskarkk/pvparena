@@ -4,13 +4,12 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.classes.PASpawn;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.regions.ArenaRegion;
 import net.slipcor.pvparena.managers.SpawnManager;
+import net.slipcor.pvparena.regions.ArenaRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -50,14 +49,14 @@ public class PAA_Setup extends AbstractArenaCommand {
 
         if (activeSetups.containsValue(arena)) {
             activeSetups.remove(sender.getName());
-            msg = Language.parse(arena, MSG.ARENA_SETUP_DISABLED, arena.getName());
+            msg = Language.parse(MSG.ARENA_SETUP_DISABLED, arena.getName());
         } else {
             if (arena.isFightInProgress()) {
                 final PAA_Stop cmd = new PAA_Stop();
                 cmd.commit(arena, sender, new String[0]);
             }
             activeSetups.put(sender.getName(), arena);
-            msg = Language.parse(arena, MSG.ARENA_SETUP_ENABLED, arena.getName());
+            msg = Language.parse(MSG.ARENA_SETUP_ENABLED, arena.getName());
         }
         arena.msg(sender, msg);
     }
@@ -69,7 +68,7 @@ public class PAA_Setup extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.SETUP));
+        Arena.pmsg(sender, HELP.SETUP);
     }
 
     public static void chat(final Player player, final String message) {
@@ -90,8 +89,8 @@ public class PAA_Setup extends AbstractArenaCommand {
 
         final String[] word = message.toLowerCase().split(" ");
         if (word[0].startsWith("h") || word[0].startsWith("?")) {
-            arena.msg(player, Language.parse(MSG.ERROR_ERROR, message));
-            arena.msg(player, Help.parse(HELP.SETUP_CMDS));
+            arena.msg(player, MSG.ERROR_ERROR, message);
+            arena.msg(player, HELP.SETUP_CMDS);
         }
 
         if (word[0].startsWith("s")) {
@@ -155,9 +154,9 @@ public class PAA_Setup extends AbstractArenaCommand {
                 }
                 if (region == null || amount == 0) {
                     if (region == null) {
-                        arena.msg(player, Language.parse(MSG.ERROR_REGION_NOTFOUND, word[1]));
+                        arena.msg(player, MSG.ERROR_REGION_NOTFOUND, word[1]);
                     } else {
-                        arena.msg(player, Language.parse(MSG.ERROR_NOT_NUMERIC, word[3]));
+                        arena.msg(player, MSG.ERROR_NOT_NUMERIC, word[3]);
                     }
                 } else {
                     if (word[2].startsWith("m")) {
@@ -177,7 +176,7 @@ public class PAA_Setup extends AbstractArenaCommand {
             } else if (word.length == 3 && word[2].startsWith("r")) {
                 final ArenaRegion region = arena.getRegion(word[1]);
                 if (region == null) {
-                    arena.msg(player, Language.parse(MSG.ERROR_REGION_NOTFOUND, word[1]));
+                    arena.msg(player, MSG.ERROR_REGION_NOTFOUND, word[1]);
                 } else {
                     // remove
                     final PAA_Region cmd = new PAA_Region();
@@ -192,8 +191,8 @@ public class PAA_Setup extends AbstractArenaCommand {
             return;
         }
 
-        arena.msg(player, Language.parse(MSG.ERROR_ERROR, message));
-        arena.msg(player, Help.parse(HELP.SETUP_CMDS));
+        arena.msg(player, MSG.ERROR_ERROR, message);
+        arena.msg(player, HELP.SETUP_CMDS);
     }
 
     @Override

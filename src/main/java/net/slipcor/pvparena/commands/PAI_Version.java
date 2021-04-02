@@ -68,7 +68,7 @@ public class PAI_Version extends AbstractGlobalCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.VERSION));
+        Arena.pmsg(sender, HELP.VERSION);
     }
 
     @Override

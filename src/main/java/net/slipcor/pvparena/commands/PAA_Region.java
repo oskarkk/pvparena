@@ -5,7 +5,6 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -53,7 +52,7 @@ public class PAA_Region extends AbstractArenaCommand {
         }
 
         if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
 
@@ -63,20 +62,20 @@ public class PAA_Region extends AbstractArenaCommand {
             if (activeSelections.get(sender.getName()) != null) {
                 // already selecting!
                 if (sender.getName().equals(selector)) {
-                    arena.msg(sender, Language.parse(arena, MSG.ERROR_REGION_YOUSELECTEXIT));
+                    arena.msg(sender, MSG.ERROR_REGION_YOUSELECTEXIT);
                     selector = null;
                     activeSelections.remove(sender.getName());
                 } else {
-                    arena.msg(sender, Language.parse(arena, MSG.ERROR_REGION_YOUSELECT, arena.getName()));
-                    arena.msg(sender, Language.parse(arena, MSG.ERROR_REGION_YOUSELECT2));
+                    arena.msg(sender, MSG.ERROR_REGION_YOUSELECT, arena.getName());
+                    arena.msg(sender, MSG.ERROR_REGION_YOUSELECT2);
                     selector = sender.getName();
                 }
                 return;
             }
             // selecting now!
             activeSelections.put(sender.getName(), arena);
-            arena.msg(sender, Language.parse(arena, MSG.REGION_YOUSELECT, arena.getName()));
-            arena.msg(sender, Language.parse(arena, MSG.REGION_SELECT, arena.getName()));
+            arena.msg(sender, MSG.REGION_YOUSELECT, arena.getName());
+            arena.msg(sender, MSG.REGION_SELECT, arena.getName());
             return;
         }
         if (args.length == 2 && args[1].equalsIgnoreCase("border")) {
@@ -84,7 +83,7 @@ public class PAA_Region extends AbstractArenaCommand {
             final ArenaRegion region = arena.getRegion(args[0]);
 
             if (region == null) {
-                arena.msg(sender, Language.parse(arena, MSG.ERROR_REGION_NOTFOUND, args[0]));
+                arena.msg(sender, MSG.ERROR_REGION_NOTFOUND, args[0]);
                 return;
             }
             region.getShape().showBorder((Player) sender);
@@ -95,11 +94,11 @@ public class PAA_Region extends AbstractArenaCommand {
             final ArenaRegion region = arena.getRegion(args[0]);
 
             if (region == null) {
-                arena.msg(sender, Language.parse(arena, MSG.ERROR_REGION_NOTFOUND, args[0]));
+                arena.msg(sender, MSG.ERROR_REGION_NOTFOUND, args[0]);
                 return;
             }
             arena.getConfig().setManually("arenaregion." + region.getRegionName(), null);
-            arena.msg(sender, Language.parse(arena, MSG.REGION_REMOVED, region.getRegionName()));
+            arena.msg(sender, MSG.REGION_REMOVED, region.getRegionName());
 
             arena.getRegions().remove(region);
             arena.getConfig().save();
@@ -112,7 +111,7 @@ public class PAA_Region extends AbstractArenaCommand {
             final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer((Player) sender);
 
             if (!aPlayer.didValidSelection()) {
-                arena.msg(sender, Language.parse(arena, MSG.REGION_SELECT, arena.getName()));
+                arena.msg(sender, MSG.REGION_SELECT, arena.getName());
                 return;
             }
 
@@ -126,14 +125,14 @@ public class PAA_Region extends AbstractArenaCommand {
             }
 
             if (shape == null) {
-                arena.msg(sender, Language.parse(arena, MSG.ARENA_REGION_SHAPE_UNKNOWN, args[1]));
+                arena.msg(sender, MSG.ARENA_REGION_SHAPE_UNKNOWN, args[1]);
                 return;
             }
 
             final ArenaRegion region = new ArenaRegion(arena, args[0], shape, locs);
 
             if (!region.getShape().hasVolume()) {
-                arena.msg(sender, Language.parse(arena, MSG.ERROR_REGION_INVALID));
+                arena.msg(sender, MSG.ERROR_REGION_INVALID);
                 return;
             }
 
@@ -143,9 +142,9 @@ public class PAA_Region extends AbstractArenaCommand {
 
             aPlayer.unsetSelection();
 
-            arena.msg(sender, Language.parse(arena, MSG.REGION_SAVED, args[0]));
+            arena.msg(sender, MSG.REGION_SAVED, args[0]);
 
-            arena.msg(sender, Language.parse(arena, MSG.REGION_SAVED_NOTICE, arena.getName(), args[0]));
+            arena.msg(sender, MSG.REGION_SAVED_NOTICE, arena.getName(), args[0]);
 
             return;
         }
@@ -153,7 +152,7 @@ public class PAA_Region extends AbstractArenaCommand {
         final ArenaRegion region = arena.getRegion(args[0]);
 
         if (region == null) {
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_REGION_NOTFOUND, args[0]));
+            arena.msg(sender, MSG.ERROR_REGION_NOTFOUND, args[0]);
             return;
         }
 
@@ -184,7 +183,7 @@ public class PAA_Region extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.REGION));
+        Arena.pmsg(sender, HELP.REGION);
     }
 
     @Override

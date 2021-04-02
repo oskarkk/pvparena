@@ -2,7 +2,6 @@ package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -38,7 +37,7 @@ public class PAA_Create extends AbstractGlobalCommand {
         }
 
         if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, Language.parse(MSG.ERROR_ONLY_PLAYERS));
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
 
@@ -51,7 +50,7 @@ public class PAA_Create extends AbstractGlobalCommand {
         Arena arena = ArenaManager.getArenaByName(args[0]);
 
         if (arena != null) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ARENA_EXISTS, arena.getName()));
+            Arena.pmsg(sender, MSG.ERROR_ARENA_EXISTS, arena.getName());
             return;
         }
 
@@ -68,7 +67,7 @@ public class PAA_Create extends AbstractGlobalCommand {
                 ArenaGoal goal = goalManager.getNewInstance(args[1]);
                 arena.setGoal(goal, true);
             } else {
-                arena.msg(sender, Language.parse(MSG.ERROR_GOAL_NOTFOUND, args[1], String.join(",", goalManager.getAllGoalNames())));
+                arena.msg(sender, MSG.ERROR_GOAL_NOTFOUND, args[1], String.join(",", goalManager.getAllGoalNames()));
                 return;
             }
         } else {
@@ -77,7 +76,7 @@ public class PAA_Create extends AbstractGlobalCommand {
         }
 
         if (ArenaManager.loadArena(arena)) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ARENA_CREATE_DONE, arena.getName()));
+            Arena.pmsg(sender, MSG.ARENA_CREATE_DONE, arena.getName());
             arena = ArenaManager.getArenaByName(arena.getName());
             final PAA_ToggleMod cmd = new PAA_ToggleMod();
             cmd.commit(arena, sender, new String[]{"standardspectate"});
@@ -93,7 +92,7 @@ public class PAA_Create extends AbstractGlobalCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.CREATE));
+        Arena.pmsg(sender, HELP.CREATE);
     }
 
     @Override

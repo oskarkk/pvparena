@@ -121,14 +121,14 @@ public class ArenaRegion {
             final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 aPlayer.setSelection(event.getClickedBlock().getLocation(), false);
-                arena.msg(player, Language.parse(arena, MSG.REGION_POS1));
+                arena.msg(player, MSG.REGION_POS1);
                 event.setCancelled(true); // no destruction in creative mode :)
                 return true; // left click => pos1
             }
 
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 aPlayer.setSelection(event.getClickedBlock().getLocation(), true);
-                arena.msg(player, Language.parse(arena, MSG.REGION_POS2));
+                arena.msg(player, MSG.REGION_POS2);
                 return true; // right click => pos2
             }
         }
@@ -412,7 +412,7 @@ public class ArenaRegion {
             Player player = arenaPlayer.getPlayer();
 
             if (loc == null) {
-                Arena.pmsg(player, Language.parse(this.arena, MSG.NOTICE_YOU_NOCAMP));
+                Arena.pmsg(player, MSG.NOTICE_YOU_NOCAMP);
             } else {
                 if (loc.distance(player.getLocation()) < 3) {
                     debug(player, "damaged in NOCAMP region");
@@ -462,7 +462,7 @@ public class ArenaRegion {
 
     private void handleDeathRegionFlag(ArenaPlayer arenaPlayer) {
         Player player = arenaPlayer.getPlayer();
-        Arena.pmsg(player, Language.parse(this.arena, MSG.NOTICE_YOU_DEATH));
+        Arena.pmsg(player, MSG.NOTICE_YOU_DEATH);
         ArenaGoal goal = this.arena.getGoal();
         if (goal.getName().endsWith("DeathMatch")) {
             if (goal.getPlayerLifeMap().containsKey(arenaPlayer.getPlayer())) {
@@ -498,20 +498,20 @@ public class ArenaRegion {
             try {
                 height = Integer.parseInt(value);
             } catch (final Exception e) {
-                return Language.parse(this.arena, MSG.ERROR_NOT_NUMERIC, value);
+                return Language.parse(MSG.ERROR_NOT_NUMERIC, value);
             }
 
             this.locs[0].setY(this.shape.getCenter().getY() - (height >> 1));
             this.locs[1].setY(this.locs[0].getY() + height);
 
-            return Language.parse(this.arena, MSG.REGION_HEIGHT, value);
+            return Language.parse(MSG.REGION_HEIGHT, value);
         }
         if (key.equalsIgnoreCase("radius")) {
             int radius;
             try {
                 radius = Integer.parseInt(value);
             } catch (Exception e) {
-                return Language.parse(this.arena, MSG.ERROR_NOT_NUMERIC, value);
+                return Language.parse(MSG.ERROR_NOT_NUMERIC, value);
             }
 
             final PABlockLocation loc = this.shape.getCenter();
@@ -524,7 +524,7 @@ public class ArenaRegion {
             this.locs[1].setY(loc.getY() + radius);
             this.locs[1].setZ(loc.getZ() + radius);
 
-            return Language.parse(this.arena, MSG.REGION_RADIUS, value);
+            return Language.parse(MSG.REGION_RADIUS, value);
         }
         if (key.equalsIgnoreCase("position")) {
             return null; // TODO insert function to align the arena based on a
@@ -532,7 +532,7 @@ public class ArenaRegion {
             // TODO see SETUP.creole
         }
 
-        return Language.parse(this.arena, MSG.ERROR_ARGUMENT, key,
+        return Language.parse(MSG.ERROR_ARGUMENT, key,
                 "height | radius | position");
     }
 }

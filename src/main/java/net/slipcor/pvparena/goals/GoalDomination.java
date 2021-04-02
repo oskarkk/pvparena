@@ -225,7 +225,7 @@ public class GoalDomination extends ArenaGoal {
                             // unclaim
                             debug(this.arena, "      - not being unclaimed. do it!");
                             ArenaTeam team = this.getFlagMap().get(loc);
-                            String contestingMsg = Language.parse(this.arena, MSG.GOAL_DOMINATION_CONTESTING, team.getColoredName() + ChatColor.YELLOW);
+                            String contestingMsg = Language.parse(MSG.GOAL_DOMINATION_CONTESTING, team.getColoredName() + ChatColor.YELLOW);
                             this.arena.broadcast(contestingMsg);
                             final DominationRunnable domRunner = new DominationRunnable(
                                     this.arena, false, loc,
@@ -277,7 +277,7 @@ public class GoalDomination extends ArenaGoal {
                 debug(this.arena, "    - not yet being unclaimed, do it!");
                 // create an unclaim runnable
                 ArenaTeam arenaTeam = this.getFlagMap().get(loc);
-                String unclaimingMsg = Language.parse(this.arena, MSG.GOAL_DOMINATION_UNCLAIMING, arenaTeam.getColoredName() + ChatColor.YELLOW);
+                String unclaimingMsg = Language.parse(MSG.GOAL_DOMINATION_UNCLAIMING, arenaTeam.getColoredName() + ChatColor.YELLOW);
                 this.arena.broadcast(unclaimingMsg);
                 final DominationRunnable running = new DominationRunnable(this.arena,
                         false, loc, this.getFlagMap().get(loc), this);
@@ -323,7 +323,7 @@ public class GoalDomination extends ArenaGoal {
                         for (final ArenaTeam arenaTeam : teams) {
                             debug(this.arena, "TEAM " + arenaTeam.getName() + " IS CLAIMING "
                                     + loc);
-                            String claimingMsg = Language.parse(this.arena, MSG.GOAL_DOMINATION_CLAIMING,
+                            String claimingMsg = Language.parse(MSG.GOAL_DOMINATION_CLAIMING,
                                     arenaTeam.getColoredName() + ChatColor.YELLOW);
                             this.arena.broadcast(claimingMsg);
 
@@ -377,7 +377,7 @@ public class GoalDomination extends ArenaGoal {
             return;
         }
 
-        this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_DOMINATION_SCORE,
+        this.arena.broadcast(Language.parse(MSG.GOAL_DOMINATION_SCORE,
                 arenaTeam.getColoredName()
                         + ChatColor.YELLOW, (max - lives) + "/" + max));
     }
@@ -427,11 +427,11 @@ public class GoalDomination extends ArenaGoal {
             ArenaModuleManager
                     .announce(
                             arena,
-                            Language.parse(arena, MSG.TEAM_HAS_WON,
+                            Language.parse(MSG.TEAM_HAS_WON,
                                     winteam.getColor()
                                             + winteam.getName() + ChatColor.YELLOW),
                             "WINNER");
-            arena.broadcast(Language.parse(arena, MSG.TEAM_HAS_WON,
+            arena.broadcast(Language.parse(MSG.TEAM_HAS_WON,
                     winteam.getColor() + winteam.getName()
                             + ChatColor.YELLOW));
         }
@@ -445,11 +445,11 @@ public class GoalDomination extends ArenaGoal {
     public void commitCommand(final CommandSender sender, final String[] args) {
         if (PAA_Region.activeSelections.containsKey(sender.getName())) {
             PAA_Region.activeSelections.remove(sender.getName());
-            this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_FLAGS_SET, "flags"));
+            this.arena.msg(sender, MSG.GOAL_FLAGS_SET, "flags");
         } else {
 
             PAA_Region.activeSelections.put(sender.getName(), this.arena);
-            this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_FLAGS_TOSET, "flags"));
+            this.arena.msg(sender, MSG.GOAL_FLAGS_TOSET, "flags");
         }
     }
 
@@ -477,14 +477,14 @@ public class GoalDomination extends ArenaGoal {
         if (aTeam != null && !force) {
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+                    Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                             + aTeam.getName() + ChatColor.YELLOW), "END");
 
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+                    Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                             + aTeam.getName() + ChatColor.YELLOW), "WINNER");
-            this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+            this.arena.broadcast(Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                     + aTeam.getName() + ChatColor.YELLOW));
         }
 
@@ -512,7 +512,7 @@ public class GoalDomination extends ArenaGoal {
 
             SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), flagName);
 
-            this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_FLAGS_SET, flagName));
+            this.arena.msg(player, MSG.GOAL_FLAGS_SET, flagName);
             return true;
         }
         return false;
@@ -704,7 +704,7 @@ public class GoalDomination extends ArenaGoal {
                     this.domination.getFlagMap().put(this.loc, this.arenaTeam);
                     // long interval = 20L * 5;
 
-                    this.arena.broadcast(Language.parse(this.arena,
+                    this.arena.broadcast(Language.parse(
                             MSG.GOAL_DOMINATION_CLAIMED, this.arenaTeam
                                     .getColoredName() + ChatColor.YELLOW));
                     this.takeFlag(this.arena, this.loc, this.arenaTeam);

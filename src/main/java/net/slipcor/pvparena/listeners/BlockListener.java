@@ -129,10 +129,7 @@ public class BlockListener implements Listener {
                 .name())
                 && !list.contains(event.getBlock().getType()
                 .name())) {
-            arena.msg(
-                    event.getPlayer(),
-                    Language.parse(arena, MSG.ERROR_WHITELIST_DISALLOWED,
-                            Language.parse(arena, MSG.GENERAL_BREAK)));
+            arena.msg(event.getPlayer(), MSG.ERROR_WHITELIST_DISALLOWED, Language.parse(MSG.GENERAL_BREAK));
             // not on whitelist. DENY!
             event.setCancelled(true);
             debug(event.getPlayer(), "whitelist out");
@@ -151,10 +148,7 @@ public class BlockListener implements Listener {
 
         if (list.contains(event.getBlock().getType().name())
                 || list.contains(event.getBlock().getType().name())) {
-            arena.msg(
-                    event.getPlayer(),
-                    Language.parse(arena, MSG.ERROR_BLACKLIST_DISALLOWED,
-                            Language.parse(arena, MSG.GENERAL_BREAK)));
+            arena.msg(event.getPlayer(), MSG.ERROR_BLACKLIST_DISALLOWED, Language.parse(MSG.GENERAL_BREAK));
             // on blacklist. DENY!
             event.setCancelled(true);
             debug(event.getPlayer(), "blacklist out");
@@ -426,7 +420,7 @@ public class BlockListener implements Listener {
                 new ArrayList<>());
 
         if (!list.isEmpty() && !list.contains(placedBlock.getType().name())) {
-            arena.msg(player, Language.parse(arena, MSG.ERROR_WHITELIST_DISALLOWED, Language.parse(arena, MSG.GENERAL_PLACE)));
+            arena.msg(player, MSG.ERROR_WHITELIST_DISALLOWED, Language.parse(MSG.GENERAL_PLACE));
             event.setCancelled(true);
             debug(arena, "not on whitelist. DENY!");
             return;
@@ -454,7 +448,7 @@ public class BlockListener implements Listener {
                 new ArrayList<>());
 
         if (list.contains(placedBlock.getType().name())) {
-            arena.msg(player, Language.parse(arena, MSG.ERROR_BLACKLIST_DISALLOWED, Language.parse(arena, MSG.GENERAL_PLACE)));
+            arena.msg(player, MSG.ERROR_BLACKLIST_DISALLOWED, Language.parse(MSG.GENERAL_PLACE));
             event.setCancelled(true);
             debug(arena, "on blacklist. DENY!");
             return;

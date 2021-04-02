@@ -1,7 +1,6 @@
 package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -41,7 +40,7 @@ public class PAA_Protection extends AbstractArenaCommand {
         final ArenaRegion region = arena.getRegion(args[0]);
 
         if (region == null) {
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_REGION_NOTFOUND, args[0]));
+            arena.msg(sender, MSG.ERROR_REGION_NOTFOUND, args[0]);
             return;
         }
 
@@ -51,7 +50,7 @@ public class PAA_Protection extends AbstractArenaCommand {
             regionProtection = RegionProtection.valueOf(args[1].toUpperCase());
         } catch (final Exception e) {
             if (!"all".equalsIgnoreCase(args[1])) {
-                arena.msg(sender, Language.parse(arena, MSG.ERROR_REGION_FLAG_NOTFOUND, args[1], StringParser.joinArray(RegionProtection.values(), " ")));
+                arena.msg(sender, MSG.ERROR_REGION_FLAG_NOTFOUND, args[1], StringParser.joinArray(RegionProtection.values(), " "));
                 return;
             }
         }
@@ -59,9 +58,9 @@ public class PAA_Protection extends AbstractArenaCommand {
         if (args.length < 3) {
             // toggle
             if (region.protectionToggle(regionProtection)) {
-                arena.msg(sender, Language.parse(arena, MSG.REGION_FLAG_ADDED, args[1]));
+                arena.msg(sender, MSG.REGION_FLAG_ADDED, args[1]);
             } else {
-                arena.msg(sender, Language.parse(arena, MSG.REGION_FLAG_REMOVED, args[1]));
+                arena.msg(sender, MSG.REGION_FLAG_REMOVED, args[1]);
             }
             region.saveToConfig();
             return;
@@ -69,23 +68,23 @@ public class PAA_Protection extends AbstractArenaCommand {
 
         if (StringParser.isPositiveValue(args[2])) {
             region.protectionAdd(regionProtection);
-            arena.msg(sender, Language.parse(arena, MSG.REGION_FLAG_ADDED, args[1]));
+            arena.msg(sender, MSG.REGION_FLAG_ADDED, args[1]);
             region.saveToConfig();
             return;
         }
 
         if (StringParser.isNegativeValue(args[2])) {
             region.protectionRemove(regionProtection);
-            arena.msg(sender, Language.parse(arena, MSG.REGION_FLAG_REMOVED, args[1]));
+            arena.msg(sender, MSG.REGION_FLAG_REMOVED, args[1]);
             region.saveToConfig();
             return;
         }
 
         // usage: /pa {arenaname} protection [regionname] [regionflag] {value}
 
-        arena.msg(sender, Language.parse(arena, MSG.ERROR_INVALID_VALUE, args[2]));
-        arena.msg(sender, Language.parse(arena, MSG.ERROR_POSITIVES, StringParser.joinSet(StringParser.positive, " | ")));
-        arena.msg(sender, Language.parse(arena, MSG.ERROR_NEGATIVES, StringParser.joinSet(StringParser.negative, " | ")));
+        arena.msg(sender, MSG.ERROR_INVALID_VALUE, args[2]);
+        arena.msg(sender, MSG.ERROR_POSITIVES, StringParser.joinSet(StringParser.positive, " | "));
+        arena.msg(sender, MSG.ERROR_NEGATIVES, StringParser.joinSet(StringParser.negative, " | "));
     }
 
     @Override
@@ -95,7 +94,7 @@ public class PAA_Protection extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.PROTECTION));
+        Arena.pmsg(sender, HELP.PROTECTION);
     }
 
     @Override

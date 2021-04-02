@@ -1,7 +1,6 @@
 package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -41,10 +40,10 @@ public class PAA_Regions extends AbstractArenaCommand {
         }
 
         if (args.length < 1) {
-            arena.msg(sender, Language.parse(arena, MSG.REGIONS_LISTHEAD, arena.getName()));
+            arena.msg(sender, MSG.REGIONS_LISTHEAD, arena.getName());
 
             for (final ArenaRegion ars : arena.getRegions()) {
-                arena.msg(sender, Language.parse(arena, MSG.REGIONS_LISTVALUE, ars.getRegionName(), ars.getType().name(), ars.getShape().getName()));
+                arena.msg(sender, MSG.REGIONS_LISTVALUE, ars.getRegionName(), ars.getType().name(), ars.getShape().getName());
             }
             return;
         }
@@ -52,15 +51,15 @@ public class PAA_Regions extends AbstractArenaCommand {
         final ArenaRegion region = arena.getRegion(args[0]);
 
         if (region == null) {
-            arena.msg(sender, Language.parse(arena, MSG.ERROR_REGION_NOTFOUND, args[0]));
+            arena.msg(sender, MSG.ERROR_REGION_NOTFOUND, args[0]);
             return;
         }
 
-        arena.msg(sender, Language.parse(arena, MSG.REGIONS_HEAD, arena.getName() + ':' + args[0]));
-        arena.msg(sender, Language.parse(arena, MSG.REGIONS_TYPE, region.getType().name()));
-        arena.msg(sender, Language.parse(arena, MSG.REGIONS_SHAPE, region.getShape().getName()));
-        arena.msg(sender, Language.parse(arena, MSG.REGIONS_FLAGS, StringParser.joinSet(region.getFlags(), ", ")));
-        arena.msg(sender, Language.parse(arena, MSG.REGIONS_PROTECTIONS, StringParser.joinSet(region.getProtections(), ", ")));
+        arena.msg(sender, MSG.REGIONS_HEAD, arena.getName() + ':' + args[0]);
+        arena.msg(sender, MSG.REGIONS_TYPE, region.getType().name());
+        arena.msg(sender, MSG.REGIONS_SHAPE, region.getShape().getName());
+        arena.msg(sender, MSG.REGIONS_FLAGS, StringParser.joinSet(region.getFlags(), ", "));
+        arena.msg(sender, MSG.REGIONS_PROTECTIONS, StringParser.joinSet(region.getProtections(), ", "));
         arena.msg(sender, "0: " + region.locs[0]);
         arena.msg(sender, "1: " + region.locs[1]);
     }
@@ -72,7 +71,7 @@ public class PAA_Regions extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.REGIONS));
+        Arena.pmsg(sender, HELP.REGIONS);
     }
 
     @Override

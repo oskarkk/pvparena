@@ -123,7 +123,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
                             .noneMatch(team -> team.getName().equals(TOUCHDOWN))) {
                         debug(this.arena, player, "cancelling");
 
-                        this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_FLAGS_NOTSAFE));
+                        this.arena.msg(player, MSG.GOAL_FLAGS_NOTSAFE);
                         return false;
                     }
                 }
@@ -135,7 +135,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
                 ItemStack mainHandItem = player.getInventory().getItemInMainHand();
                 if (!ColorUtils.isSubType(mainHandItem.getType(), flagType)) {
                     debug(this.arena, player, "player " + player.getName() + " is not holding the flag");
-                    this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_PHYSICALFLAGS_HOLDFLAG));
+                    this.arena.msg(player, MSG.GOAL_PHYSICALFLAGS_HOLDFLAG);
                     return false;
                 }
 
@@ -144,14 +144,14 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
 
                 try {
                     if (TOUCHDOWN.equals(flagTeam.getName())) {
-                        this.arena.broadcast(Language.parse(this.arena,
+                        this.arena.broadcast(Language.parse(
                                 MSG.GOAL_FLAGS_TOUCHHOME, arenaTeam
                                         .colorizePlayer(player)
                                         + ChatColor.YELLOW, String
                                         .valueOf(this.getTeamLifeMap().get(arenaPlayer
                                                 .getArenaTeam()) - 1)));
                     } else {
-                        this.arena.broadcast(Language.parse(this.arena,
+                        this.arena.broadcast(Language.parse(
                                 MSG.GOAL_FLAGS_BROUGHTHOME, arenaTeam.colorizePlayer(player)
                                         + ChatColor.YELLOW,
                                 flagTeam.getColoredName()
@@ -210,7 +210,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
 
         if (flagTeam == null) {
 
-            this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer
+            this.arena.broadcast(Language.parse(MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer
                     .getArenaTeam().getColorCodeString()
                     + arenaPlayer.getName()
                     + ChatColor.YELLOW));
@@ -224,7 +224,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
 
             this.releaseFlag(this.touchdownTeam);
         } else {
-            this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPED, arenaPlayer
+            this.arena.broadcast(Language.parse(MSG.GOAL_FLAGS_DROPPED, arenaPlayer
                     .getArenaTeam().getColorCodeString()
                     + arenaPlayer.getName()
                     + ChatColor.YELLOW, flagTeam.getName() + ChatColor.YELLOW));
@@ -277,7 +277,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
         final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
 
         if (flagTeam == null) {
-            this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer
+            this.arena.broadcast(Language.parse(MSG.GOAL_FLAGS_DROPPEDTOUCH, arenaPlayer
                     .getArenaTeam().getColorCodeString()
                     + arenaPlayer.getName()
                     + ChatColor.YELLOW));
@@ -290,7 +290,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
 
             this.releaseFlag(this.touchdownTeam);
         } else {
-            this.arena.broadcast(Language.parse(this.arena, MSG.GOAL_FLAGS_DROPPED, arenaPlayer
+            this.arena.broadcast(Language.parse(MSG.GOAL_FLAGS_DROPPED, arenaPlayer
                             .getArenaTeam().colorizePlayer(player) + ChatColor.YELLOW,
                     flagTeam.getColoredName() + ChatColor.YELLOW));
             this.getFlagMap().remove(flagTeam);
@@ -410,13 +410,13 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
 
                 if (this.touchdownTeam.equals(arenaTeam)) {
 
-                    this.arena.broadcast(Language.parse(this.arena,
+                    this.arena.broadcast(Language.parse(
                             MSG.GOAL_FLAGS_GRABBEDTOUCH,
                             pTeam.colorizePlayer(player) + ChatColor.YELLOW));
                 } else {
 
                     this.arena.broadcast(Language
-                            .parse(this.arena, MSG.GOAL_FLAGS_GRABBED,
+                            .parse(MSG.GOAL_FLAGS_GRABBED,
                                     pTeam.colorizePlayer(player)
                                             + ChatColor.YELLOW,
                                     arenaTeam.getColoredName()

@@ -5,12 +5,9 @@ import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.classes.PAClassSign;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.classes.PASpawn;
-import net.slipcor.pvparena.core.ArrowHack;
-import net.slipcor.pvparena.core.Config;
+import net.slipcor.pvparena.core.*;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
-import net.slipcor.pvparena.core.StringUtils;
 import net.slipcor.pvparena.events.*;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModule;
@@ -24,9 +21,10 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -90,7 +88,6 @@ public class Arena {
     private boolean gaveRewards;
 
     private final Config cfg;
-    private YamlConfiguration language = new YamlConfiguration();
     private long startTime;
     private ArenaScoreboard scoreboard = null;
 
@@ -113,19 +110,6 @@ public class Arena {
         if (this.valid) {
             StatisticsManager.loadStatistics(this);
             SpawnManager.loadSpawns(this, this.cfg);
-
-            final String langName = this.cfg.getDefinedString(CFG.GENERAL_LANG);
-            if (langName == null) {
-                return;
-            }
-
-            final File langFile = new File(PVPArena.getInstance().getDataFolder(), langName);
-            this.language = new YamlConfiguration();
-            try {
-                this.language.load(langFile);
-            } catch (final InvalidConfigurationException | IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -229,10 +213,6 @@ public class Arena {
         final List<String> list = this.mods.stream().map(ArenaModule::getName).collect(Collectors.toList());
         this.cfg.set(CFG.LISTS_MODS, list);
         this.cfg.save();
-    }
-
-    public YamlConfiguration getLanguage() {
-        return this.language;
     }
 
     public boolean isLocked() {
@@ -415,7 +395,7 @@ public class Arena {
 
         debug(this, player, "checking class perms");
         if (this.cfg.getBoolean(CFG.PERMS_EXPLICITCLASS) && !player.hasPermission("pvparena.class." + className)) {
-            this.msg(player, Language.parse(this, MSG.ERROR_NOPERM_CLASS, className));
+            this.msg(player, MSG.ERROR_NOPERM_CLASS, className);
             return; // class permission desired and failed =>
             // announce and OUT
         }
@@ -430,7 +410,7 @@ public class Arena {
                     this.signs.add(classSign);
                 }
                 if (!classSign.add(player)) {
-                    this.msg(player, Language.parse(this, MSG.ERROR_CLASS_FULL, className));
+                    this.msg(player, MSG.ERROR_CLASS_FULL, className);
                     return;
                 }
             }
@@ -476,7 +456,7 @@ public class Arena {
             if (!this.cfg.getBoolean(CFG.READY_ENFORCECOUNTDOWN) && this.getClass(this.cfg.getString(CFG.READY_AUTOCLASS)) == null && !this.fightInProgress) {
                 this.startRunner.cancel();
                 this.startRunner = null;
-                this.broadcast(Language.parse(this, MSG.TIMER_COUNTDOWN_INTERRUPTED));
+                this.broadcast(Language.parse(MSG.TIMER_COUNTDOWN_INTERRUPTED));
             }
             return;
         }
@@ -548,7 +528,7 @@ public class Arena {
                 player.getInventory().setItem(
                         player.getInventory().firstEmpty(), stack);
             } catch (final Exception e) {
-                this.msg(player, Language.parse(this, MSG.ERROR_INVENTORY_FULL));
+                this.msg(player, MSG.ERROR_INVENTORY_FULL);
                 return;
             }
         }
@@ -586,16 +566,18 @@ public class Arena {
         this.playedPlayers.add(playerName);
     }
 
-    public void msg(final CommandSender sender, final String[] msg) {
-        for (final String string : msg) {
-            this.msg(sender, string);
-        }
+    public void msg(final CommandSender sender, Help.HELP helpMsg) {
+        helpMsg.get().forEach(helpLine -> pmsg(sender, StringParser.colorize(helpLine)));
     }
 
-    public void msg(final CommandSender sender, final String msg) {
+    public void msg(final CommandSender sender, final MSG msg, String... args) {
+        this.msg(sender, Language.parse(msg, args));
+    }
+
+    public void msg(final CommandSender sender, String msg) {
         if (sender != null && !StringUtils.isBlank(msg)) {
             debug(this, '@' + sender.getName() + ": " + msg);
-            sender.sendMessage(Language.parse(this, MSG.MESSAGES_GENERAL, this.prefix, msg));
+            sender.sendMessage(Language.parse(MSG.MESSAGES_GENERAL, this.prefix, msg));
         }
     }
 
@@ -611,7 +593,7 @@ public class Arena {
                                   final Entity damager) {
 
         if (cause == null) {
-            return Language.parse(this, MSG.DEATHCAUSE_CUSTOM);
+            return Language.parse(MSG.DEATHCAUSE_CUSTOM);
         }
 
         debug(this, player, "return a damage name for : " + cause.toString());
@@ -637,17 +619,17 @@ public class Arena {
                 try {
                     Entity eventDamager = ((EntityDamageByEntityEvent) lastDamageCause).getDamager();
                     debug(this, player, "last damager: " + eventDamager.getType());
-                    return Language.parse(this, MSG.getByName("DEATHCAUSE_" + eventDamager.getType().name()));
+                    return Language.parse(MSG.getByName("DEATHCAUSE_" + eventDamager.getType().name()));
                 } catch (final Exception e) {
-                    return Language.parse(this, MSG.DEATHCAUSE_CUSTOM);
+                    return Language.parse(MSG.DEATHCAUSE_CUSTOM);
                 }
             case ENTITY_EXPLOSION:
                 try {
                     Entity eventDamager = ((EntityDamageByEntityEvent) lastDamageCause).getDamager();
                     debug(this, player, "last damager: " + eventDamager.getType());
-                    return Language.parse(this, MSG.getByName("DEATHCAUSE_" + eventDamager.getType().name()));
+                    return Language.parse(MSG.getByName("DEATHCAUSE_" + eventDamager.getType().name()));
                 } catch (final Exception e) {
-                    return Language.parse(this, MSG.DEATHCAUSE_ENTITY_EXPLOSION);
+                    return Language.parse(MSG.DEATHCAUSE_ENTITY_EXPLOSION);
                 }
             case PROJECTILE:
                 if (damager instanceof Player && team != null) {
@@ -660,10 +642,10 @@ public class Arena {
 
                     debug(this, player, "last damager: " + lEntity.getType());
 
-                    return Language.parse(this, MSG.getByName("DEATHCAUSE_" + lEntity.getType().name()));
+                    return Language.parse(MSG.getByName("DEATHCAUSE_" + lEntity.getType().name()));
                 } catch (final Exception e) {
 
-                    return Language.parse(this, MSG.DEATHCAUSE_PROJECTILE);
+                    return Language.parse(MSG.DEATHCAUSE_PROJECTILE);
                 }
             default:
                 break;
@@ -673,14 +655,7 @@ public class Arena {
             PVPArena.getInstance().getLogger().warning("Unknown cause: " + cause.toString());
             string = MSG.DEATHCAUSE_VOID;
         }
-        return Language.parse(this, string);
-    }
-
-    public static void pmsg(final CommandSender sender, final String msg) {
-        if (sender != null && !StringUtils.isBlank(msg)) {
-            debug(sender, "@{} : {}", sender.getName(), msg);
-            sender.sendMessage(Language.parse(MSG.MESSAGES_GENERAL, PVPArena.getInstance().getConfig().getString("globalPrefix", "PVP Arena"), msg));
-        }
+        return Language.parse(string);
     }
 
     /**
@@ -709,17 +684,17 @@ public class Arena {
 
                 this.broadcastExcept(
                         player,
-                        Language.parse(this, MSG.FIGHT_PLAYER_LEFT, player.getName()
+                        Language.parse(MSG.FIGHT_PLAYER_LEFT, player.getName()
                                 + ChatColor.YELLOW));
             } else {
                 ArenaModuleManager.parsePlayerLeave(this, player, team);
 
                 this.broadcastExcept(
                         player,
-                        Language.parse(this, MSG.FIGHT_PLAYER_LEFT,
+                        Language.parse(MSG.FIGHT_PLAYER_LEFT,
                                 team.colorizePlayer(player) + ChatColor.YELLOW));
             }
-            this.msg(player, Language.parse(this, MSG.NOTICE_YOU_LEFT));
+            this.msg(player, MSG.NOTICE_YOU_LEFT);
         }
 
         this.removePlayer(player, this.cfg.getString(location), soft, force);
@@ -727,7 +702,7 @@ public class Arena {
         if (!this.cfg.getBoolean(CFG.READY_ENFORCECOUNTDOWN) && this.startRunner != null && this.cfg.getInt(CFG.READY_MINPLAYERS) > 0 &&
                 this.getFighters().size() <= this.cfg.getInt(CFG.READY_MINPLAYERS)) {
             this.startRunner.cancel();
-            this.broadcast(Language.parse(this, MSG.TIMER_COUNTDOWN_INTERRUPTED));
+            this.broadcast(Language.parse(MSG.TIMER_COUNTDOWN_INTERRUPTED));
             this.startRunner = null;
         }
 
@@ -748,17 +723,17 @@ public class Arena {
 
         final int players = TeamManager.countPlayersInTeams(this);
         if (players < 2) {
-            return Language.parse(this, MSG.ERROR_READY_1_ALONE);
+            return Language.parse(MSG.ERROR_READY_1_ALONE);
         }
         if (players < this.cfg.getInt(CFG.READY_MINPLAYERS)) {
-            return Language.parse(this, MSG.ERROR_READY_4_MISSING_PLAYERS);
+            return Language.parse(MSG.ERROR_READY_4_MISSING_PLAYERS);
         }
 
         if (this.cfg.getBoolean(CFG.READY_CHECKEACHPLAYER)) {
             for (final ArenaTeam team : this.teams) {
                 for (final ArenaPlayer ap : team.getTeamMembers()) {
                     if (ap.getStatus() != PlayerStatus.READY) {
-                        return Language.parse(this, MSG.ERROR_READY_0_ONE_PLAYER_NOT_READY);
+                        return Language.parse(MSG.ERROR_READY_0_ONE_PLAYER_NOT_READY);
                     }
                 }
             }
@@ -777,11 +752,11 @@ public class Arena {
             }
 
             if (this.cfg.getBoolean(CFG.USES_EVENTEAMS) && !TeamManager.checkEven(this)) {
-                return Language.parse(this, MSG.NOTICE_WAITING_EQUAL);
+                return Language.parse(MSG.NOTICE_WAITING_EQUAL);
             }
 
             if (activeTeams.size() < 2) {
-                return Language.parse(this, MSG.ERROR_READY_2_TEAM_ALONE);
+                return Language.parse(MSG.ERROR_READY_2_TEAM_ALONE);
             }
         }
 
@@ -801,7 +776,7 @@ public class Arena {
                     } else {
                         // player no class!
                         PVPArena.getInstance().getLogger().warning("Player no class: " + p.getPlayer());
-                        return Language.parse(this, MSG.ERROR_READY_5_ONE_PLAYER_NO_CLASS);
+                        return Language.parse(MSG.ERROR_READY_5_ONE_PLAYER_NO_CLASS);
                     }
                 }
             }
@@ -817,7 +792,7 @@ public class Arena {
                     return "";
                 }
             }
-            return Language.parse(this, MSG.ERROR_READY_0_ONE_PLAYER_NOT_READY);
+            return Language.parse(MSG.ERROR_READY_0_ONE_PLAYER_NOT_READY);
         }
         return this.cfg.getBoolean(CFG.READY_ENFORCECOUNTDOWN) ? "" : null;
     }
@@ -1188,12 +1163,12 @@ public class Arena {
                     aPlayer.createState(aPlayer.getPlayer());
                     InventoryManager.clearInventory(aPlayer.getPlayer());
                     c.equip(aPlayer.getPlayer());
-                    this.msg(aPlayer.getPlayer(), Language.parse(this, MSG.CLASS_PREVIEW, c.getName()));
+                    this.msg(aPlayer.getPlayer(), MSG.CLASS_PREVIEW, c.getName());
                 }
                 return;
             }
         }
-        this.msg(aPlayer.getPlayer(), Language.parse(this, MSG.ERROR_CLASS_NOT_FOUND, cName));
+        this.msg(aPlayer.getPlayer(), MSG.ERROR_CLASS_NOT_FOUND, cName);
     }
 
     public void setFightInProgress(final boolean fightInProgress) {
@@ -1480,8 +1455,7 @@ public class Arena {
             }
 
             if (autoClass != null && this.getClass(autoClass) == null) {
-                this.msg(player, Language.parse(this, MSG.ERROR_CLASS_NOT_FOUND,
-                        "autoClass"));
+                this.msg(player, MSG.ERROR_CLASS_NOT_FOUND, "autoClass");
                 return false;
             }
         }
@@ -1539,12 +1513,6 @@ public class Arena {
         return true;
     }
 
-    public static void pmsg(final CommandSender sender, final String[] msgs) {
-        for (final String s : msgs) {
-            pmsg(sender, s);
-        }
-    }
-
     public void addBlock(final PABlock paBlock) {
         this.blocks.removeIf(block -> block.getName().equals(paBlock.getName()));
         this.blocks.add(paBlock);
@@ -1553,5 +1521,21 @@ public class Arena {
     public void addSpawn(final PASpawn paSpawn) {
         this.spawns.removeIf(spawn -> spawn.getName().equals(paSpawn.getName()));
         this.spawns.add(paSpawn);
+    }
+
+    public static void pmsg(final CommandSender sender, MSG msg, String... args) {
+        pmsg(sender, Language.parse(msg, args));
+    }
+
+    public static void pmsg(final CommandSender sender, Help.HELP helpMsg) {
+        helpMsg.get().forEach(helpLine -> pmsg(sender, StringParser.colorize(helpLine)));
+    }
+
+    public static void pmsg(final CommandSender sender, final String msg) {
+        if (sender != null && !StringUtils.isBlank(msg)) {
+            debug(sender, "@{} : {}", sender.getName(), msg);
+            String prefix = PVPArena.getInstance().getConfig().getString("globalPrefix", "PVP Arena");
+            sender.sendMessage(Language.parse(MSG.MESSAGES_GENERAL, prefix, msg));
+        }
     }
 }

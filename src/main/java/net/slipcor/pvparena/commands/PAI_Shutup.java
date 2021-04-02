@@ -2,7 +2,6 @@ package net.slipcor.pvparena.commands;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -38,7 +37,7 @@ public class PAI_Shutup extends AbstractArenaCommand {
         }
 
         if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
             return;
         }
 
@@ -48,30 +47,30 @@ public class PAI_Shutup extends AbstractArenaCommand {
             // toggle
             if (aPlayer.isIgnoringAnnouncements()) {
                 aPlayer.setIgnoreAnnouncements(false);
-                arena.msg(sender, Language.parse(arena, MSG.MODULE_ANNOUNCEMENTS_IGNOREOFF));
+                arena.msg(sender, MSG.MODULE_ANNOUNCEMENTS_IGNOREOFF);
             } else {
                 aPlayer.setIgnoreAnnouncements(true);
-                arena.msg(sender, Language.parse(arena, MSG.MODULE_ANNOUNCEMENTS_IGNOREON));
+                arena.msg(sender, MSG.MODULE_ANNOUNCEMENTS_IGNOREON);
             }
             return;
         }
 
         if (StringParser.isPositiveValue(args[0])) {
             aPlayer.setIgnoreAnnouncements(true);
-            arena.msg(sender, Language.parse(arena, MSG.MODULE_ANNOUNCEMENTS_IGNOREON));
+            arena.msg(sender, MSG.MODULE_ANNOUNCEMENTS_IGNOREON);
         }
 
         if (StringParser.isNegativeValue(args[0])) {
             aPlayer.setIgnoreAnnouncements(false);
-            arena.msg(sender, Language.parse(arena, MSG.MODULE_ANNOUNCEMENTS_IGNOREOFF));
+            arena.msg(sender, MSG.MODULE_ANNOUNCEMENTS_IGNOREOFF);
             return;
         }
 
         // usage: /pa {arenaname} shutup {value}
 
-        arena.msg(sender, Language.parse(arena, MSG.ERROR_INVALID_VALUE, args[0]));
-        arena.msg(sender, Language.parse(arena, MSG.ERROR_POSITIVES, StringParser.joinSet(StringParser.positive, " | ")));
-        arena.msg(sender, Language.parse(arena, MSG.ERROR_NEGATIVES, StringParser.joinSet(StringParser.negative, " | ")));
+        arena.msg(sender, MSG.ERROR_INVALID_VALUE, args[0]);
+        arena.msg(sender, MSG.ERROR_POSITIVES, StringParser.joinSet(StringParser.positive, " | "));
+        arena.msg(sender, MSG.ERROR_NEGATIVES, StringParser.joinSet(StringParser.negative, " | "));
 
     }
 
@@ -82,7 +81,7 @@ public class PAI_Shutup extends AbstractArenaCommand {
 
     @Override
     public void displayHelp(final CommandSender sender) {
-        Arena.pmsg(sender, Help.parse(HELP.SHUTUP));
+        Arena.pmsg(sender, HELP.SHUTUP);
     }
 
     @Override

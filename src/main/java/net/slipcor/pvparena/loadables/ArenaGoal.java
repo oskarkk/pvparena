@@ -266,14 +266,14 @@ public class ArenaGoal implements IArenaCommandHandler {
                 CFG.READY_MAXTEAMPLAYERS);
 
         if (maxPlayers > 0 && this.arena.getFighters().size() >= maxPlayers) {
-            throw new GameplayException(Language.parse(this.arena, Language.MSG.ERROR_JOIN_ARENA_FULL));
+            throw new GameplayException(Language.parse(Language.MSG.ERROR_JOIN_ARENA_FULL));
         }
 
         if (!this.arena.isFreeForAll() && args != null && args.length > 0) {
             final ArenaTeam team = this.arena.getTeam(args[0]);
 
             if (team != null && maxTeamPlayers > 0 && team.getTeamMembers().size() >= maxTeamPlayers) {
-                throw new GameplayException(Language.parse(this.arena, Language.MSG.ERROR_JOIN_TEAM_FULL));
+                throw new GameplayException(Language.parse(Language.MSG.ERROR_JOIN_TEAM_FULL));
             }
         }
     }
@@ -578,14 +578,14 @@ public class ArenaGoal implements IArenaCommandHandler {
         String coloredPlayerName = respawnTeam.colorizePlayer(player) + ChatColor.YELLOW;
 
         if(deathMessage == Language.MSG.FIGHT_KILLED_BY_REMAINING || deathMessage == Language.MSG.FIGHT_KILLED_BY_REMAINING_FRAGS) {
-            this.arena.broadcast(Language.parse(this.arena, deathMessage,
+            this.arena.broadcast(Language.parse(deathMessage,
                     coloredPlayerName, deathCause, String.valueOf(remainingLives)));
         } else if(deathMessage == Language.MSG.FIGHT_KILLED_BY_REMAINING_TEAM || deathMessage == Language.MSG.FIGHT_KILLED_BY_REMAINING_TEAM_FRAGS) {
-            this.arena.broadcast(Language.parse(this.arena, deathMessage,
+            this.arena.broadcast(Language.parse(deathMessage,
                     coloredPlayerName,deathCause, String.valueOf(remainingLives),
                     respawnTeam.getColoredName()));
         } else {
-            this.arena.broadcast(Language.parse(this.arena, Language.MSG.FIGHT_KILLED_BY,
+            this.arena.broadcast(Language.parse(Language.MSG.FIGHT_KILLED_BY,
                     coloredPlayerName, deathCause));
         }
     }

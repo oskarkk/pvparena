@@ -158,7 +158,7 @@ public class GoalFood extends ArenaGoal {
                     this.flagName = args[0];
                     PAA_Region.activeSelections.put(sender.getName(), this.arena);
 
-                    this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_FOOD_TOSET, this.flagName));
+                    this.arena.msg(sender, MSG.GOAL_FOOD_TOSET, this.flagName);
                 }
             }
         } else if (args[0].contains(FOODFURNACE)) {
@@ -168,7 +168,7 @@ public class GoalFood extends ArenaGoal {
                     this.flagName = args[0];
                     PAA_Region.activeSelections.put(sender.getName(), this.arena);
 
-                    this.arena.msg(sender, Language.parse(this.arena, MSG.GOAL_FOODFURNACE_TOSET, this.flagName));
+                    this.arena.msg(sender, MSG.GOAL_FOODFURNACE_TOSET, this.flagName);
                 }
             }
         }
@@ -198,14 +198,14 @@ public class GoalFood extends ArenaGoal {
         if (aTeam != null && !force) {
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+                    Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                             + aTeam.getName() + ChatColor.YELLOW), "END");
 
             ArenaModuleManager.announce(
                     this.arena,
-                    Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+                    Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                             + aTeam.getName() + ChatColor.YELLOW), "WINNER");
-            this.arena.broadcast(Language.parse(this.arena, MSG.TEAM_HAS_WON, aTeam.getColor()
+            this.arena.broadcast(Language.parse(MSG.TEAM_HAS_WON, aTeam.getColor()
                     + aTeam.getName() + ChatColor.YELLOW));
         }
 
@@ -253,13 +253,13 @@ public class GoalFood extends ArenaGoal {
             if (block.getType() != Material.FURNACE) {
                 return false;
             }
-            this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_FOODFURNACE_SET, this.flagName));
+            this.arena.msg(player, MSG.GOAL_FOODFURNACE_SET, this.flagName);
 
         } else {
             if (block.getType() != Material.CHEST) {
                 return false;
             }
-            this.arena.msg(player, Language.parse(this.arena, MSG.GOAL_FOOD_SET, this.flagName));
+            this.arena.msg(player, MSG.GOAL_FOOD_SET, this.flagName);
 
         }
 
@@ -348,7 +348,7 @@ public class GoalFood extends ArenaGoal {
         }
 
         if (!validSpawns.contains(new PABlockLocation(clickedBlock.getLocation()))) {
-            this.arena.msg(player.getPlayer(), Language.parse(this.arena, MSG.GOAL_FOOD_NOTYOURFOOD));
+            this.arena.msg(player.getPlayer(), MSG.GOAL_FOOD_NOTYOURFOOD);
             return true;
         }
 

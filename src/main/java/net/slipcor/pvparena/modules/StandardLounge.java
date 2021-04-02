@@ -70,14 +70,14 @@ public class StandardLounge extends ArenaModule {
     public boolean handleJoin(Player player) throws GameplayException {
         if (this.arena.isLocked() && !player.hasPermission("pvparena.admin")
                 && !(player.hasPermission("pvparena.create") && this.arena.getOwner().equals(player.getName()))) {
-            throw new GameplayException(Language.parse(this.arena, MSG.ERROR_DISABLED));
+            throw new GameplayException(Language.parse(MSG.ERROR_DISABLED));
         }
 
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
 
         if (aPlayer.getArena() != null) {
             debug(aPlayer.getArena(), player, this.getName());
-            throw new GameplayException(Language.parse(this.arena,
+            throw new GameplayException(Language.parse(
                     MSG.ERROR_ARENA_ALREADY_PART_OF, ArenaManager.getIndirectArenaName(aPlayer.getArena())));
         }
 
@@ -87,7 +87,7 @@ public class StandardLounge extends ArenaModule {
                 autoClass = player.getName();
             }
             if (autoClass != null && this.arena.getClass(autoClass) == null) {
-                throw new GameplayException(Language.parse(this.arena, MSG.ERROR_CLASS_NOT_FOUND, "autoClass"));
+                throw new GameplayException(Language.parse(MSG.ERROR_CLASS_NOT_FOUND, "autoClass"));
             }
         }
 
