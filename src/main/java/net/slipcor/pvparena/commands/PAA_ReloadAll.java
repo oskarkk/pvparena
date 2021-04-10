@@ -57,7 +57,7 @@ public class PAA_ReloadAll extends AbstractGlobalCommand {
             scmd.commit(a, sender, emptyArray);
         }
 
-        ArenaManager.load_arenas();
+        ArenaManager.loadAllArenas();
         RegionManager.getInstance().reloadCache();
     }
 

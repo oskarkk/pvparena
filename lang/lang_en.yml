@@ -1,9 +1,9 @@
 nulang:
   arena:
     create:
-      done: arena '%1%' created!
+      done: 'Arena ''%1%'' with goal %2% created!'
     disable:
-      done: Arena disabled!
+      done: 'Arena disabled!'
     edit:
       disabled: 'Disabled edit mode for arena: %1%'
       enabled: 'Enabled edit mode for arena: %1%'

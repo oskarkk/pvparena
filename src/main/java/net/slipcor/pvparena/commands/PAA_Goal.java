@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <pre>PVP Arena GOAL Command class</pre>
@@ -43,7 +44,8 @@ public class PAA_Goal extends AbstractArenaCommand {
         final Loadable<?> loadableGoal = goalManager.getLoadableByName(args[0].toLowerCase());
 
         if (loadableGoal == null) {
-            arena.msg(sender, MSG.ERROR_GOAL_NOTFOUND, args[0], StringParser.joinSet(goalManager.getAllGoalNames(), " "));
+            arena.msg(sender, MSG.ERROR_GOAL_NOTFOUND, args[0],
+                    goalManager.getAllGoalNames().stream().sorted().collect(Collectors.joining(", ")));
             arena.msg(sender, MSG.GOAL_INSTALLING);
             return;
         }

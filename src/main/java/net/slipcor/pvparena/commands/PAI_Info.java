@@ -7,15 +7,13 @@ import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
+import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.regions.ArenaRegion;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <pre>PVP Arena INFO Command class</pre>
@@ -226,7 +224,8 @@ public class PAI_Info extends AbstractArenaCommand {
 
 
         if (displayMode == null || "goal".equalsIgnoreCase(displayMode)) {
-            arena.msg(sender, MSG.INFO_GOAL_ACTIVE, arena.getGoal().getName());
+            arena.msg(sender, MSG.INFO_GOAL_ACTIVE,
+                    Optional.ofNullable(arena.getGoal()).map(ArenaGoal::getName).orElse("None"));
             arena.getGoal().displayInfo(sender);
         }
 

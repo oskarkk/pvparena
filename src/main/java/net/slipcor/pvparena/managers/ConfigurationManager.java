@@ -60,32 +60,30 @@ public final class ConfigurationManager {
         }
         final YamlConfiguration config = cfg.getYamlConfiguration();
 
-        final List<String> goals = cfg.getStringList("goals", new ArrayList<>());
+        final String goalConfig = cfg.getString(CFG.GENERAL_GOAL);
         final List<String> modules = cfg.getStringList("mods", new ArrayList<>());
 
         ArenaGoalManager goalManager = PVPArena.getInstance().getAgm();
         if (cfg.getString(CFG.GENERAL_TYPE, "null") == null
                 || "null".equals(cfg.getString(CFG.GENERAL_TYPE, "null"))) {
-            cfg.createDefaults(goals, modules);
+            createNewConfig(arena, cfg);
         } else {
             // opening existing arena
 
             values:
             for (final CFG c : CFG.getValues()) {
                 if (c.hasModule()) {
-                    for (final String goal : goals) {
-                        if (goal.equals(c.getModule())) {
-                            if (cfg.getUnsafe(c.getNode()) == null) {
-                                cfg.createDefaults(goals, modules);
-                                break values;
-                            }
+                    if (goalConfig.equals(c.getGoalOrModule())) {
+                        if (cfg.getUnsafe(c.getNode()) == null) {
+                            cfg.createDefaults(goalConfig, modules);
+                            break values;
                         }
                     }
 
                     for (final String mod : modules) {
-                        if (mod.equals(c.getModule())) {
+                        if (mod.equals(c.getGoalOrModule())) {
                             if (cfg.getUnsafe(c.getNode()) == null) {
-                                cfg.createDefaults(goals, modules);
+                                cfg.createDefaults(goalConfig, modules);
                                 break values;
                             }
                         }
@@ -93,7 +91,7 @@ public final class ConfigurationManager {
                     continue; // node unused, don't check for existence!
                 }
                 if (cfg.getUnsafe(c.getNode()) == null) {
-                    cfg.createDefaults(goals, modules);
+                    cfg.createDefaults(goalConfig, modules);
                     break;
                 }
             }
@@ -104,6 +102,7 @@ public final class ConfigurationManager {
                 arena.setGoal(goal, false);
             } else {
                 PVPArena.getInstance().getLogger().warning(String.format("Goal referenced in arena '%s' not found (uninstalled?): %s", arena.getName(), goalName));
+                return false;
             }
 
             List<String> list = cfg.getStringList(CFG.LISTS_MODS.getNode(), new ArrayList<>());
@@ -118,37 +117,35 @@ public final class ConfigurationManager {
             }
         }
 
-        if (config.get(CLASSITEMS) == null) {
-            if (PVPArena.getInstance().getConfig().get(CLASSITEMS) == null) {
-                config.addDefault(CLASSITEMS + ".Ranger.items",
-                        Utils.getItemStacksFromMaterials(Material.BOW, Material.ARROW));
-                config.addDefault(CLASSITEMS + ".Ranger.offhand",
-                        Utils.getItemStacksFromMaterials(Material.AIR));
-                config.addDefault(CLASSITEMS + ".Ranger.armor",
-                        Utils.getItemStacksFromMaterials(Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS));
+        if (config.get(CLASSITEMS) == null && PVPArena.getInstance().getConfig().get(CLASSITEMS) == null) {
+            config.addDefault(CLASSITEMS + ".Ranger.items",
+                    Utils.getItemStacksFromMaterials(Material.BOW, Material.ARROW));
+            config.addDefault(CLASSITEMS + ".Ranger.offhand",
+                    Utils.getItemStacksFromMaterials(Material.AIR));
+            config.addDefault(CLASSITEMS + ".Ranger.armor",
+                    Utils.getItemStacksFromMaterials(Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS));
 
-                config.addDefault(CLASSITEMS + ".Swordsman.items",
-                        Utils.getItemStacksFromMaterials(Material.DIAMOND_SWORD));
-                config.addDefault(CLASSITEMS + ".Swordsman.offhand",
-                        Utils.getItemStacksFromMaterials(Material.AIR));
-                config.addDefault(CLASSITEMS + ".Swordsman.armor",
-                        Utils.getItemStacksFromMaterials(Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS));
+            config.addDefault(CLASSITEMS + ".Swordsman.items",
+                    Utils.getItemStacksFromMaterials(Material.DIAMOND_SWORD));
+            config.addDefault(CLASSITEMS + ".Swordsman.offhand",
+                    Utils.getItemStacksFromMaterials(Material.AIR));
+            config.addDefault(CLASSITEMS + ".Swordsman.armor",
+                    Utils.getItemStacksFromMaterials(Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS));
 
-                config.addDefault(CLASSITEMS + ".Tank.items",
-                        Utils.getItemStacksFromMaterials(Material.STONE_SWORD));
-                config.addDefault(CLASSITEMS + ".Tank.offhand",
-                        Utils.getItemStacksFromMaterials(Material.AIR));
-                config.addDefault(CLASSITEMS + ".Tank.armor",
-                        Utils.getItemStacksFromMaterials(Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS));
+            config.addDefault(CLASSITEMS + ".Tank.items",
+                    Utils.getItemStacksFromMaterials(Material.STONE_SWORD));
+            config.addDefault(CLASSITEMS + ".Tank.offhand",
+                    Utils.getItemStacksFromMaterials(Material.AIR));
+            config.addDefault(CLASSITEMS + ".Tank.armor",
+                    Utils.getItemStacksFromMaterials(Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS));
 
-                config.addDefault(CLASSITEMS + ".Pyro.items",
-                        Utils.getItemStacksFromMaterials(Material.FLINT_AND_STEEL, Material.TNT, Material.TNT, Material.TNT));
-                config.addDefault(CLASSITEMS + ".Pyro.offhand",
-                        Utils.getItemStacksFromMaterials(Material.AIR));
-                config.addDefault(CLASSITEMS + ".Pyro.armor",
-                        Utils.getItemStacksFromMaterials(Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS));
+            config.addDefault(CLASSITEMS + ".Pyro.items",
+                    Utils.getItemStacksFromMaterials(Material.FLINT_AND_STEEL, Material.TNT, Material.TNT, Material.TNT));
+            config.addDefault(CLASSITEMS + ".Pyro.offhand",
+                    Utils.getItemStacksFromMaterials(Material.AIR));
+            config.addDefault(CLASSITEMS + ".Pyro.armor",
+                    Utils.getItemStacksFromMaterials(Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS));
 
-            }
         }
 
         if (config.get("time_intervals") == null) {
@@ -174,6 +171,7 @@ public final class ConfigurationManager {
             config.addDefault(prefix + "3600", "60 %m");
         }
 
+        debug(arena, "setting default config for goal {}", arena.getGoal());
         arena.getGoal().setDefaults(config);
 
         config.options().copyDefaults(true);
@@ -193,9 +191,9 @@ public final class ConfigurationManager {
             ItemStack[] armors;
 
             try {
-                items = getItemStacksFromConfig(config.getList(CLASSITEMS + "."+stringObjectEntry1.getKey()+".items"));
-                offHand = getItemStacksFromConfig(config.getList(CLASSITEMS + "."+stringObjectEntry1.getKey()+".offhand"))[0];
-                armors = getItemStacksFromConfig(config.getList(CLASSITEMS + "."+stringObjectEntry1.getKey()+".armor"));
+                items = getItemStacksFromConfig(config.getList(CLASSITEMS + "." + stringObjectEntry1.getKey() + ".items"));
+                offHand = getItemStacksFromConfig(config.getList(CLASSITEMS + "." + stringObjectEntry1.getKey() + ".offhand"))[0];
+                armors = getItemStacksFromConfig(config.getList(CLASSITEMS + "." + stringObjectEntry1.getKey() + ".armor"));
             } catch (final Exception e) {
                 Bukkit.getLogger().severe(
                         "[PVP Arena] Error while parsing class, skipping: "
@@ -217,7 +215,7 @@ public final class ConfigurationManager {
                 arena.addClass(stringObjectEntry1.getKey(), items, offHand, armors);
                 debug(arena, "adding class chest items to class " + stringObjectEntry1.getKey());
 
-            }   catch (Exception e) {
+            } catch (Exception e) {
                 arena.addClass(stringObjectEntry1.getKey(), items, offHand, armors);
                 debug(arena, "adding class items to class " + stringObjectEntry1.getKey());
             }
@@ -239,10 +237,7 @@ public final class ConfigurationManager {
                 final ArenaRegion region = Config.parseRegion(arena, config,
                         rName);
 
-                if (region == null) {
-                    PVPArena.getInstance().getLogger().severe(
-                            "Error while loading arena, region null: " + rName);
-                } else if (region.getWorld() == null) {
+                if (region.getWorld() == null) {
                     PVPArena.getInstance().getLogger().severe(
                             "Error while loading arena, world null: " + rName);
                 } else {
@@ -280,16 +275,30 @@ public final class ConfigurationManager {
                         (String) stringObjectEntry.getValue());
                 arena.getTeams().add(team);
                 debug(arena, "added team " + team.getName() + " => "
-                                + team.getColorCodeString());
+                        + team.getColorCodeString());
             }
         }
 
+        debug(arena, "loading modules for arena");
         ArenaModuleManager.configParse(arena, config);
         cfg.save();
         cfg.reloadMaps();
 
         arena.setPrefix(cfg.getString(CFG.GENERAL_PREFIX));
         return true;
+    }
+
+    /**
+     * Setup new Arena config
+     *
+     * @param arena new Arena
+     * @param cfg config
+     */
+    private static void createNewConfig(Arena arena, Config cfg) {
+        cfg.set(Config.CFG.GENERAL_PREFIX, arena.getName());
+        debug(arena, "set config goal {}", arena.getGoal().getName());
+        cfg.set(CFG.GENERAL_GOAL, arena.getGoal().getName());
+        cfg.createDefaults(arena.getGoal().getName(), new ArrayList<>());
     }
 
     /**

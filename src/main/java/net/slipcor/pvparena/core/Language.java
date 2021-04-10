@@ -31,11 +31,12 @@ public final class Language {
 
     public enum MSG {
 
-        ARENA_CREATE_DONE("nulang.arena.create.done", "Arena '%1%' created!"),
+        ARENA_CREATE_DONE("nulang.arena.create.done", "Arena '%1%' with goal %2% created!"),
         ARENA_DISABLE_DONE("nulang.arena.disable.done", "Arena disabled!"),
         ARENA_EDIT_DISABLED("nulang.arena.edit.disabled", "Disabled edit mode for arena: %1%"),
         ARENA_EDIT_ENABLED("nulang.arena.edit.enabled", "Enabled edit mode for arena: %1%"),
         ARENA_ENABLE_DONE("nulang.arena.enable.done", "Arena enabled!"),
+        ARENA_ENABLE_FAIL("nulang.arena.enable.fail", "&cArena failed to load. Please check the config."),
         ARENA_LIST("nulang.arena.arenalist", "Arenas: &a%1%&r"),
         ARENA_REGION_SHAPE_UNKNOWN("nulang.arena.regionshapeunknown", "Arena Shape '%1%' unknown. Consult the forums: http://goo.gl/IfLOh"),
         ARENA_RELOAD_DONE("nulang.arena.reload.done", "Arena reloaded!"),
@@ -398,7 +399,8 @@ public final class Language {
         REGIONS_SHAPE("nulang.regions.shape", "Region Shape: &a%1%&r"),
         REGIONS_TYPE("nulang.regions.type", "Region Type: &a%1%&r"),
 
-        RELOAD_DONE("nulang.reloaded", "Config reloaded!"),
+        RELOAD_DONE("nulang.reloaded", "&2Config of %1% reloaded."),
+        RELOAD_FAILED("nulang.reloadfail", "&cFail to reload arena %1%.&f Please check the arena config."),
         RELOAD_YMLS_DONE("nulang.ymls.reloaded", "Languages reloaded!"),
 
         ROUND_DISPLAY("nulang.round.display", "Round #%1%: %2%"),

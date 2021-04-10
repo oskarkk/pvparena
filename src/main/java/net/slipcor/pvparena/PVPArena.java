@@ -445,7 +445,7 @@ public class PVPArena extends JavaPlugin {
 
         Debugger.load(this, Bukkit.getConsoleSender());
         ArenaClass.addGlobalClasses();
-        ArenaManager.load_arenas();
+        ArenaManager.loadAllArenas();
 
         this.loadConfigValues();
 

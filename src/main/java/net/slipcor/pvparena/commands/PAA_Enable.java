@@ -6,6 +6,7 @@ import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.managers.RegionManager;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
@@ -34,6 +35,11 @@ public class PAA_Enable extends AbstractArenaCommand {
         }
 
         if (!argCountValid(sender, arena, args, new Integer[]{0})) {
+            return;
+        }
+
+        if (!ArenaManager.loadArena(arena)) {
+            arena.msg(sender, MSG.ARENA_ENABLE_FAIL);
             return;
         }
 

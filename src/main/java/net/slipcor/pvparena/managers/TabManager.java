@@ -7,6 +7,7 @@ import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.commands.AbstractGlobalCommand;
 import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.commands.PAA_Edit;
+import net.slipcor.pvparena.core.CollectionUtils;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.regions.RegionFlag;
 import net.slipcor.pvparena.regions.RegionProtection;
@@ -88,8 +89,13 @@ public final class TabManager {
             addCommandsStartingWithPrefix(matches, sender, arena, arenaCommands, args[0]);
 
             if (arena != null) {
-                addCommandsStartingWithPrefix(matches, sender, arena, singletonList(arena.getGoal()), args[0]);
-                addCommandsStartingWithPrefix(matches, sender, arena, new ArrayList<>(arena.getMods()), args[0]);
+                // an invalid arena config file may produce NPE here
+                if (arena.getGoal() != null) {
+                    addCommandsStartingWithPrefix(matches, sender, arena, singletonList(arena.getGoal()), args[0]);
+                }
+                if (CollectionUtils.isNotEmpty(arena.getMods())) {
+                    addCommandsStartingWithPrefix(matches, sender, arena, new ArrayList<>(arena.getMods()), args[0]);
+                }
             }
             return new ArrayList<>(matches);
         }
@@ -98,8 +104,12 @@ public final class TabManager {
         addTreesMatchingValueInHandlerList(commands, arenaCommands, arena, args[0]);
         addTreesMatchingValueInHandlerList(commands, globalCommands, arena, args[0]);
         if (arena != null) {
-            addTreesMatchingValueInHandlerList(commands, singletonList(arena.getGoal()), arena, args[0]);
-            addTreesMatchingValueInHandlerList(commands, new ArrayList<>(arena.getMods()), arena, args[0]);
+            if(arena.getGoal() != null) {
+                addTreesMatchingValueInHandlerList(commands, singletonList(arena.getGoal()), arena, args[0]);
+            }
+            if(CollectionUtils.isNotEmpty(arena.getMods())) {
+                addTreesMatchingValueInHandlerList(commands, new ArrayList<>(arena.getMods()), arena, args[0]);
+            }
         }
 
         for (final CommandTree<String> tree : commands) {
@@ -115,7 +125,9 @@ public final class TabManager {
      * @param list    the ArenaCommandHandler list to search
      * @param prefix  the prefix to look for
      */
-    private static void addCommandsStartingWithPrefix(final Set<String> matches, final CommandSender sender, final Arena arena, final List<? extends IArenaCommandHandler> list, final String prefix) {
+    private static void addCommandsStartingWithPrefix(final Set<String> matches, final CommandSender sender,
+                                                      final Arena arena, final List<? extends IArenaCommandHandler> list,
+                                                      final String prefix) {
         for (final IArenaCommandHandler ach : list) {
             if (ach.hasPerms(sender, arena)) {
                 if(prefix.startsWith("!") || prefix.startsWith("-")) {

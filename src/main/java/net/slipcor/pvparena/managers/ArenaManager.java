@@ -19,11 +19,14 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 import static net.slipcor.pvparena.config.Debugger.debug;
@@ -277,38 +280,32 @@ public final class ArenaManager {
     /**
      * load all configs in the PVP Arena folder
      */
-    public static void load_arenas() {
-        debug("loading arenas...");
-        Map<String, Set<String>> missingsGoals = new HashMap<>();
+    public static void loadAllArenas() {
+
+        debug("reading 'arenas' folder...");
+        File[] files = null;
         try {
             final File path = new File(PVPArena.getInstance().getDataFolder().getPath(),
                     "arenas");
-            final File[] files = path.listFiles();
+            files = path.listFiles();
+        } catch (final Exception e) {
+            PVPArena.getInstance().getLogger().severe(String.format("Can't create PvpArena folder: %s.", e.getMessage()));
+            return;
+        }
+
+        if (CollectionUtils.isNotEmpty(files)) {
             for (File arenaConfigFile : files) {
                 if (!arenaConfigFile.isDirectory() && arenaConfigFile.getName().contains(".yml")) {
                     String sName = arenaConfigFile.getName().replace("config_", "");
                     sName = sName.replace(".yml", "");
-                    final String missingGoal = checkIfMissingGoals(sName);
-                    if (missingGoal == null) {
-                        debug("arena: {}", sName);
-                        if (!ARENAS.containsKey(sName.toLowerCase())) {
-                            Arena arena = new Arena(sName);
-                            loadArena(arena);
-                        }
-                    } else {
-                        // store all arena file name with the missing goal
-                        missingsGoals.computeIfAbsent(missingGoal, k -> new HashSet<>());
-                        missingsGoals.get(missingGoal).add(arenaConfigFile.getName());
+
+                    debug("arena: {}", sName);
+                    if (!ARENAS.containsKey(sName.toLowerCase())) {
+                        Arena arena = new Arena(sName);
+                        loadArena(arena);
                     }
                 }
             }
-            missingsGoals.keySet().forEach(key -> {
-                PVPArena.getInstance().getLogger().warning(Language.parse(MSG.ERROR_GOAL_NOTFOUND, key,
-                        StringParser.joinSet(missingsGoals.get(key), ", "),
-                        StringParser.joinSet(PVPArena.getInstance().getAgm().getAllGoalNames(), ", ")));
-            });
-        } catch (final Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -334,15 +331,37 @@ public final class ArenaManager {
         if (arena == null) {
             return false;
         }
-        debug("loading arena {}", arena);
+        debug(arena, "loading arena");
 
-        if (!arena.isValid()) {
-            Arena.pmsg(Bukkit.getConsoleSender(), MSG.ERROR_ARENACONFIG, arena.getName());
+        File file = new File(String.format("%s/arenas/%s.yml", PVPArena.getInstance().getDataFolder().getPath(), arena.getName()));
+        if (!file.exists()) {
+            PVPArena.getInstance().getLogger().severe(String.format("Can't load arena %s: file %s not found.", arena.getName(), file.getName()));
             return false;
+        }
+        final Config cfg = new Config(file);
+        arena.setConfig(cfg);
+        // Goal can only be changed in-game (To add goal config nodes etc.)
+        if (arena.getGoal() != null) {
+            debug(arena, "set config goal {}", arena.getGoal().getName());
+            cfg.set(CFG.GENERAL_GOAL, arena.getGoal().getName());
+            cfg.save();
+        }
+        arena.setValid(ConfigurationManager.configParse(arena, cfg));
+        debug(arena, "valid: {}", arena.isValid());
+        if (arena.isValid()) {
+            StatisticsManager.loadStatistics(arena);
+            SpawnManager.loadSpawns(arena, cfg);
+        } else {
+            // not valid arena config file
+            Arena.pmsg(Bukkit.getConsoleSender(), MSG.ERROR_ARENACONFIG, arena.getName());
+            // force enabled to false to prevent players using it
+            arena.getConfig().set(CFG.GENERAL_ENABLED, false);
+            arena.getConfig().save();
+            arena.setLocked(true);
         }
 
         ARENAS.put(arena.getName().toLowerCase(), arena);
-        return true;
+        return arena.isValid();
     }
 
     public static void removeArena(final Arena arena, final boolean deleteConfig) {
@@ -449,7 +468,7 @@ public final class ArenaManager {
                     debug("Arena not found: {}", arena);
                     error = true;
                 } else {
-                    debug("added {} > {}" , key , arena);
+                    debug("added {} > {}", key, arena);
                 }
             }
             if (error || strings.size() < 1) {
@@ -612,7 +631,7 @@ public final class ArenaManager {
                 // OR
                 // B: ungrouped and allowing ungrouped
                 if (preciseArenaName != null) {
-                    debug("priorizing actual arena name {} over {}" , preciseArenaName, string);
+                    debug("priorizing actual arena name {} over {}", preciseArenaName, string);
                     string = preciseArenaName;
                 }
                 debug("out getArenaByName: {}", string);
