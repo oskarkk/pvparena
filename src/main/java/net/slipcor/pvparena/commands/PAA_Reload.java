@@ -43,7 +43,9 @@ public class PAA_Reload extends AbstractArenaCommand {
 
         if (ArenaManager.loadArena(newArena)) {
             RegionManager.getInstance().reloadCache();
-            newArena.msg(sender, MSG.RELOAD_DONE);
+            newArena.msg(sender, MSG.RELOAD_DONE, arena.getName());
+        } else {
+            newArena.msg(sender, MSG.RELOAD_FAILED, arena.getName());
         }
     }
 

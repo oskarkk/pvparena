@@ -19,36 +19,28 @@ another place, don't destroy it, just redefine your spawn points and your region
 
 <br>
 
-## 1. Create the arena
+## 1. Choose the goal for the arena
 
-Just type this command to create your arena:
+PvpArena provide some predefined goals like team death match, player death match, capture the flag and more. 
 
-`/pa create [newArenaName] (free)`
-
-By default your arena will work with a team system. If you add the `free` option, your arena will work on a *Free for
-all* (FFA) game mode.
-
-> **🚩 Tip:**  
-> This parameter can be changed using [/pa gamemode](commands/gamemode.md) command or in your config file by 
-> setting `general.type` parameter to `free` or `none`. 
-
-<br>
-
-## 2. Set goals for the arena
-
-By default, your arena will use [TeamLives](goals/teamlives.md) goal if your arena is in team mode and 
-[PlayerLives](goals/playerlives.md) goal otherwise. If you're ok with this, go to the next point, otherwise please
-continue reading.
-
-You can choose a custom goal [in the list](goals.md) and set it for your arena with the command:
-`/pa [arenaName] goal [goalName]`
+You can choose a goal [in this list](goals.md).
 
 Each goal has its own setup, so take the time to read [documentation](goals.md) of the goal you want to use.
 
-You will find more information about this command [on this link](commands/goal.md).
+<br>
 
-> **Reminder:**  
-> Don't forget to remove _TeamLives_ goal if you don't use it 😉
+## 2. Create the arena
+
+Just type this command to create your arena:
+
+`/pa create [newArenaName] (goal)`
+
+By default, your arena will use [TeamLives](goals/teamlives.md) goal.
+
+You can change arena goal with the command:
+`/pa [arenaName] goal [goalName]`
+
+You will find more information about this command [on this link](commands/goal.md).
 
 <br>
 

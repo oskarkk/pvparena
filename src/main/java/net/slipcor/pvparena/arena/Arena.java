@@ -21,10 +21,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -33,8 +31,6 @@ import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -74,7 +70,7 @@ public class Arena {
     // arena status
     private boolean fightInProgress;
     private boolean locked;
-    private final boolean valid;
+    private boolean valid;
     private int startCount;
 
     private ArenaGoal goal;
@@ -87,7 +83,7 @@ public class Arena {
 
     private boolean gaveRewards;
 
-    private final Config cfg;
+    private Config config;
     private long startTime;
     private ArenaScoreboard scoreboard = null;
 
@@ -95,26 +91,14 @@ public class Arena {
 
     public Arena(final String name) {
         this.name = name;
+    }
 
-        debug(this, "loading Arena " + name);
-        File file = new File(String.format("%s/arenas/%s.yml", PVPArena.getInstance().getDataFolder().getPath(), name));
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (final IOException e) {
-                e.printStackTrace();
-            }
-        }
-        this.cfg = new Config(file);
-        this.valid = ConfigurationManager.configParse(this, this.cfg);
-        if (this.valid) {
-            StatisticsManager.loadStatistics(this);
-            SpawnManager.loadSpawns(this, this.cfg);
-        }
+    public void setConfig(Config cfg) {
+        this.config = cfg;
     }
 
     public Config getConfig() {
-        return this.cfg;
+        return this.config;
     }
 
     public Set<PABlock> getBlocks() {
@@ -182,9 +166,13 @@ public class Arena {
         }
 
         if (updateConfig) {
-            this.cfg.set(CFG.GENERAL_GOAL, this.goal.getName());
-            this.cfg.save();
+            this.config.set(CFG.GENERAL_GOAL, this.goal.getName());
+            this.config.save();
         }
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 
     public Set<ArenaModule> getMods() {
@@ -211,8 +199,8 @@ public class Arena {
 
     private void updateModsInCfg() {
         final List<String> list = this.mods.stream().map(ArenaModule::getName).collect(Collectors.toList());
-        this.cfg.set(CFG.LISTS_MODS, list);
-        this.cfg.save();
+        this.config.set(CFG.LISTS_MODS, list);
+        this.config.save();
     }
 
     public boolean isLocked() {
@@ -249,7 +237,7 @@ public class Arena {
 
     public Material getReadyBlock() {
         try {
-            return this.cfg.getMaterial(CFG.READY_BLOCK, Material.STICK);
+            return this.config.getMaterial(CFG.READY_BLOCK, Material.STICK);
         } catch (final Exception e) {
             Language.logWarn(MSG.ERROR_MAT_NOT_FOUND, "ready block");
         }
@@ -367,7 +355,7 @@ public class Arena {
      * @param player the player to prefix
      */
     public void broadcastColored(final String msg, final ChatColor color, final Player player) {
-        final String sColor = this.cfg.getBoolean(CFG.CHAT_COLORNICK) ? color.toString() : "";
+        final String sColor = this.config.getBoolean(CFG.CHAT_COLORNICK) ? color.toString() : "";
         synchronized (this) {
             this.broadcast(sColor + player.getName() + ChatColor.WHITE + ": " + msg.replace("&", "%%&%%"));
         }
@@ -394,14 +382,14 @@ public class Arena {
         debug(this, player, "choosing player class");
 
         debug(this, player, "checking class perms");
-        if (this.cfg.getBoolean(CFG.PERMS_EXPLICITCLASS) && !player.hasPermission("pvparena.class." + className)) {
+        if (this.config.getBoolean(CFG.PERMS_EXPLICITCLASS) && !player.hasPermission("pvparena.class." + className)) {
             this.msg(player, MSG.ERROR_NOPERM_CLASS, className);
             return; // class permission desired and failed =>
             // announce and OUT
         }
 
         if (sign != null) {
-            if (this.cfg.getBoolean(CFG.USES_CLASSSIGNSDISPLAY)) {
+            if (this.config.getBoolean(CFG.USES_CLASSSIGNSDISPLAY)) {
                 PAClassSign.remove(this.signs, player);
                 final Block block = sign.getBlock();
                 PAClassSign classSign = PAClassSign.used(block.getLocation(), this.signs);
@@ -453,7 +441,7 @@ public class Arena {
     public void countDown() {
         if (this.startRunner != null || this.fightInProgress) {
 
-            if (!this.cfg.getBoolean(CFG.READY_ENFORCECOUNTDOWN) && this.getClass(this.cfg.getString(CFG.READY_AUTOCLASS)) == null && !this.fightInProgress) {
+            if (!this.config.getBoolean(CFG.READY_ENFORCECOUNTDOWN) && this.getClass(this.config.getString(CFG.READY_AUTOCLASS)) == null && !this.fightInProgress) {
                 this.startRunner.cancel();
                 this.startRunner = null;
                 this.broadcast(Language.parse(MSG.TIMER_COUNTDOWN_INTERRUPTED));
@@ -461,7 +449,7 @@ public class Arena {
             return;
         }
 
-        new StartRunnable(this, this.cfg.getInt(CFG.TIME_STARTCOUNTDOWN));
+        new StartRunnable(this, this.config.getInt(CFG.TIME_STARTCOUNTDOWN));
     }
 
     /**
@@ -493,19 +481,19 @@ public class Arena {
         debug(this, player, "giving rewards to " + player.getName());
 
         ArenaModuleManager.giveRewards(this, player);
-        ItemStack[] items = this.cfg.getItems(CFG.ITEMS_REWARDS);
+        ItemStack[] items = this.config.getItems(CFG.ITEMS_REWARDS);
 
-        final boolean isRandom = this.cfg.getBoolean(CFG.ITEMS_RANDOM);
+        final boolean isRandom = this.config.getBoolean(CFG.ITEMS_RANDOM);
         final Random rRandom = new Random();
 
         final PAWinEvent dEvent = new PAWinEvent(this, player, items);
         Bukkit.getPluginManager().callEvent(dEvent);
         items = dEvent.getItems();
 
-        debug(this, player, "start " + this.startCount + " - minplayers: " + this.cfg.getInt(CFG.ITEMS_MINPLAYERS));
+        debug(this, player, "start " + this.startCount + " - minplayers: " + this.config.getInt(CFG.ITEMS_MINPLAYERS));
 
         if (items == null || items.length < 1
-                || this.cfg.getInt(CFG.ITEMS_MINPLAYERS) > this.startCount) {
+                || this.config.getInt(CFG.ITEMS_MINPLAYERS) > this.startCount) {
             return;
         }
 
@@ -543,7 +531,7 @@ public class Arena {
     }
 
     public void hasNotPlayed(final ArenaPlayer player) {
-        if (this.cfg.getBoolean(CFG.JOIN_ONLYIFHASPLAYED)) {
+        if (this.config.getBoolean(CFG.JOIN_ONLYIFHASPLAYED)) {
             return;
         }
         this.playedPlayers.remove(player.getName());
@@ -697,10 +685,10 @@ public class Arena {
             this.msg(player, MSG.NOTICE_YOU_LEFT);
         }
 
-        this.removePlayer(player, this.cfg.getString(location), soft, force);
+        this.removePlayer(player, this.config.getString(location), soft, force);
 
-        if (!this.cfg.getBoolean(CFG.READY_ENFORCECOUNTDOWN) && this.startRunner != null && this.cfg.getInt(CFG.READY_MINPLAYERS) > 0 &&
-                this.getFighters().size() <= this.cfg.getInt(CFG.READY_MINPLAYERS)) {
+        if (!this.config.getBoolean(CFG.READY_ENFORCECOUNTDOWN) && this.startRunner != null && this.config.getInt(CFG.READY_MINPLAYERS) > 0 &&
+                this.getFighters().size() <= this.config.getInt(CFG.READY_MINPLAYERS)) {
             this.startRunner.cancel();
             this.broadcast(Language.parse(MSG.TIMER_COUNTDOWN_INTERRUPTED));
             this.startRunner = null;
@@ -725,11 +713,11 @@ public class Arena {
         if (players < 2) {
             return Language.parse(MSG.ERROR_READY_1_ALONE);
         }
-        if (players < this.cfg.getInt(CFG.READY_MINPLAYERS)) {
+        if (players < this.config.getInt(CFG.READY_MINPLAYERS)) {
             return Language.parse(MSG.ERROR_READY_4_MISSING_PLAYERS);
         }
 
-        if (this.cfg.getBoolean(CFG.READY_CHECKEACHPLAYER)) {
+        if (this.config.getBoolean(CFG.READY_CHECKEACHPLAYER)) {
             for (final ArenaTeam team : this.teams) {
                 for (final ArenaPlayer ap : team.getTeamMembers()) {
                     if (ap.getStatus() != PlayerStatus.READY) {
@@ -744,14 +732,14 @@ public class Arena {
 
             for (final ArenaTeam team : this.teams) {
                 for (final ArenaPlayer ap : team.getTeamMembers()) {
-                    if (!this.cfg.getBoolean(CFG.READY_CHECKEACHTEAM) || ap.getStatus() == PlayerStatus.READY) {
+                    if (!this.config.getBoolean(CFG.READY_CHECKEACHTEAM) || ap.getStatus() == PlayerStatus.READY) {
                         activeTeams.add(team.getName());
                         break;
                     }
                 }
             }
 
-            if (this.cfg.getBoolean(CFG.USES_EVENTEAMS) && !TeamManager.checkEven(this)) {
+            if (this.config.getBoolean(CFG.USES_EVENTEAMS) && !TeamManager.checkEven(this)) {
                 return Language.parse(MSG.NOTICE_WAITING_EQUAL);
             }
 
@@ -767,8 +755,8 @@ public class Arena {
                 if (p.getArenaClass() == null) {
                     debug(this, p.getPlayer(), "player has no class");
 
-                    String autoClass = this.cfg.getDefinedString(CFG.READY_AUTOCLASS);
-                    if (this.cfg.getBoolean(CFG.USES_PLAYERCLASSES) && this.getClass(p.getName()) != null) {
+                    String autoClass = this.config.getDefinedString(CFG.READY_AUTOCLASS);
+                    if (this.config.getBoolean(CFG.USES_PLAYERCLASSES) && this.getClass(p.getName()) != null) {
                         autoClass = p.getName();
                     }
                     if (autoClass != null && this.getClass(autoClass) != null) {
@@ -784,7 +772,7 @@ public class Arena {
         final int readyPlayers = this.countReadyPlayers();
 
         if (players > readyPlayers) {
-            final double ratio = this.cfg.getDouble(CFG.READY_NEEDEDRATIO);
+            final double ratio = this.config.getDouble(CFG.READY_NEEDEDRATIO);
             debug(this, "ratio: " + ratio);
             if (ratio > 0) {
                 double aRatio = ((double) readyPlayers) / players;
@@ -794,7 +782,7 @@ public class Arena {
             }
             return Language.parse(MSG.ERROR_READY_0_ONE_PLAYER_NOT_READY);
         }
-        return this.cfg.getBoolean(CFG.READY_ENFORCECOUNTDOWN) ? "" : null;
+        return this.config.getBoolean(CFG.READY_ENFORCECOUNTDOWN) ? "" : null;
     }
 
     /**
@@ -843,7 +831,7 @@ public class Arena {
         }
 
         this.callExitEvent(player);
-        if (this.cfg.getBoolean(CFG.USES_CLASSSIGNSDISPLAY)) {
+        if (this.config.getBoolean(CFG.USES_CLASSSIGNSDISPLAY)) {
             PAClassSign.remove(this.signs, player);
         }
 
@@ -874,7 +862,7 @@ public class Arena {
         for (final ArenaPlayer arenaPlayer : players) {
             if (arenaPlayer.getStatus() != null && arenaPlayer.getStatus() == PlayerStatus.FIGHT) {
                 if (!force && arenaPlayer.getStatus() == PlayerStatus.FIGHT
-                        && this.fightInProgress && !this.gaveRewards && !this.isFreeForAll() && this.cfg.getBoolean(CFG.USES_TEAMREWARDS)) {
+                        && this.fightInProgress && !this.gaveRewards && !this.isFreeForAll() && this.config.getBoolean(CFG.USES_TEAMREWARDS)) {
                     players.removeAll(arenaPlayer.getArenaTeam().getTeamMembers());
                     this.giveRewardsLater(arenaPlayer.getArenaTeam()); // this removes the players from the arena
                     break;
@@ -893,7 +881,7 @@ public class Arena {
                     arenaPlayer.addWins();
                 }
                 this.callExitEvent(player);
-                this.resetPlayer(player, this.cfg.getString(CFG.TP_WIN, OLD_TP),
+                this.resetPlayer(player, this.config.getString(CFG.TP_WIN, OLD_TP),
                         false, force);
                 if (!force && arenaPlayer.getStatus() == PlayerStatus.FIGHT && this.fightInProgress && !this.gaveRewards) {
                     // if we are remaining, give reward!
@@ -909,10 +897,10 @@ public class Arena {
                     arenaPlayer.addLosses();
                 }
                 this.callExitEvent(player);
-                this.resetPlayer(player, this.cfg.getString(CFG.TP_LOSE, OLD_TP), false, force);
+                this.resetPlayer(player, this.config.getString(CFG.TP_LOSE, OLD_TP), false, force);
             } else {
                 this.callExitEvent(arenaPlayer.getPlayer());
-                this.resetPlayer(arenaPlayer.getPlayer(), this.cfg.getString(CFG.TP_LOSE, OLD_TP), false, force);
+                this.resetPlayer(arenaPlayer.getPlayer(), this.config.getString(CFG.TP_LOSE, OLD_TP), false, force);
             }
 
             arenaPlayer.reset();
@@ -921,7 +909,7 @@ public class Arena {
             if (this.equals(player.getArena()) && player.getStatus() == PlayerStatus.WATCH) {
 
                 this.callExitEvent(player.getPlayer());
-                this.resetPlayer(player.getPlayer(), this.cfg.getString(CFG.TP_EXIT, OLD_TP), false, force);
+                this.resetPlayer(player.getPlayer(), this.config.getString(CFG.TP_EXIT, OLD_TP), false, force);
                 player.setArena(null);
                 player.reset();
             }
@@ -940,7 +928,7 @@ public class Arena {
         players.forEach(ap -> {
             ap.addWins();
             this.callExitEvent(ap.getPlayer());
-            this.resetPlayer(ap.getPlayer(), this.cfg.getString(CFG.TP_WIN, OLD_TP), false, false);
+            this.resetPlayer(ap.getPlayer(), this.config.getString(CFG.TP_WIN, OLD_TP), false, false);
             ap.reset();
         });
 
@@ -991,8 +979,7 @@ public class Arena {
         ArenaModuleManager.reset(this, force);
         ArenaManager.advance(Arena.this);
         this.clearRegions();
-        this.goal.reset(force);
-
+        ofNullable(this.goal).ifPresent(arenaGoal -> arenaGoal.reset(force));
         StatisticsManager.save();
 
         try {
@@ -1031,7 +1018,7 @@ public class Arena {
 
         ArenaModuleManager.resetPlayer(this, player, soft, force);
 
-        if (!soft && (!aPlayer.hasCustomClass() || this.cfg.getBoolean(CFG.GENERAL_CUSTOMRETURNSGEAR))) {
+        if (!soft && (!aPlayer.hasCustomClass() || this.config.getBoolean(CFG.GENERAL_CUSTOMRETURNSGEAR))) {
             ArenaPlayer.reloadInventory(this, player, true);
         }
 
@@ -1047,7 +1034,7 @@ public class Arena {
                 debug(Arena.this, player, "string = " + destination);
                 aPlayer.setTelePass(true);
 
-                int noDamageTicks = Arena.this.cfg.getInt(CFG.TIME_TELEPORTPROTECT) * 20;
+                int noDamageTicks = Arena.this.config.getInt(CFG.TIME_TELEPORTPROTECT) * 20;
                 if (OLD_TP.equalsIgnoreCase(destination)) {
                     debug(Arena.this, player, "tping to old");
                     if (aPlayer.getSavedLocation() != null) {
@@ -1058,7 +1045,7 @@ public class Arena {
                         aPlayer.setTeleporting(false);
                     }
                 } else {
-                    Vector offset = Arena.this.cfg.getOffset(destination);
+                    Vector offset = Arena.this.config.getOffset(destination);
                     PALocation loc = SpawnManager.getSpawnByExactName(Arena.this, destination);
                     if (loc == null) {
                         new Exception("RESET Spawn null: " + Arena.this.getName() + "->" + destination).printStackTrace();
@@ -1082,8 +1069,8 @@ public class Arena {
         final RunLater runLater = new RunLater();
 
         aPlayer.setTeleporting(true);
-        if (this.cfg.getInt(CFG.TIME_RESETDELAY) > 0 && !force) {
-            Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), runLater, this.cfg.getInt(CFG.TIME_RESETDELAY) * 20L);
+        if (this.config.getInt(CFG.TIME_RESETDELAY) > 0 && !force) {
+            Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), runLater, this.config.getInt(CFG.TIME_RESETDELAY) * 20L);
         } else if (PVPArena.getInstance().isShuttingDown()) {
             runLater.run();
         } else {
@@ -1100,20 +1087,20 @@ public class Arena {
     public void unKillPlayer(final Player player, final DamageCause cause, final Entity damager) {
 
         debug(this, player, "respawning player " + player.getName());
-        double iHealth = this.cfg.getInt(CFG.PLAYER_HEALTH, -1);
+        double iHealth = this.config.getInt(CFG.PLAYER_HEALTH, -1);
 
         if (iHealth < 1) {
             iHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
         }
 
         PlayerState.playersetHealth(player, iHealth);
-        player.setFoodLevel(this.cfg.getInt(CFG.PLAYER_FOODLEVEL, 20));
-        player.setSaturation(this.cfg.getInt(CFG.PLAYER_SATURATION, 20));
-        player.setExhaustion((float) this.cfg.getDouble(CFG.PLAYER_EXHAUSTION, 0.0));
+        player.setFoodLevel(this.config.getInt(CFG.PLAYER_FOODLEVEL, 20));
+        player.setSaturation(this.config.getInt(CFG.PLAYER_SATURATION, 20));
+        player.setExhaustion((float) this.config.getDouble(CFG.PLAYER_EXHAUSTION, 0.0));
         player.setVelocity(new Vector());
         player.setFallDistance(0);
 
-        if (this.cfg.getBoolean(CFG.PLAYER_DROPSEXP)) {
+        if (this.config.getBoolean(CFG.PLAYER_DROPSEXP)) {
             player.setTotalExperience(0);
             player.setLevel(0);
             player.setExp(0);
@@ -1148,7 +1135,7 @@ public class Arena {
             }, 5L);
         } catch (Exception ignored) {
         }
-        player.setNoDamageTicks(this.cfg.getInt(CFG.TIME_TELEPORTPROTECT) * 20);
+        player.setNoDamageTicks(this.config.getInt(CFG.TIME_TELEPORTPROTECT) * 20);
     }
 
     public void selectClass(final ArenaPlayer aPlayer, final String cName) {
@@ -1184,14 +1171,14 @@ public class Arena {
         // on the BLOCK position of the given location plus the player orientation
         final PALocation location = Config.parseLocation(string);
 
-        this.cfg.setManually("spawns." + node, string);
-        this.cfg.save();
+        this.config.setManually("spawns." + node, string);
+        this.config.save();
         this.addSpawn(new PASpawn(location, node));
     }
 
     public void spawnUnset(final String node) {
-        this.cfg.setManually("spawns." + node, null);
-        this.cfg.save();
+        this.config.setManually("spawns." + node, null);
+        this.config.save();
     }
 
     public void start() {
@@ -1339,7 +1326,7 @@ public class Arena {
 
         debug("raw location: {}", loc);
 
-        Vector offset = this.cfg.getOffset(place);
+        Vector offset = this.config.getOffset(place);
         debug("offset location: {}", offset);
 
         aPlayer.setTeleporting(true);
@@ -1348,21 +1335,21 @@ public class Arena {
     }
 
     private void execPostTeleportationFixes(ArenaPlayer aPlayer) {
-        if (this.cfg.getBoolean(CFG.PLAYER_REMOVEARROWS)) {
+        if (this.config.getBoolean(CFG.PLAYER_REMOVEARROWS)) {
             try {
                 new ArrowHack(aPlayer.getPlayer());
             } catch (final Exception ignored) {
             }
         }
 
-        if (this.cfg.getBoolean(CFG.USES_INVISIBILITYFIX) && Arrays.asList(PlayerStatus.FIGHT, PlayerStatus.LOUNGE).contains(aPlayer.getStatus())) {
+        if (this.config.getBoolean(CFG.USES_INVISIBILITYFIX) && Arrays.asList(PlayerStatus.FIGHT, PlayerStatus.LOUNGE).contains(aPlayer.getStatus())) {
             Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), () ->
                 Arena.this.getFighters()
                         .forEach(ap -> ap.getPlayer().showPlayer(PVPArena.getInstance(), aPlayer.getPlayer()))
             , 5L);
         }
 
-        if (!this.cfg.getBoolean(CFG.PERMS_FLY)) {
+        if (!this.config.getBoolean(CFG.PERMS_FLY)) {
             Bukkit.getScheduler().runTaskLater(PVPArena.getInstance(), () -> {
                 aPlayer.getPlayer().setAllowFlight(false);
                 aPlayer.getPlayer().setFlying(false);
@@ -1373,7 +1360,7 @@ public class Arena {
     private void teleportPlayer(String place, final ArenaPlayer arenaPlayer, Location location) {
         Player player = arenaPlayer.getPlayer();
         player.teleport(location);
-        int noDamageTicks = this.cfg.getInt(CFG.TIME_TELEPORTPROTECT) * 20;
+        int noDamageTicks = this.config.getInt(CFG.TIME_TELEPORTPROTECT) * 20;
         player.setNoDamageTicks(noDamageTicks);
         if (place.contains("lounge")) {
             debug(this, "setting TelePass later!");
@@ -1401,7 +1388,7 @@ public class Arena {
 
         debug(this, player, "trying to join player " + player.getName());
 
-        final String clear = this.cfg.getString(CFG.PLAYER_CLEARINVENTORY);
+        final String clear = this.config.getString(CFG.PLAYER_CLEARINVENTORY);
 
         if ("ALL".equals(clear) || clear.contains(player.getGameMode().name())) {
             player.getInventory().clear();
@@ -1427,8 +1414,8 @@ public class Arena {
         }
 
         if (aPlayer.getArenaClass() == null) {
-            String autoClass = this.cfg.getDefinedString(CFG.READY_AUTOCLASS);
-            if(this.cfg.getBoolean(CFG.USES_PLAYERCLASSES) && this.getClass(player.getName()) != null) {
+            String autoClass = this.config.getDefinedString(CFG.READY_AUTOCLASS);
+            if(this.config.getBoolean(CFG.USES_PLAYERCLASSES) && this.getClass(player.getName()) != null) {
                 autoClass = player.getName();
             }
 
@@ -1465,7 +1452,7 @@ public class Arena {
         aPlayer.setStatus(PlayerStatus.FIGHT);
 
         final Set<PASpawn> spawns = new HashSet<>();
-        if (this.cfg.getBoolean(CFG.GENERAL_CLASSSPAWN)) {
+        if (this.config.getBoolean(CFG.GENERAL_CLASSSPAWN)) {
             String arenaClass = this.getConfig().getDefinedString(CFG.READY_AUTOCLASS);
             if(this.getConfig().getBoolean(CFG.USES_PLAYERCLASSES) && this.getClass(player.getName()) != null) {
                 arenaClass = player.getName();
@@ -1501,8 +1488,8 @@ public class Arena {
 
 
             if (aPlayer.getArenaTeam() != null && aPlayer.getArenaClass() == null) {
-                String autoClass = arena.cfg.getDefinedString(CFG.READY_AUTOCLASS);
-                if (arena.cfg.getBoolean(CFG.USES_PLAYERCLASSES) && arena.getClass(player.getName()) != null) {
+                String autoClass = arena.config.getDefinedString(CFG.READY_AUTOCLASS);
+                if (arena.config.getBoolean(CFG.USES_PLAYERCLASSES) && arena.getClass(player.getName()) != null) {
                     autoClass = player.getName();
                 }
                 if (autoClass != null && arena.getClass(autoClass) != null) {

@@ -421,7 +421,7 @@ public class Config {
         private final String node;
         private final Object value;
         private final String type;
-        private final String module;
+        private final String goalOrModule;
 
         public static CFG getByNode(final String node) {
             for (final CFG m : CFG.getValues()) {
@@ -436,63 +436,63 @@ public class Config {
             this.node = node;
             this.value = value;
             this.type = "string";
-            this.module = source;
+            this.goalOrModule = source;
         }
 
         CFG(final String node, final Boolean value, final String source) {
             this.node = node;
             this.value = value;
             this.type = "boolean";
-            this.module = source;
+            this.goalOrModule = source;
         }
 
         CFG(final String node, final Integer value, final String source) {
             this.node = node;
             this.value = value;
             this.type = "int";
-            this.module = source;
+            this.goalOrModule = source;
         }
 
         CFG(final String node, final Double value, final String source) {
             this.node = node;
             this.value = value;
             this.type = "double";
-            this.module = source;
+            this.goalOrModule = source;
         }
 
         CFG(final String node, final ItemStack[] value, final String source) {
             this.node = node;
             this.value = getSerializableItemStacks(value);
             this.type = "items";
-            this.module = source;
+            this.goalOrModule = source;
         }
 
         CFG(final String node, final Material value, final String source) {
             this.node = node;
             this.value = value.name();
             this.type = "material";
-            this.module = source;
+            this.goalOrModule = source;
         }
 
         CFG(final String node, final GameMode value, final String source) {
             this.node = node;
             this.value = value.name();
             this.type = "gamemode";
-            this.module = source;
+            this.goalOrModule = source;
         }
 
         CFG(final String node, final List<String> value, String source) {
             this.node = node;
             this.value = value;
             this.type = "list";
-            this.module = source;
+            this.goalOrModule = source;
         }
 
         CFG(final String node, final Map<String, String> value, final String source) {
             this.node = node;
             this.value = node;
             this.type = "stringMap";
-            this.module = source;
+            this.goalOrModule = source;
         }
 
         public String getNode() {
@@ -515,7 +515,7 @@ public class Config {
                     result.define(new String[]{cfg.node, "inventory"});
                     result.define(new String[]{ending, "inventory"});
                 } else if ("gamemode".equals(cfg.type)) {
-                    result.define(new String[]{cfg.node, "{GameMode}"});;
+                    result.define(new String[]{cfg.node, "{GameMode}"});
                     result.define(new String[]{ending, "{GameMode}"});
                 } else if ("boolean".equals(cfg.type)) {
                     result.define(new String[]{cfg.node, "true"});
@@ -547,12 +547,12 @@ public class Config {
             return this.type;
         }
 
-        public String getModule() {
-            return this.module;
+        public String getGoalOrModule() {
+            return this.goalOrModule;
         }
 
         public boolean hasModule() {
-            return this.module != null;
+            return this.goalOrModule != null;
         }
     }
 
@@ -571,17 +571,17 @@ public class Config {
         this.strings = new HashMap<>();
     }
 
-    public void createDefaults(final List<String> goals, final List<String> modules) {
+    public void createDefaults(final String goal, final List<String> modules) {
         this.cfg.options().indent(2);
 
-        for (final CFG cfg : CFG.getValues()) {
-            if (cfg.hasModule()) {
-                String mod = cfg.getModule();
-                if (goals.contains(mod) || modules.contains(mod)) {
-                    this.cfg.addDefault(cfg.getNode(), cfg.getValue());
+        for (final CFG config : CFG.getValues()) {
+            if (config.hasModule()) {
+                String mod = config.getGoalOrModule();
+                if (goal.contains(mod) || modules.contains(mod)) {
+                    this.cfg.addDefault(config.getNode(), config.getValue());
                 }
             } else {
-                this.cfg.addDefault(cfg.getNode(), cfg.getValue());
+                this.cfg.addDefault(config.getNode(), config.getValue());
             }
         }
         this.save();
