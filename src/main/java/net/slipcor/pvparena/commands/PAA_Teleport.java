@@ -7,6 +7,7 @@ import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.exceptions.GameplayException;
 import net.slipcor.pvparena.managers.SpawnManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,7 +38,7 @@ public class PAA_Teleport extends AbstractArenaCommand {
             return;
         }
 
-        if (!argCountValid(sender, arena, args, new Integer[]{1})) {
+        if (!argCountValid(sender, arena, args, new Integer[]{1, 2, 3})) {
             return;
         }
 
@@ -46,17 +47,21 @@ public class PAA_Teleport extends AbstractArenaCommand {
             return;
         }
 
-        // usage: /pa {arenaname} teleport [spawnname] | tp to a spawn
+        // usage: /pa {arenaname} teleport (teamName) [spawnName] (className) | tp to a spawn
 
-        final PALocation loc = SpawnManager.getSpawnByExactName(arena, args[0]);
+        try {
+            String[] parsedSpawnName = SpawnManager.parseSpawnNameArgs(arena, args);
+            PALocation loc = SpawnManager.getSpawnByExactName(arena, parsedSpawnName[1], parsedSpawnName[0], parsedSpawnName[2]);
 
-        if (loc == null) {
-            arena.msg(sender, MSG.ERROR_SPAWN_UNKNOWN, args[0]);
-            return;
+            if(loc == null) {
+                throw new GameplayException(Language.parse(MSG.ERROR_SPAWN_UNKNOWN, String.join(" ", parsedSpawnName)));
+            }
+
+            ((Player) sender).teleport(loc.toLocation(), TeleportCause.PLUGIN);
+            ((Player) sender).setNoDamageTicks(arena.getConfig().getInt(CFG.TIME_TELEPORTPROTECT) * 20);
+        } catch(GameplayException e) {
+            arena.msg(sender, e.getMessage());
         }
-
-        ((Player) sender).teleport(loc.toLocation(), TeleportCause.PLUGIN);
-        ((Player) sender).setNoDamageTicks(arena.getConfig().getInt(CFG.TIME_TELEPORTPROTECT) * 20);
     }
 
     @Override
@@ -85,9 +90,21 @@ public class PAA_Teleport extends AbstractArenaCommand {
         if (arena == null) {
             return result;
         }
-        for (final PASpawn spawn : arena.getSpawns()) {
-            result.define(new String[]{spawn.getName()});
+
+        for (PASpawn spawn : arena.getSpawns()) {
+            if (spawn.hasTeamName()) {
+                if(spawn.hasClassName()) {
+                    result.define(new String[]{spawn.getTeamName(), spawn.getName(), spawn.getClassName()});
+                } else {
+                    result.define(new String[]{spawn.getTeamName(), spawn.getName()});
+                }
+            } else if (spawn.hasClassName()) {
+                result.define(new String[]{spawn.getName(), spawn.getClassName()});
+            } else {
+                result.define(new String[]{spawn.getName()});
+            }
         }
+
         return result;
     }
 }

@@ -473,8 +473,9 @@ nulang:
     teamlounge: 'Lounge configuré: %1%'
     notset: 'Spawn non configuré: &a%1%&r'
     offset: Spawn &a%1%&r offset by &a%2%&r blocks.
-    removed: 'Spawn supprimé: &a%1%&r'
-    set: 'Spawn configuré: &a%1%&r'
+    removed: 'Spawn supprimé: %1%'
+    set: 'Spawn configuré: %1%'
+    setagain: 'Spawn reconfiguré: %1%'
     setdone: 'Paramètrage du spawn terminé: &a%1%&r'
     setstart: 'Paramètrage du spawn: &a%1%&r'
     unknown: 'Spawn inconnu : &a%1%&r'

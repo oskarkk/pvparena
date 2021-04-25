@@ -73,7 +73,7 @@ public class ArenaTeam {
      * @return the colorized team name
      */
     public String getColoredName() {
-        return this.color + this.name;
+        return this.color + this.name + ChatColor.RESET;
     }
 
     /**
@@ -108,7 +108,7 @@ public class ArenaTeam {
     }
 
     public boolean isEveryoneReady() {
-        for (final ArenaPlayer ap : this.players) {
+        for (ArenaPlayer ap : this.players) {
             if (ap.getStatus() != PlayerStatus.READY) {
                 return false;
             }

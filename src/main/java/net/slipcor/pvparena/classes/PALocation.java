@@ -3,6 +3,7 @@ package net.slipcor.pvparena.classes;
 import net.slipcor.pvparena.core.StringParser;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 /**
@@ -51,6 +52,10 @@ public class PALocation {
     public PALocation add(Vector vector) {
         return new PALocation(this.world, vector.getX() + this.x, vector.getY() + this.y,
                 vector.getZ() + this.z, this.pitch, this.yaw);
+    }
+
+    public PALocation simplifyCoordinates() {
+        return new PALocation(this.world, Math.floor(this.x), Math.floor(this.y), Math.floor(this.z), this.pitch, this.yaw);
     }
 
     @Override
@@ -141,6 +146,10 @@ public class PALocation {
 
     public String getWorldName() {
         return this.world;
+    }
+
+    public World getWorld() {
+        return this.toLocation().getWorld();
     }
 
     public double getX() {
