@@ -192,7 +192,7 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
             this.arena.getConfig().set(this.getFlagTypeCfg(), mat.name());
 
             this.arena.getConfig().save();
-            this.arena.msg(sender, MSG.GOAL_FLAGS_TYPESET, this.getFlagTypeCfg().toString());
+            this.arena.msg(sender, MSG.GOAL_FLAGS_TYPESET, mat.name());
 
         } else if ("flageffect".equalsIgnoreCase(args[0])) {
 
