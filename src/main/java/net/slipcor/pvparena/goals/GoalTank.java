@@ -1,7 +1,10 @@
 package net.slipcor.pvparena.goals;
 
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.arena.*;
+import net.slipcor.pvparena.arena.ArenaClass;
+import net.slipcor.pvparena.arena.ArenaPlayer;
+import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.classes.PADeathInfo;
 import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -21,7 +24,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 import static net.slipcor.pvparena.config.Debugger.debug;
 
@@ -41,7 +47,7 @@ public class GoalTank extends ArenaGoal {
         super("Tank");
     }
 
-    private static final Map<Arena, ArenaPlayer> tanks = new HashMap<>();
+    private ArenaPlayer tank;
 
     private EndRunnable endRunner;
 
@@ -58,7 +64,7 @@ public class GoalTank extends ArenaGoal {
     @Override
     public boolean checkEnd() {
         final int count = this.getPlayerLifeMap().size();
-        return (count <= 1 || tanks.get(this.arena).getStatus() != PlayerStatus.FIGHT);
+        return (count <= 1 || this.tank.getStatus() != PlayerStatus.FIGHT);
     }
 
     @Override
@@ -74,7 +80,7 @@ public class GoalTank extends ArenaGoal {
         if (this.getPlayerLifeMap().containsKey(player)) {
             final int iLives = this.getPlayerLifeMap().get(player);
             debug(this.arena, player, "lives before death: " + iLives);
-            return iLives > 1 && !tanks.get(this.arena).equals(ArenaPlayer.fromPlayer(player));
+            return iLives > 1 && !this.tank.getName().equals(ArenaPlayer.fromPlayer(player).getName());
         }
         return true;
     }
@@ -100,7 +106,7 @@ public class GoalTank extends ArenaGoal {
                 if (ap.getStatus() != PlayerStatus.FIGHT) {
                     continue;
                 }
-                if (tanks.containsValue(ap)) {
+                if (this.tank.getName().equals(ap.getName())) {
                     ArenaModuleManager.announce(this.arena,
                             Language.parse(MSG.GOAL_TANK_TANKWON, ap.getName()), "END");
                     ArenaModuleManager.announce(this.arena,
@@ -135,9 +141,9 @@ public class GoalTank extends ArenaGoal {
         int iLives = this.getPlayerLifeMap().get(player);
         ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer(player);
         debug(this.arena, player, "lives before death: " + iLives);
-        if (iLives <= 1 || tanks.get(this.arena).equals(arenaPlayer)) {
+        if (iLives <= 1 || this.tank.getName().equals(arenaPlayer.getName())) {
 
-            if (tanks.get(this.arena).equals(arenaPlayer)) {
+            if (this.tank.getName().equals(arenaPlayer.getName())) {
 
                 final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, "tank", "playerDeath:" + player.getName());
                 Bukkit.getPluginManager().callEvent(gEvent);
@@ -254,7 +260,7 @@ public class GoalTank extends ArenaGoal {
             }
         }
         tankTeam.add(tank);
-        tanks.put(this.arena, tank);
+        this.tank = tank;
 
         final ArenaClass tankClass = this.arena.getClass("%tank%");
         if (tankClass != null) {
@@ -287,7 +293,7 @@ public class GoalTank extends ArenaGoal {
     public void reset(final boolean force) {
         this.endRunner = null;
         this.getPlayerLifeMap().clear();
-        tanks.remove(this.arena);
+        this.tank = null;
         this.arena.getTeams().remove(this.arena.getTeam("tank"));
     }
 
@@ -296,7 +302,7 @@ public class GoalTank extends ArenaGoal {
 
         for (final ArenaPlayer arenaPlayer : this.arena.getFighters()) {
             double score = this.getPlayerLifeMap().getOrDefault(arenaPlayer.getPlayer(), 0);
-            if (tanks.containsValue(arenaPlayer)) {
+            if (this.tank.getName().equals(arenaPlayer.getName())) {
                 score *= this.arena.getFighters().size();
             }
             if (scores.containsKey(arenaPlayer.getName())) {
