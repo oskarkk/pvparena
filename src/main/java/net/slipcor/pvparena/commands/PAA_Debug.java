@@ -3,7 +3,6 @@ package net.slipcor.pvparena.commands;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.config.DebugOutputMode;
 import net.slipcor.pvparena.config.Debugger;
-import net.slipcor.pvparena.core.Help;
 import net.slipcor.pvparena.core.Help.HELP;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.StringParser;
@@ -68,7 +67,7 @@ public class PAA_Debug extends AbstractGlobalCommand {
         {
             if ("output".equalsIgnoreCase(args[0])) {
                 if (Stream.of(DebugOutputMode.values()).anyMatch(outMode -> outMode.name().equalsIgnoreCase(args[1]))) {
-                    DebugOutputMode newDebugOutputMode = DebugOutputMode.valueOf(args[1]);
+                    DebugOutputMode newDebugOutputMode = DebugOutputMode.valueOf(args[1].toUpperCase());
                     Debugger.setOutputMode(newDebugOutputMode);
                     Arena.pmsg(sender, String.format("debugging output was set to %s", newDebugOutputMode));
                 } else {

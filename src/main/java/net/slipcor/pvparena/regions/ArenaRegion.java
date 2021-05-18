@@ -17,7 +17,6 @@ import net.slipcor.pvparena.loadables.ArenaRegionShape;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.SpawnManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -29,7 +28,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static net.slipcor.pvparena.config.Debugger.debug;
@@ -42,7 +44,7 @@ public class ArenaRegion {
     private RegionType type;
     private final Set<RegionFlag> flags = new HashSet<>();
     private final Set<RegionProtection> protections = new HashSet<>();
-    private final Map<String, Location> playerLocations = new HashMap<>();
+    private final NoCampRunnable noCampRunnable;
 
     private static final Set<Material> NOWOOLS = new HashSet<>();
 
@@ -174,6 +176,7 @@ public class ArenaRegion {
         this.world = locs[0].getWorldName();
         arena.addRegion(this);
         this.shape.initialize(this);
+        this.noCampRunnable = new NoCampRunnable(this.arena.getConfig().getInt(CFG.DAMAGE_SPAWNCAMP));
     }
 
     /**
@@ -339,6 +342,7 @@ public class ArenaRegion {
 
     public void reset() {
         this.removeEntities();
+        this.noCampRunnable.stop();
     }
 
     public void removeEntities() {
@@ -408,22 +412,13 @@ public class ArenaRegion {
 
     private void handleNoCampRegionFlag(ArenaPlayer arenaPlayer, PABlockLocation pLoc) {
         if (this.shape.contains(pLoc)) {
-            final Location loc = this.playerLocations.get(arenaPlayer.getName());
-            Player player = arenaPlayer.getPlayer();
+            boolean entering = this.noCampRunnable.updatePlayer(arenaPlayer);
 
-            if (loc == null) {
-                Arena.pmsg(player, MSG.NOTICE_YOU_NOCAMP);
-            } else {
-                if (loc.distance(player.getLocation()) < 3) {
-                    debug(player, "damaged in NOCAMP region");
-                    int campDamage = this.arena.getConfig().getInt(CFG.DAMAGE_SPAWNCAMP);
-                    player.setLastDamageCause(new EntityDamageEvent(player, DamageCause.CUSTOM, campDamage));
-                    player.damage(campDamage);
-                }
+            if (entering) {
+                Arena.pmsg(arenaPlayer.getPlayer(), MSG.NOTICE_YOU_NOCAMP);
             }
-            this.playerLocations.put(arenaPlayer.getName(), player.getLocation().getBlock().getLocation());
         } else {
-            this.playerLocations.remove(arenaPlayer.getName());
+            this.noCampRunnable.removePlayer(arenaPlayer);
         }
     }
 
