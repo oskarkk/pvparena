@@ -35,6 +35,8 @@ public final class PlayerState {
     private double health;
     private double maxhealth;
     private int explevel;
+    private float walkSpeed;
+    private float flySpeed;
 
     private float exhaustion;
     private float experience;
@@ -48,7 +50,7 @@ public final class PlayerState {
 
     public PlayerState(final Player player) {
         this.name = player.getName();
-        debug(player, "creating PlayerState of " + this.name);
+        debug(player, "creating PlayerState of {}", this.name);
 
         this.fireticks = player.getFireTicks();
         this.foodlevel = player.getFoodLevel();
@@ -60,6 +62,9 @@ public final class PlayerState {
         this.experience = player.getExp();
         this.explevel = player.getLevel();
         this.saturation = player.getSaturation();
+
+        this.walkSpeed = player.getWalkSpeed();
+        this.flySpeed = player.getFlySpeed();
 
         this.potionEffects = player.getActivePotionEffects();
         this.collides = player.isCollidable();
@@ -93,6 +98,8 @@ public final class PlayerState {
         cfg.set("state.saturation", this.saturation);
         cfg.set("state.displayname", this.displayname);
         cfg.set("state.flying", ArenaPlayer.fromPlayer(this.name).getFlyState());
+        cfg.set("state.walkSpeed", this.walkSpeed);
+        cfg.set("state.flySpeed", this.flySpeed);
         cfg.set("state.collides", this.collides);
     }
 
@@ -146,6 +153,8 @@ public final class PlayerState {
 
             player.setDisplayName(n);
         }
+        player.setWalkSpeed(0.2F);
+        player.setFlySpeed(0.2F);
     }
 
     public void unload(final boolean soft) {
@@ -226,6 +235,8 @@ public final class PlayerState {
             }
             player.setFlying(aPlayer.getFlyState());
         }
+        player.setFlySpeed(this.flySpeed);
+        player.setWalkSpeed(this.walkSpeed);
     }
 
     /**
@@ -261,6 +272,8 @@ public final class PlayerState {
         this.displayname = null;
         this.potionEffects = null;
         this.collides = false;
+        this.walkSpeed = 0.2f;
+        this.flySpeed = 0.2f;
     }
 
     public static void removeEffects(final Player player) {
@@ -299,6 +312,8 @@ public final class PlayerState {
         pState.displayname = cfg.getString("state.displayname", pName);
         ArenaPlayer.fromPlayer(pName).setFlyState(cfg.getBoolean("state.flying", false));
         pState.collides = cfg.getBoolean("state.collides", false);
+        pState.walkSpeed = (float) cfg.getDouble("state.walkSpeed", 0.2f);
+        pState.flySpeed = (float) cfg.getDouble("state.flySpeed", 0.2f);
 
         return pState;
     }
