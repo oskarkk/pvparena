@@ -31,10 +31,10 @@ Example with type "lounge":
 ## Details
 
 There are two syntax according to the gamemode (free or teams) of your arena goal: 
-- If you're using a "free" arena, you can define unlimited spawns using syntax `/pa myArena spawn set team spawnX` where X should
+- if you're using a "free" arena, you can define unlimited spawns using syntax `/pa myArena spawn set team spawnX` where X should
  be anything (word, digit, letter, etc).
-- If your arena works with teams, you have to use `/pa myArena spawn set team spawn` where "team" is the name of one of your 
-team.
+- if your arena works with teams, you have to use `/pa myArena spawn set team spawn` where "team" is the name of one of your 
+teams.
 - you can set spawn only for some class with `/pa myArena set team spawn class` where "class" is the name of one of your
   arena class.
 
@@ -42,6 +42,14 @@ If you get a message "spawn unknown", this is probably because you did not insta
 a [module](../modules.md). 
 Be sure you have installed and activated stuff you want to add, for instance the "Flags" goal, or the "StandardSpectate" 
 module...
+
+## Spawn requirements for each arena
+
+In general cases, you need to set those spawns:
+- for team arenas: one spawn per team, one lounge per team, one spectator area and one exit
+- for free arenas: several spawns, one lounge, one spectator area and one exit
+
+Anyway, the plugin tell you which spawns are missing if there.
 
 ## Spawn Offset
 
