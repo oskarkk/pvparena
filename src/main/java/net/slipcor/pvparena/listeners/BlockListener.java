@@ -330,8 +330,7 @@ public class BlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockIgnite(final BlockIgniteEvent event) {
-        if (this.willBeSkipped(event, event.getBlock().getLocation(),
-                RegionProtection.FIRE)) {
+        if (this.willBeSkipped(event, event.getBlock().getLocation(), RegionProtection.FIRE)) {
             return;
         }
         final Arena arena = ArenaManager.getArenaByRegionLocation(

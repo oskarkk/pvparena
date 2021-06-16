@@ -298,10 +298,6 @@ public class CuboidRegion extends ArenaRegionShape {
         return this.region.locs[0];
     }
 
-    ArenaRegion getRegion() {
-        return this.region;
-    }
-
     @Override
     public boolean tooFarAway(final int joinRange, final Location location) {
         final PABlockLocation reach = new PABlockLocation(location).pointTo(
@@ -351,5 +347,22 @@ public class CuboidRegion extends ArenaRegionShape {
             this.region.locs[0] = new PABlockLocation(this.region.locs[0].toLocation().subtract(0, 0, diffZ * value));
         }
 
+    }
+
+    @Override
+    public Set<PABlockLocation> getAllBlocks() {
+        PABlockLocation min = this.getMinimumLocation();
+        PABlockLocation max = this.getMaximumLocation();
+        Set<PABlockLocation> result = new HashSet<>();
+
+        for(int x = min.getX(); x <= max.getX(); x++) {
+            for(int y = min.getY(); y <= max.getY(); y++) {
+                for(int z = min.getZ(); z <= max.getZ(); z++) {
+                    result.add(new PABlockLocation(min.getWorldName(), x, y, z));
+                }
+            }
+        }
+
+        return result;
     }
 }

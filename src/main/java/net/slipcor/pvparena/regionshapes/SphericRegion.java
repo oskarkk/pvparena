@@ -298,10 +298,6 @@ public class SphericRegion extends ArenaRegionShape {
         return this.region.locs[0].getDistanceSquared(this.region.locs[1]) / 4;
     }
 
-    private ArenaRegion getRegion() {
-        return this.region;
-    }
-
     @Override
     public PABlockLocation getCenter() {
         return this.region.locs[0].getMidpoint(this.region.locs[1]);

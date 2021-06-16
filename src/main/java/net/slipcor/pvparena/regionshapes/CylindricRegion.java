@@ -391,10 +391,6 @@ public class CylindricRegion extends ArenaRegionShape {
         return result;
     }
 
-    ArenaRegion getRegion() {
-        return this.region;
-    }
-
     @Override
     public boolean tooFarAway(final int joinRange, final Location location) {
         final PABlockLocation cLoc = this.getCenter();

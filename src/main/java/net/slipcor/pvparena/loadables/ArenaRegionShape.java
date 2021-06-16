@@ -7,7 +7,9 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <pre>
@@ -48,6 +50,25 @@ public abstract class ArenaRegionShape {
     public abstract boolean tooFarAway(int joinRange, Location location);
 
     public abstract boolean hasVolume();
+
+    public Set<PABlockLocation> getAllBlocks() {
+        PABlockLocation min = this.getMinimumLocation();
+        PABlockLocation max = this.getMaximumLocation();
+        Set<PABlockLocation> result = new HashSet<>();
+
+        for(int x = min.getX(); x <= max.getX(); x++) {
+            for(int y = min.getY(); y <= max.getY(); y++) {
+                for(int z = min.getZ(); z <= max.getZ(); z++) {
+                    PABlockLocation blockLocation =  new PABlockLocation(min.getWorldName(), x, y, z);
+                    if(this.contains(blockLocation)) {
+                        result.add(blockLocation);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
 
     public void displayInfo(final CommandSender sender) {
     }

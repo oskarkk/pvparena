@@ -11,12 +11,10 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
 import static org.bukkit.configuration.serialization.ConfigurationSerialization.deserializeObject;
 
 public class ItemStackUtils  {
@@ -185,5 +183,11 @@ public class ItemStackUtils  {
             result[i] = deserialize((Map<String, Object>) mapList.get(i));
         }
         return result;
+    }
+
+    public static ItemStack[] cloneItemStacks(ItemStack[] itemStackArray) {
+        return Arrays.stream(itemStackArray)
+                .map(itemStack -> ofNullable(itemStack).map(ItemStack::new).orElse(null))
+                .toArray(ItemStack[]::new);
     }
 }
