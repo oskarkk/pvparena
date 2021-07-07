@@ -19,6 +19,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -294,9 +295,9 @@ public abstract class ArenaModule implements IArenaCommandHandler {
     /**
      * hook into a block being pushed/pulled
      *
-     * @param block the block being pushed/pulled
+     * @param event the piston extend being pushed/pulled
      */
-    public void onBlockPiston(final Block block) {
+    public void onBlockPiston(final BlockPistonExtendEvent event) {
     }
 
     /**

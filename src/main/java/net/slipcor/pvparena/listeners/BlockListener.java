@@ -380,10 +380,8 @@ public class BlockListener implements Listener {
             return; // no arena => out
         }
         debug(arena, "block piston extend inside the arena");
-        for (final Block block : event.getBlocks()) {
 
-            ArenaModuleManager.onBlockPiston(arena, block);
-        }
+        ArenaModuleManager.onBlockPiston(arena, event);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

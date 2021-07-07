@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
@@ -140,9 +141,9 @@ public class ArenaModuleManager {
         }
     }
 
-    public static void onBlockPiston(final Arena arena, final Block block) {
+    public static void onBlockPiston(final Arena arena, final BlockPistonExtendEvent event) {
         for (final ArenaModule mod : arena.getMods()) {
-            mod.onBlockPiston(block);
+            mod.onBlockPiston(event);
         }
     }
 

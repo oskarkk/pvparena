@@ -51,7 +51,7 @@ Currently, there are two ways to regen battlefield after a match. You can use ei
 
 Here is a quick list of precisions to support your choice:
 * BlockRestore:
-    * Reset only blocks broken by players
+    * Reset only blocks, chests, 
     * Asynchronous
     * Perfect for arena where few blocks are destroyed (like spleef)
 * WorldEdit:

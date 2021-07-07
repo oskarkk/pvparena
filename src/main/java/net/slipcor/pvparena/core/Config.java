@@ -296,7 +296,8 @@ public class Config {
         MODULES_BLOCKRESTORE_HARD("modules.blockrestore.hard", false, "BlockRestore"),
         MODULES_BLOCKRESTORE_OFFSET("modules.blockrestore.offset", 1, "BlockRestore"),
         MODULES_BLOCKRESTORE_RESTOREBLOCKS("modules.blockrestore.restoreblocks", true, "BlockRestore"),
-        MODULES_BLOCKRESTORE_RESTORECHESTS("modules.blockrestore.restorechests", false, "BlockRestore"),
+        MODULES_BLOCKRESTORE_RESTORECONTAINERS("modules.blockrestore.restorecontainers", false, "BlockRestore"),
+        MODULES_BLOCKRESTORE_RESTOREINTERACTIONS("modules.blockrestore.restoreinteractions", false, "BlockRestore"),
 
         MODULES_BLOCKDISSOLVE_CALCOFFSET("modules.blockdissolve.calcoffset", 0.333, "BlockDissolve"),
         MODULES_BLOCKDISSOLVE_MATERIALS("modules.blockdissolve.materials", new ItemStack[]{
