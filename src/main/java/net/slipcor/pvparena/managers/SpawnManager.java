@@ -397,6 +397,12 @@ public final class SpawnManager {
                 .collect(Collectors.toSet());
     }
 
+    public static Set<PABlock> getPABlocksStartingWith(@NotNull Arena arena, @NotNull String name, String teamName) {
+        return arena.getBlocks().stream()
+                .filter(block -> block.getName().startsWith(name) && Objects.equals(block.getTeamName(), teamName))
+                .collect(Collectors.toSet());
+    }
+
     public static Set<PABlockLocation> getBlocksContaining(@NotNull Arena arena, @NotNull String name) {
         return getPABlocksContaining(arena, name).stream()
                 .map(PABlock::getLocation)

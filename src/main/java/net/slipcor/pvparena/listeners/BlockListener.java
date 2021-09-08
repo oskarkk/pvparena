@@ -13,8 +13,8 @@ import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.Utils;
 import net.slipcor.pvparena.exceptions.GameplayException;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
-import net.slipcor.pvparena.regions.RegionProtection;
 import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.regions.RegionProtection;
 import net.slipcor.pvparena.runnables.DamageResetRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -24,12 +24,24 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.data.type.Fire;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
-import org.bukkit.event.block.*;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockFormEvent;
+import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockGrowEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
-import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 
 import java.util.ArrayList;
@@ -65,38 +77,19 @@ public class BlockListener implements Listener {
             return PAA_Edit.activeEdits.containsValue(arena) || PAA_Setup.activeSetups.containsValue(arena);
         }
 
-        arena = ArenaManager.getArenaByProtectedRegionLocation(
-                new PABlockLocation(loc), rp);
-
-        if (arena == null) {
+        if (!arena.hasRegionsProtectingLocation(loc, rp)) {
             return false;
         }
 
         return PAA_Edit.activeEdits.containsValue(arena);
     }
 
-    static boolean isProtected(final Location loc, final Cancellable event,
-                               final RegionProtection node) {
-        final Arena arena = ArenaManager.getArenaByProtectedRegionLocation(
-                new PABlockLocation(loc), node);
-        if (arena == null) {
-            return false;
+    static boolean isProtected(Arena arena, Location loc, Cancellable event, RegionProtection node) {
+        if (arena != null && arena.hasRegionsProtectingLocation(loc, node)) {
+            event.setCancelled(true);
+            return true;
         }
-
-        if (event instanceof PlayerEvent) {
-            final PlayerEvent e = (PlayerEvent) event;
-
-            final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(e.getPlayer().getName());
-
-            if (aPlayer.getArena() != null && aPlayer.getArena() != arena) {
-                return false; // players in arenas should be caught by their arenas
-            }
-        }
-
-        // debug.i("protection " + node.name() + " enabled and thus cancelling " +
-        // event.toString());
-        event.setCancelled(true);
-        return true;
+        return false;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -136,8 +129,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        if (isProtected(event.getBlock().getLocation(), event,
-                RegionProtection.BREAK)) {
+        if (isProtected(arena, event.getBlock().getLocation(), event, RegionProtection.BREAK)) {
             debug(event.getPlayer(), "isprotected!");
             return;
         }
@@ -178,8 +170,7 @@ public class BlockListener implements Listener {
         if (arena == null) {
             return; // no arena => out
         }
-        if (isProtected(event.getBlock().getLocation(), event,
-                RegionProtection.FIRE)) {
+        if (isProtected(arena, event.getBlock().getLocation(), event, RegionProtection.FIRE)) {
             return;
         }
 
@@ -198,8 +189,7 @@ public class BlockListener implements Listener {
 
         debug(arena, "block block decaying inside the arena");
 
-        if (isProtected(event.getBlock().getLocation(), event,
-                RegionProtection.NATURE)) {
+        if (isProtected(arena, event.getBlock().getLocation(), event, RegionProtection.NATURE)) {
             return;
         }
 
@@ -222,8 +212,7 @@ public class BlockListener implements Listener {
         }
 
         debug(arena, "block block fading inside the arena");
-        if (isProtected(event.getBlock().getLocation(), event,
-                RegionProtection.NATURE)) {
+        if (isProtected(arena, event.getBlock().getLocation(), event, RegionProtection.NATURE)) {
             return;
         }
 
@@ -248,7 +237,7 @@ public class BlockListener implements Listener {
 
         // arena.debugnfo("block fluids inside the arena");
 
-        if (isProtected(block.getLocation(), event, RegionProtection.NATURE)) {
+        if (isProtected(arena, block.getLocation(), event, RegionProtection.NATURE)) {
             return;
         }
 
@@ -271,8 +260,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        if (isProtected(event.getBlock().getLocation(), event,
-                RegionProtection.NATURE)) {
+        if (isProtected(arena, event.getBlock().getLocation(), event, RegionProtection.NATURE)) {
             return;
         }
 
@@ -290,7 +278,7 @@ public class BlockListener implements Listener {
             debug("BlockGrowEvent -> no arena");
             return; // no arena => out
         }
-        if (isProtected(block.getLocation(), event, RegionProtection.NATURE)) {
+        if (isProtected(arena, block.getLocation(), event, RegionProtection.NATURE)) {
             return;
         }
 
@@ -320,7 +308,7 @@ public class BlockListener implements Listener {
             if (arena == null) {
                 continue;
             }
-            if (isProtected(block.getLocation(), event, RegionProtection.NATURE)) {
+            if (isProtected(arena, block.getLocation(), event, RegionProtection.NATURE)) {
                 return;
             }
 
@@ -339,9 +327,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        if (arena.getConfig().getBoolean(CFG.PROTECT_ENABLED)
-                && (isProtected(event.getBlock().getLocation(), event,
-                RegionProtection.FIRE))) {
+        if (isProtected(arena, event.getBlock().getLocation(), event, RegionProtection.FIRE)) {
             return;
         }
         ArenaModuleManager.onBlockBreak(arena, event.getBlock());
@@ -365,11 +351,9 @@ public class BlockListener implements Listener {
         Arena arena = null;
 
         for (Block block : event.getBlocks()) {
-            arena = ArenaManager.getArenaByRegionLocation(
-                    new PABlockLocation(block.getLocation()));
+            arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(block.getLocation()));
             if (arena != null) {
-                if (isProtected(event.getBlock().getLocation(), event,
-                        RegionProtection.PISTON)) {
+                if (isProtected(arena, event.getBlock().getLocation(), event, RegionProtection.PISTON)) {
                     return;
                 }
                 break;
@@ -423,14 +407,14 @@ public class BlockListener implements Listener {
             return;
         }
 
-        if (isProtected(block.getLocation(), event, RegionProtection.PLACE)) {
-            if (arena.isFightInProgress() && !isProtected(block.getLocation(), event, RegionProtection.TNT)
+        if (isProtected(arena, block.getLocation(), event, RegionProtection.PLACE)) {
+            if (arena.isFightInProgress() && !isProtected(arena, block.getLocation(), event, RegionProtection.TNT)
                     && block.getType() == Material.TNT) {
 
                 ArenaModuleManager.onBlockPlace(arena, block, event.getBlockReplacedState().getType());
                 event.setCancelled(false);
                 debug(arena, "we do not block TNT, so just return if it is TNT");
-            } else if (arena.isFightInProgress() && !isProtected(block.getLocation(), event, RegionProtection.FIRE)
+            } else if (arena.isFightInProgress() && !isProtected(arena, block.getLocation(), event, RegionProtection.FIRE)
                     && block.getBlockData() instanceof Fire) {
 
                 ArenaModuleManager.onBlockPlace(arena, block, event.getBlockReplacedState().getType());
@@ -470,14 +454,11 @@ public class BlockListener implements Listener {
             return;
         }
 
-        final Arena arena = ArenaManager.getArenaByProtectedRegionLocation(
-                new PABlockLocation(event.getBlock().getLocation()),
-                RegionProtection.PAINTING);
+        final Arena arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(event.getBlock().getLocation()));
 
         debug(event.getPlayer(), "painting place");
 
-        if (arena == null || isProtected(event.getBlock().getLocation(), event,
-                RegionProtection.PAINTING)) {
+        if (arena == null || isProtected(arena, event.getBlock().getLocation(), event, RegionProtection.PAINTING)) {
             return;
         }
 
@@ -492,16 +473,14 @@ public class BlockListener implements Listener {
             return;
         }
 
-        final Arena arena = ArenaManager.getArenaByProtectedRegionLocation(
-                new PABlockLocation(event.getEntity().getLocation()),
-                RegionProtection.PAINTING);
+        final Arena arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(event.getEntity().getLocation()));
 
-        if (isProtected(event.getEntity().getLocation(), event,
-                RegionProtection.PAINTING)) {
-            return;
-        }
         if (arena == null) {
             debug("painting break outside arena");
+            return;
+        }
+
+        if (isProtected(arena, event.getEntity().getLocation(), event, RegionProtection.PAINTING)) {
             return;
         }
         debug(arena, "painting break inside an arena");

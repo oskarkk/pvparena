@@ -64,7 +64,7 @@ public class InventoryListener implements Listener {
             return;
         }
 
-        if (!BlockListener.isProtected(event.getWhoClicked().getLocation(), event, RegionProtection.INVENTORY)) {
+        if (!BlockListener.isProtected(arena, event.getWhoClicked().getLocation(), event, RegionProtection.INVENTORY)) {
             // we don't need no protection => out!
             return;
         }

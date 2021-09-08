@@ -11,6 +11,7 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
 import net.slipcor.pvparena.managers.*;
 import net.slipcor.pvparena.regions.ArenaRegion;
+import net.slipcor.pvparena.regions.RegionProtection;
 import net.slipcor.pvparena.regions.RegionType;
 import net.slipcor.pvparena.runnables.StartRunnable;
 import org.bukkit.*;
@@ -257,6 +258,13 @@ public class Arena {
         return this.regions.stream()
                 .filter(rg -> rg.getType() == regionType)
                 .collect(Collectors.toSet());
+    }
+
+    public boolean hasRegionsProtectingLocation(Location loc, RegionProtection protection) {
+        return this.getConfig().getBoolean(CFG.PROTECT_ENABLED) && this.regions.stream()
+                .anyMatch(region -> region.getShape().contains(new PABlockLocation(loc))
+                        && region.getProtections().contains(protection)
+                );
     }
 
     public Set<PAClassSign> getSigns() {

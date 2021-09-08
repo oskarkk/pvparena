@@ -260,7 +260,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        if (!BlockListener.isProtected(player.getLocation(), event, RegionProtection.CRAFT)) {
+        if (!BlockListener.isProtected(arena, player.getLocation(), event, RegionProtection.CRAFT)) {
             return; // no craft protection
         }
 
@@ -295,8 +295,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        if (!BlockListener.isProtected(player.getLocation(), event,
-                RegionProtection.DROP)) {
+        if (!BlockListener.isProtected(arena, player.getLocation(), event, RegionProtection.DROP)) {
             return; // no drop protection
         }
 
@@ -696,7 +695,7 @@ public class PlayerListener implements Listener {
             }
         }
 
-        if (arena == null || !BlockListener.isProtected(player.getLocation(), event, RegionProtection.PICKUP)) {
+        if (arena == null || !BlockListener.isProtected(arena, player.getLocation(), event, RegionProtection.PICKUP)) {
             return; // no fighting player or no powerups => OUT
         }
         arena.getGoal().onPlayerPickUp(event);

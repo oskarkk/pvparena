@@ -100,38 +100,30 @@ public class EntityListener implements Listener {
     public static void onEntityExplode(final EntityExplodeEvent event) {
         debug("explosion");
 
-        Arena arena = ArenaManager.getArenaByProtectedRegionLocation(
-                new PABlockLocation(event.getLocation()), RegionProtection.TNT);
-        if (arena == null) {
+        Location eventLocation = event.getLocation();
+        Arena arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(eventLocation));
 
-            arena = ArenaManager.getArenaByProtectedRegionLocation(
-                    new PABlockLocation(event.getLocation()), RegionProtection.TNTBREAK);
-            if (arena == null) {
-
-                arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(event.getLocation()));
-                if (arena != null) {
-                    ArenaModuleManager.onEntityExplode(arena, event);
-                }
-
-                return; // no arena => out
-            }
+        if(arena == null) {
+            return;
         }
-        debug(arena, "explosion inside an arena, TNT should be blocked");
-        if (!arena.getConfig().getBoolean(CFG.PROTECT_ENABLED)
-                || !(event.getEntity() instanceof TNTPrimed)
-                && !(event.getEntity() instanceof Creeper)) {
+
+        if(arena.hasRegionsProtectingLocation(eventLocation, RegionProtection.TNT) ||
+                arena.hasRegionsProtectingLocation(eventLocation, RegionProtection.TNTBREAK)) {
+            debug(arena, "explosion inside an protected arena, TNT should be blocked");
+            event.setCancelled(true);
+        } else {
+            debug(arena, "explosion allowed inside this arena");
 
             try {
                 arena.getGoal().checkExplode(event);
             } catch (GameplayException e) {
                 debug(arena, "onEntityExplode cancelled by goal: {}", arena.getGoal().getName());
+                event.setCancelled(true);
+                return;
             }
 
             ArenaModuleManager.onEntityExplode(arena, event);
-            return;
         }
-
-        event.setCancelled(true); // ELSE => cancel event
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

@@ -196,6 +196,7 @@ public class Config {
 
         // ----------
         GOAL_BLOCKDESTROY_BLOCKTYPE("goal.blockdestroy.blocktype", Material.IRON_BLOCK, "BlockDestroy"),
+        GOAL_BLOCKDESTROY_AUTOCOLOR("goal.blockdestroy.autocolor", true, "BlockDestroy"),
         GOAL_BLOCKDESTROY_LIVES("goal.blockdestroy.bdlives", 1, "BlockDestroy"),
 
         GOAL_CHECKPOINTS_CLAIMRANGE("goal.checkpoints.cpclaimrange", 5, "CheckPoints"),
