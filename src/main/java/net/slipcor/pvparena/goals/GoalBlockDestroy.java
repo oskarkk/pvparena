@@ -336,10 +336,13 @@ public class GoalBlockDestroy extends ArenaGoal {
     @Override
     public void reset(final boolean force) {
         this.getTeamLifeMap().clear();
-        this.blockDataMap.forEach((paBlockLoc, blockData) ->
-                paBlockLoc.toLocation().getBlock().setBlockData(blockData)
-        );
-        this.blockDataMap.clear();
+
+        if(this.blockDataMap != null) {
+            this.blockDataMap.forEach((paBlockLoc, blockData) ->
+                    paBlockLoc.toLocation().getBlock().setBlockData(blockData)
+            );
+            this.blockDataMap.clear();
+        }
     }
 
     @Override

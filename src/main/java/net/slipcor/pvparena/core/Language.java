@@ -234,6 +234,7 @@ public final class Language {
         ERROR_PLAYER_NOTFOUND("nulang.error.playernotfound", "&cPlayer not found: &r%1%&c"),
         ERROR_POSITIVES("nulang.error.positives", "Positive values: &b%1%&r"),
         ERROR_POTIONEFFECTTYPE_NOTFOUND("nulang.error.potioneffecttypenotfound", "PotionEffectType not found: &e%1%&r"),
+        ERROR_NEED_SAME_BLOCK_TYPE("nulang.error.needsameblocktype", "All of your blocks must have the same type/material"),
 
         ERROR_READY_0_ONE_PLAYER_NOT_READY("nulang.error.ready.notready0", "At least one player is not ready!"),
         ERROR_READY_1_ALONE("nulang.error.ready.notready1", "You are alone in the arena!"),
@@ -507,11 +508,11 @@ public final class Language {
         GOAL_DOMINATION_CLOSE_SELECTION("nulang.goal.dom.closeselection", "&eSelection mode has been closed"),
 
         GOAL_FLAGS_BROUGHTHOME("lang.flaghomeleft", "%1% brought home the flag of team %2%! Captures remaining: %3%"),
-        GOAL_FLAGS_TOUCHHOME("lang.touchhomeleft", "%1% brought home the flag! Captures remaining: %2%"),
+        GOAL_FLAGS_TOUCHHOME("lang.touchhomeleft", "%1% brought home the touchdown flag! Other teams loses one life!"),
         GOAL_FLAGS_DROPPED("lang.flagsave", "%1% dropped the flag of team %2%!"),
-        GOAL_FLAGS_DROPPEDTOUCH("lang.flagsavetouch", "%1% dropped the flag!"),
+        GOAL_FLAGS_DROPPEDTOUCH("lang.flagsavetouch", "%1% dropped the touchdown flag!"),
         GOAL_FLAGS_GRABBED("lang.flaggrab", "%1% grabbed the flag of team %2%!"),
-        GOAL_FLAGS_GRABBEDTOUCH("lang.flaggrabtouch", "%1% grabbed the flag!"),
+        GOAL_FLAGS_GRABBEDTOUCH("lang.flaggrabtouch", "%1% grabbed the touchdown flag!"),
         GOAL_FLAGS_NOTSAFE("lang.flagnotsafe", "Your flag is taken! Cannot bring back an enemy flag!'"),
         GOAL_FLAGS_SET("lang.setflag", "Flag set: %1%"),
         GOAL_FLAGS_TOSET("lang.tosetflag", "Flag to set: %1%"),

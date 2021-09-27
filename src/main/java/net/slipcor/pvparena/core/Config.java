@@ -212,7 +212,7 @@ public class Config {
         GOAL_DOM_TICKINTERVAL("goal.dom.tickinterval", 60, "Domination"),
         GOAL_DOM_TICKREWARD("goal.dom.tickreward", 1, "Domination"),
 
-        GOAL_FLAGS_FLAGTYPE("goal.flags.flagType", Material.WHITE_WOOL, "Flags"),
+        GOAL_FLAGS_AUTOCOLOR("goal.flags.autocolor", true, "Flags"),
         GOAL_FLAGS_LIVES("goal.flags.flives", 3, "Flags"),
         GOAL_FLAGS_MUSTBESAFE("goal.flags.mustBeSafe", true, "Flags"),
         GOAL_FLAGS_WOOLFLAGHEAD("goal.flags.woolFlagHead", true, "Flags"),
@@ -232,7 +232,7 @@ public class Config {
         GOAL_LLIVES_LIVES("goal.liberation.llives", 3, "Liberation"),
         GOAL_PDM_LIVES("goal.playerdm.pdlives", 3, "PlayerDeathMatch"),
 
-        GOAL_PFLAGS_FLAGTYPE("goal.physicalflags.flagType", Material.WHITE_WOOL, "PhysicalFlags"),
+        GOAL_PFLAGS_AUTOCOLOR("goal.physicalflags.autocolor", true, "PhysicalFlags"),
         GOAL_PFLAGS_LIVES("goal.physicalflags.flives", 3, "PhysicalFlags"),
         GOAL_PFLAGS_MUSTBESAFE("goal.physicalflags.mustBeSafe", true, "PhysicalFlags"),
         GOAL_PFLAGS_WOOLFLAGHEAD("goal.physicalflags.woolFlagHead", true, "PhysicalFlags"),

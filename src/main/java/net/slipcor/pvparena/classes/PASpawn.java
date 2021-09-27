@@ -93,7 +93,7 @@ public class PASpawn {
                 ofNullable(this.teamName).orElse(""),
                 this.name,
                 ofNullable(this.className).orElse("")
-        ));
+        ).trim());
     }
 
     @Override

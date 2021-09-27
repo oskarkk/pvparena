@@ -953,16 +953,7 @@ public final class SpawnManager {
         if (blockArgs.length > 1) {
             ArenaTeam arenaTeam = arena.getTeam(blockArgs[0]);
             blockName = blockArgs[1];
-            if (arenaTeam == null) {
-                PVPArena.getInstance().getLogger().severe(
-                        String.format("[%s] %s is not a valid team for spawn %s",
-                                arena.getName(),
-                                blockArgs[0],
-                                blockNode
-                        ));
-                return;
-            }
-            arenaTeamName = arenaTeam.getName();
+            arenaTeamName = ofNullable(arenaTeam).map(ArenaTeam::getName).orElse(blockArgs[0].toLowerCase());
         }
         try {
             spawns.add(new PABlock(Config.parseBlockLocation(location), blockName, arenaTeamName));

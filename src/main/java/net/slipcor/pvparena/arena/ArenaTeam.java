@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static net.slipcor.pvparena.config.Debugger.debug;
@@ -146,6 +147,19 @@ public class ArenaTeam {
     @Override
     public String toString() {
         return this.name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || this.getClass() != o.getClass()) return false;
+        ArenaTeam arenaTeam = (ArenaTeam) o;
+        return this.name.equals(arenaTeam.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.name);
     }
 
     public void sendMessage(ArenaPlayer sender, String msg) {
