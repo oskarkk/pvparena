@@ -834,6 +834,8 @@ public class PlayerListener implements Listener {
         if (arena == null) {
             return; // no fighting player => OUT
         }
+        // must rememeber that they're quitting because then the teleport can't wait
+        ArenaPlayer.parsePlayer(player.getName()).setQuitting(true);
         arena.playerLeave(player, CFG.TP_EXIT, false, true, false);
     }
 

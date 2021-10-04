@@ -1564,6 +1564,9 @@ public class Arena {
             Bukkit.getScheduler().runTaskLater(PVPArena.instance, runLater, cfg.getInt(CFG.TIME_RESETDELAY) * 20);
         } else if (PVPArena.instance.isShuttingDown()) {
             runLater.run();
+        } else if (aPlayer.isQuitting()) {
+            // if we wait when teleporting a player when he's quitting, the teleport will fail
+            runLater.run();
         } else {
             // Waiting two ticks in order to avoid player death bug
             Bukkit.getScheduler().runTaskLater(PVPArena.instance, runLater, 2);

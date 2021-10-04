@@ -51,6 +51,8 @@ public class ArenaPlayer {
     private boolean teleporting;
     private boolean mayDropInventory;
 
+    // mark if the player is quitting for early teleport
+    private boolean quitting; 
     private Boolean flying;
 
     private Arena arena;
@@ -586,6 +588,10 @@ public class ArenaPlayer {
         return telePass;
     }
 
+    public boolean isQuitting() {
+        return quitting;
+    }
+
     public boolean isIgnoringAnnouncements() {
         return ignoreAnnouncements;
     }
@@ -698,6 +704,7 @@ public class ArenaPlayer {
         }
 
         telePass = false;
+        quitting = false;
 
         if (state != null) {
             state.reset();
@@ -842,6 +849,10 @@ public class ArenaPlayer {
 
     public void setTeleporting(final boolean isTeleporting) {
         teleporting = isTeleporting;
+    }
+
+    public void setQuitting(final boolean isQuitting) {
+        quitting = isQuitting;
     }
 
     public void showBloodParticles() {
