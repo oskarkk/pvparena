@@ -238,6 +238,8 @@ public final class ConfigurationManager {
             }
         }
 
+        checkTypes(cfg, arena);
+
         ArenaModuleManager.configParse(arena, config);
         cfg.save();
         cfg.reloadMaps();
@@ -332,5 +334,38 @@ public final class ConfigurationManager {
             return Language.parse(arena, MSG.ERROR_MISSING_SPAWN, error);
         }
         return null;
+    }
+
+    /**
+     * Check if the types in the yaml file are correct (are the same as the 
+     * types of the default values in CFG). Convert if the type in yaml is
+     * int instead of double.
+     *
+     * @param cfg the config to check
+     * @param arena the arena to put its name in warning messages
+     */
+    public static void checkTypes(final Config cfg, final Arena arena) {
+        YamlConfiguration yamlcfg = cfg.getYamlConfiguration();
+        for (final String key : yamlcfg.getKeys(true)) {
+            final Object obj = yamlcfg.get(key);
+            final Object correctobj;
+            if (CFG.getByNode(key) != null) {
+                correctobj = CFG.getByNode(key).getValue();
+            } else {
+                continue;
+            }
+            if (obj != null && obj.getClass() != correctobj.getClass()) {
+                if (obj instanceof Integer && correctobj instanceof Double) {
+                    Double dvalue = ((Integer) obj).doubleValue();
+                    PVPArena.instance.getLogger().warning(
+                        "[PVP Arena] " + arena.getName() + " - wrong type in " + key + ": integer (" + obj.toString() + "), converting to float (" + dvalue.toString() + ")");
+                    cfg.setManually(key, null);
+                    cfg.setManually(key, dvalue);
+                } else {
+                    PVPArena.instance.getLogger().warning(
+                        "[PVP Arena] " + arena.getName() + " - wrong type in " + key + ": " + obj.getClass().getSimpleName() + " instead of " + correctobj.getClass().getSimpleName() );
+                }
+            }
+        }
     }
 }
