@@ -292,6 +292,7 @@ public final class Language {
 
         GOAL_SET("nulang.goal.added", "Goal set: &a%1%&r"),
         GOAL_INSTALLING("nulang.goal.installing", "Install goals by command: &a/pa install %1%&r"),
+        GOAL_CLOSED_SELECTION("nulang.goal.closedselection","&eSelection mode has been closed"),
 
         HELP_HEADLINE("nulang.help.head", "&e--- &aPVP Arena Help&e %1% &e---"),
         HELP_ADMIN("nulang.help.admin", "&c%1% - help administrating"),
@@ -503,28 +504,31 @@ public final class Language {
         GOAL_DOMINATION_CONTESTING("nulang.goal.dom.contesting", "&eA flag claimed by team %1% is being contested!"),
         GOAL_DOMINATION_UNCLAIMING("nulang.goal.dom.unclaiming", "&eA flag claimed by team %1% is being unclaimed!"),
         GOAL_DOMINATION_UNCLAIMINGBY("nulang.goal.dom.unclaimingby", "&eA flag claimed by team %1% is being unclaimed by team %2%!"),
-        GOAL_DOMINATION_SET_FLAG("nulang.goal.dom.setflag", "&eClick on your arena flags to register them, they need to be colorable blocks. Type this command again to close selection mode."),
+        GOAL_DOMINATION_SET_FLAG("nulang.goal.dom.setflag", "&eClick on a flag to register it, it needs to be a colorable block."),
         GOAL_DOMINATION_EXISTING_FLAG("nulang.goal.dom.existingflag", "&eThis flag was already set"),
-        GOAL_DOMINATION_CLOSE_SELECTION("nulang.goal.dom.closeselection", "&eSelection mode has been closed"),
 
-        GOAL_FLAGS_BROUGHTHOME("lang.flaghomeleft", "%1% brought home the flag of team %2%! Captures remaining: %3%"),
-        GOAL_FLAGS_TOUCHHOME("lang.touchhomeleft", "%1% brought home the touchdown flag! Other teams loses one life!"),
-        GOAL_FLAGS_DROPPED("lang.flagsave", "%1% dropped the flag of team %2%!"),
-        GOAL_FLAGS_DROPPEDTOUCH("lang.flagsavetouch", "%1% dropped the touchdown flag!"),
-        GOAL_FLAGS_GRABBED("lang.flaggrab", "%1% grabbed the flag of team %2%!"),
-        GOAL_FLAGS_GRABBEDTOUCH("lang.flaggrabtouch", "%1% grabbed the touchdown flag!"),
-        GOAL_FLAGS_NOTSAFE("lang.flagnotsafe", "Your flag is taken! Cannot bring back an enemy flag!'"),
-        GOAL_FLAGS_SET("lang.setflag", "Flag set: %1%"),
-        GOAL_FLAGS_TOSET("lang.tosetflag", "Flag to set: %1%"),
-        GOAL_FLAGS_TYPESET("lang.typeset", "Flag type set to: &e%1%"),
+        GOAL_FLAGS_BROUGHTHOME("lang.goal.flag.flaghomeleft", "%1% brought home the flag of team %2%! Captures remaining: %3%"),
+        GOAL_FLAGS_TOUCHHOME("lang.goal.flag.touchhomeleft", "%1% brought home the touchdown flag! Other teams loses one life!"),
+        GOAL_FLAGS_DROPPED("lang.goal.flag.flagsave", "%1% dropped the flag of team %2%!"),
+        GOAL_FLAGS_DROPPEDTOUCH("lang.goal.flag.flagsavetouch", "%1% dropped the touchdown flag!"),
+        GOAL_FLAGS_GRABBED("lang.goal.flag.flaggrab", "%1% grabbed the flag of team %2%!"),
+        GOAL_FLAGS_GRABBEDTOUCH("lang.goal.flag.flaggrabtouch", "%1% grabbed the touchdown flag!"),
+        GOAL_FLAGS_NOTSAFE("lang.goal.flag.flagnotsafe", "Your flag is taken! Cannot bring back an enemy flag!'"),
+        GOAL_FLAGS_SET("lang.goal.flag.setflag", "Flag set: %1%"),
+        GOAL_FLAGS_TOSET("lang.goal.flag.tosetflag", "Flag to set: %1%"),
+        GOAL_FLAGS_TYPESET("lang.goal.flag.typeset", "Flag type set to: &e%1%"),
         GOAL_FLAGS_NOTFOUND("lang.goal.flag.notfound", "Flag not found: &e%1%"),
         GOAL_FLAGS_REMOVED("lang.goal.flag.removed", "Flag &e%1%&r has been removed"),
 
-        GOAL_FOOD_NOTYOURFOOD("lang.notyourfood", "This is not your furnace!"),
-        GOAL_FOOD_SET("lang.setfood", "Food chest set: %1%"),
-        GOAL_FOOD_TOSET("lang.tosetfood", "Food chest to set: %1%"),
-        GOAL_FOODFURNACE_SET("lang.setfoodfurnace", "Furnace set: %1%"),
-        GOAL_FOODFURNACE_TOSET("lang.tosetfoodfurnace", "Furnace to set: %1%"),
+        GOAL_FOOD_NOTYOURFOOD("lang.goal.food.notyourfood", "This is not your furnace!"),
+        GOAL_FOOD_TOSET("lang.goal.food.tosetfood", "&eClick on a %1% to register it. Type this command again to close selection mode"),
+        GOAL_FOOD_NOTFOUND("lang.goal.food.notfound", "Block not found: %1% %2% #%3%"),
+        GOAL_FOOD_REMOVED("lang.goal.food.removed", "%1% %2% #%3% has been removed"),
+        GOAL_FOOD_EXISTING_BLOCK("lang.goal.food.existingblock", "This block has already been set for team %1%"),
+        GOAL_FOOD_FURNACE_SET("lang.goal.food.foodfurnaceset", "Furnace #%1% set for team %2%"),
+        GOAL_FOOD_CHEST_SET("lang.goal.food.foodchestset", "Food chest #%1% set for team %2%"),
+        GOAL_FOOD_ITEMS_PUT("lang.goal.food.itemsput", "Team %1% has put %2% items in their chest! Score: %3%/%4%"),
+        GOAL_FOOD_ITEMS_REMOVED("lang.goal.food.itemsremoved", "Team %1% has removed %2% items from their chest! Score: %3%/%4%"),
 
         GOAL_INFECTED_LOST("nulang.goal.infected.lost", "&6The infected players have been killed!"),
         GOAL_INFECTED_PLAYER("nulang.goal.infected.player", "&c%1% is infected!"),
@@ -898,12 +902,12 @@ public final class Language {
      * @param args strings to replace
      * @return the replaced node string
      */
-    public static String parse(final MSG message, final String... args) {
+    public static String parse(final MSG message, final Object... args) {
         trace("MSG: {}", message.name());
         String result = message.toString();
         int i = 0;
-        for (String word : args) {
-            result = result.replace("%" + ++i + '%', word);
+        for (Object word : args) {
+            result = result.replace("%" + ++i + '%', String.valueOf(word));
         }
         return StringParser.colorize(result);
     }

@@ -1,15 +1,20 @@
 package net.slipcor.pvparena.goals;
 
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.arena.*;
+import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.arena.ArenaPlayer;
+import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.classes.PABlockLocation;
-import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.classes.PADeathInfo;
+import net.slipcor.pvparena.classes.PASpawn;
+import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.commands.PAA_Region;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.core.RandomUtils;
 import net.slipcor.pvparena.core.StringUtils;
 import net.slipcor.pvparena.events.PAGoalEvent;
 import net.slipcor.pvparena.exceptions.GameplayException;
@@ -21,9 +26,12 @@ import net.slipcor.pvparena.managers.WorkflowManager;
 import net.slipcor.pvparena.runnables.EndRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Container;
+import org.bukkit.block.Furnace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -33,12 +41,19 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static net.slipcor.pvparena.classes.PABlock.PA_BLOCK_TEAM_FORMAT;
+import static java.util.Arrays.asList;
 import static net.slipcor.pvparena.config.Debugger.debug;
+import static net.slipcor.pvparena.core.StringUtils.startsWithIgnoreCase;
 
 /**
  * <pre>
@@ -48,15 +63,18 @@ import static net.slipcor.pvparena.config.Debugger.debug;
  * Players are equipped with raw food, the goal is to bring back cooked food
  * to their base. The first team having gathered enough wins!
  *
- * @author slipcor
+ * Business rules:
+ * - Each team can own several chests and several furnaces
+ * - A furnace can belong to several teams in the same time, but not a chest
+ * - Teams not having a furnace will be able to access all of them
+ *
  */
-
 public class GoalFood extends ArenaGoal {
 
     private static final String FOODCHEST = "foodchest";
     private static final String FOODFURNACE = "foodfurnace";
 
-    private String blockName;
+    private String blockTypeName;
     private String blockTeamName;
 
     public GoalFood() {
@@ -68,18 +86,18 @@ public class GoalFood extends ArenaGoal {
         return PVPArena.getInstance().getDescription().getVersion();
     }
 
-    private final Map<ArenaTeam, Material> foodtypes = new HashMap<>();
-    private final Map<Block, ArenaTeam> chestMap = new HashMap<>();
-    private static final Map<Material, Material> cookmap = new HashMap<>();
+    private final Map<ArenaTeam, Material> teamFoodMap = new HashMap<>();
+    private static final Map<Material, Material> COOK_MAP = new HashMap<>();
 
     static {
-        cookmap.put(Material.BEEF, Material.COOKED_BEEF);
-        cookmap.put(Material.CHICKEN, Material.COOKED_CHICKEN);
-        cookmap.put(Material.COD, Material.COOKED_COD);
-        cookmap.put(Material.MUTTON, Material.COOKED_MUTTON);
-        cookmap.put(Material.PORKCHOP, Material.COOKED_PORKCHOP);
-        cookmap.put(Material.POTATO, Material.BAKED_POTATO);
-        cookmap.put(Material.SALMON, Material.COOKED_SALMON);
+        COOK_MAP.put(Material.BEEF, Material.COOKED_BEEF);
+        COOK_MAP.put(Material.CHICKEN, Material.COOKED_CHICKEN);
+        COOK_MAP.put(Material.COD, Material.COOKED_COD);
+        COOK_MAP.put(Material.MUTTON, Material.COOKED_MUTTON);
+        COOK_MAP.put(Material.PORKCHOP, Material.COOKED_PORKCHOP);
+        COOK_MAP.put(Material.POTATO, Material.BAKED_POTATO);
+        COOK_MAP.put(Material.SALMON, Material.COOKED_SALMON);
+        COOK_MAP.put(Material.KELP, Material.DRIED_KELP);
     }
 
     @Override
@@ -89,21 +107,26 @@ public class GoalFood extends ArenaGoal {
 
     @Override
     public boolean checkCommand(final String string) {
-        return this.arena.getTeams().stream()
-                .map(ArenaTeam::getName)
-                .anyMatch(sTeam -> string.contains(sTeam + FOODCHEST) || string.contains(sTeam + FOODFURNACE));
+        return FOODCHEST.equalsIgnoreCase(string) || FOODFURNACE.equalsIgnoreCase(string);
     }
 
     @Override
     public List<String> getGoalCommands() {
-        List<String> result = new ArrayList<>();
-        if (this.arena != null) {
-            this.arena.getTeams()
-                    .forEach(team -> {
-                        result.add(String.format(PA_BLOCK_TEAM_FORMAT, team.getName(), FOODCHEST));
-                        result.add(String.format(PA_BLOCK_TEAM_FORMAT, team.getName(), FOODFURNACE));
-                    });
-        }
+        return asList(FOODCHEST, FOODFURNACE);
+    }
+
+    @Override
+    public CommandTree<String> getGoalSubCommands(final Arena arena) {
+        final CommandTree<String> result = new CommandTree<>(null);
+        final Pattern blockRegexPattern = Pattern.compile("[a-z]+(\\d+)");
+
+        arena.getTeamNames().forEach(teamName -> result.define(new String[]{"add", teamName}));
+        arena.getBlocks().forEach(paBlock -> {
+            Matcher matcher = blockRegexPattern.matcher(paBlock.getName());
+            if(matcher.find()) {
+                result.define(new String[]{"remove", paBlock.getTeamName(), matcher.group(1)});
+            }
+        });
         return result;
     }
 
@@ -143,8 +166,8 @@ public class GoalFood extends ArenaGoal {
             return false;
         }
 
-        if (StringUtils.isBlank(this.blockName) || block == null ||
-                (block.getType() != Material.CHEST && block.getType() != Material.FURNACE)) {
+        if (StringUtils.isBlank(this.blockTypeName) || block == null ||
+                (block.getType() != Material.CHEST && !(block.getState() instanceof Furnace))) {
             return false;
         }
 
@@ -153,28 +176,55 @@ public class GoalFood extends ArenaGoal {
 
     @Override
     public void commitCommand(final CommandSender sender, final String[] args) {
-        if (args[0].contains(FOODCHEST)) {
-            commitSetBlockCommand(sender, args);
-        } else if (args[0].contains(FOODFURNACE)) {
-            commitSetBlockCommand(sender, args);
+        if (args[0].equalsIgnoreCase(FOODCHEST) || args[0].equalsIgnoreCase(FOODFURNACE)) {
+            if(args.length != 3 && args.length != 4) {
+                this.arena.msg(sender, MSG.ERROR_INVALID_ARGUMENT_COUNT, String.valueOf(args.length), "3, 4");
+            }  else {
+                if (this.arena.getTeam(args[2]) == null) {
+                    this.arena.msg(sender, MSG.ERROR_TEAM_NOT_FOUND, this.blockTypeName);
+                    return;
+                }
+
+                if("add".equalsIgnoreCase(args[1])) {
+                    this.commitAddBlockCommand(sender, args[0], args[2]);
+                } else if ("remove".equalsIgnoreCase(args[1])) {
+                    if(args.length != 4) {
+                        this.arena.msg(sender, MSG.ERROR_INVALID_ARGUMENT_COUNT, String.valueOf(args.length), "4");
+                        return;
+                    }
+
+                    this.commitRemoveBlockCommand(sender, args[0], args[2], args[3]);
+                } else {
+                    this.arena.msg(sender, MSG.ERROR_COMMAND_INVALID, String.join(" ", args[0], args[1]));
+                }
+            }
         }
     }
 
-    private void commitSetBlockCommand(CommandSender sender, String[] args) {
-        if (args.length >= 2) {
-            String teamName = args[1];
-            if (this.arena.getTeam(teamName) == null) {
-                this.arena.msg(sender, MSG.ERROR_TEAM_NOT_FOUND, this.blockName);
-                return;
-            }
-            this.blockTeamName = teamName;
+    private void commitAddBlockCommand(CommandSender sender, String blockType, String teamName) {
+        if (PAA_Region.activeSelections.containsKey(sender.getName())) {
+            PAA_Region.activeSelections.remove(sender.getName());
+            this.arena.msg(sender, MSG.GOAL_CLOSED_SELECTION);
         } else {
-            this.blockTeamName = null;
+            this.blockTypeName = blockType;
+            this.blockTeamName = teamName;
+            PAA_Region.activeSelections.put(sender.getName(), this.arena);
+            this.arena.msg(sender, MSG.GOAL_FOOD_TOSET, this.blockTypeName.substring(4));
         }
-        this.blockName = args[0];
-        PAA_Region.activeSelections.put(sender.getName(), this.arena);
+    }
 
-        this.arena.msg(sender, MSG.GOAL_SABOTAGE_TOSETTNT, this.blockName);
+    private void commitRemoveBlockCommand(CommandSender sender, String blockType, String teamName, String index) {
+        String flagName = blockType + index;
+        Optional<PABlock> paBlock = this.arena.getBlocks().stream()
+                .filter(block -> block.getTeamName().equalsIgnoreCase(teamName) && block.getName().equalsIgnoreCase(flagName))
+                .findAny();
+
+        if (!paBlock.isPresent()) {
+            this.arena.msg(sender, MSG.GOAL_FOOD_NOTFOUND, teamName, blockType, index);
+            return;
+        }
+        SpawnManager.removeBlock(this.arena, paBlock.get());
+        this.arena.msg(sender, MSG.GOAL_FOOD_REMOVED, teamName, blockType, index);
     }
 
     @Override
@@ -233,28 +283,52 @@ public class GoalFood extends ArenaGoal {
     @Override
     public boolean commitSetBlock(final Player player, final Block block) {
 
-        debug(this.arena, player, "trying to set a foodchest/furnace");
+        debug(this.arena, player, "trying to add a new foodchest/furnace");
 
-        // command : /pa redflag1
-        // location: red1flag:
+        final Set<PABlockLocation> flags = SpawnManager.getBlocksStartingWith(this.arena, this.blockTypeName, this.blockTeamName);
 
-        SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), this.blockName, this.blockTeamName);
+        if (flags.contains(new PABlockLocation(block.getLocation()))) {
+            this.arena.msg(player, MSG.GOAL_FOOD_EXISTING_BLOCK, this.blockTeamName);
+            return true;
+        }
 
-        if (this.blockName.contains("furnace")) {
-            if (block.getType() != Material.FURNACE) {
+        int newIndex = this.arena.getBlocks().stream()
+                .filter(paBlock -> paBlock.getTeamName().equalsIgnoreCase(this.blockTeamName) && startsWithIgnoreCase(paBlock.getName(), this.blockTypeName))
+                .map(paBlock -> Integer.valueOf(paBlock.getName().replace(this.blockTypeName.toLowerCase(), "")))
+                .max(Integer::compareTo)
+                .map(index -> index + 1)
+                .orElse(0);
+
+        String blockName = this.blockTypeName.toLowerCase() + newIndex;
+
+        if (FOODFURNACE.equalsIgnoreCase(this.blockTypeName)) {
+            if (!(block.getState() instanceof Furnace)) {
                 return false;
             }
-            this.arena.msg(player, MSG.GOAL_FOODFURNACE_SET, this.blockName);
+            SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), blockName, this.blockTeamName);
+            this.arena.msg(player, MSG.GOAL_FOOD_FURNACE_SET, String.valueOf(newIndex), this.blockTeamName);
 
         } else {
             if (block.getType() != Material.CHEST) {
                 return false;
             }
-            this.arena.msg(player, MSG.GOAL_FOOD_SET, this.blockName);
+
+            Set<PABlock> allFoodChests = SpawnManager.getPABlocksContaining(this.arena, FOODCHEST);
+            Optional<PABlock> existingChest = allFoodChests.stream()
+                    .filter(paBlock -> paBlock.getLocation().equals(new PABlockLocation(block.getLocation())))
+                    .findAny();
+
+            if(existingChest.isPresent()) {
+                this.arena.msg(player, MSG.GOAL_FOOD_EXISTING_BLOCK, existingChest.get().getTeamName());
+                return false;
+            }
+
+            SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), blockName, this.blockTeamName);
+            this.arena.msg(player, MSG.GOAL_FOOD_CHEST_SET, String.valueOf(newIndex), this.blockTeamName);
         }
 
         PAA_Region.activeSelections.remove(player.getName());
-        this.blockName = null;
+        this.blockTypeName = null;
         this.blockTeamName = null;
 
         return true;
@@ -268,11 +342,6 @@ public class GoalFood extends ArenaGoal {
                 + this.arena.getConfig().getInt(CFG.GOAL_FOOD_FPLAYERITEMS));
         sender.sendMessage("items per team: "
                 + this.arena.getConfig().getInt(CFG.GOAL_FOOD_FTEAMITEMS));
-    }
-
-    @NotNull
-    private Map<ArenaTeam, Material> getFoodMap() {
-        return this.foodtypes;
     }
 
     @Override
@@ -298,28 +367,14 @@ public class GoalFood extends ArenaGoal {
             return false;
         }
 
-        final Set<PABlock> spawns = SpawnManager.getPABlocksContaining(this.arena, FOODFURNACE);
+        String teamName = aPlayer.getArenaTeam().getName();
+        Set<PABlockLocation> furnacesLocations = SpawnManager.getBlocksStartingWith(this.arena, FOODFURNACE, teamName);
 
-        if (spawns.isEmpty()) {
+        if (furnacesLocations.isEmpty()) {
             return false;
         }
 
-        final String teamName = aPlayer.getArenaTeam().getName();
-
-        final Set<PABlockLocation> validSpawns = new HashSet<>();
-
-        for (PABlock block : spawns) {
-            final String spawnName = block.getName();
-            if (spawnName.startsWith(teamName + FOODFURNACE)) {
-                validSpawns.add(block.getLocation());
-            }
-        }
-
-        if (validSpawns.isEmpty()) {
-            return false;
-        }
-
-        if (!validSpawns.contains(new PABlockLocation(clickedBlock.getLocation()))) {
+        if (!furnacesLocations.contains(new PABlockLocation(clickedBlock.getLocation()))) {
             this.arena.msg(player.getPlayer(), MSG.GOAL_FOOD_NOTYOURFOOD);
             return true;
         }
@@ -329,15 +384,21 @@ public class GoalFood extends ArenaGoal {
 
     @Override
     public void checkItemTransfer(InventoryMoveItemEvent event) {
-        if (this.chestMap.isEmpty() || !this.chestMap.containsKey(((Chest) event.getDestination().getHolder()).getBlock())) {
+        Location chestLoc = ((Chest) event.getDestination().getHolder()).getLocation();
+
+        Optional<PABlock> teamFoodChest = SpawnManager.getPABlocksContaining(this.arena, FOODCHEST).stream()
+                .filter(paBlock -> paBlock.getLocation().equals(new PABlockLocation(chestLoc)))
+                .findAny();
+
+        if (!teamFoodChest.isPresent()) {
             return;
         }
 
         final ItemStack stack = event.getItem();
 
-        final ArenaTeam arenaTeam = this.chestMap.get(((Chest) event.getDestination().getHolder()).getBlock());
+        final ArenaTeam arenaTeam = this.arena.getTeam(teamFoodChest.get().getTeamName());
 
-        if (arenaTeam == null || stack.getType() != cookmap.get(this.getFoodMap().get(arenaTeam))) {
+        if (arenaTeam == null || stack.getType() != COOK_MAP.get(this.teamFoodMap.get(arenaTeam))) {
             return;
         }
 
@@ -351,7 +412,7 @@ public class GoalFood extends ArenaGoal {
         final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this,
                 String.format("score:%s:%s:%d", arenaPlayerOptional.get().getName(), arenaTeam.getName(), stack.getAmount()));
         Bukkit.getPluginManager().callEvent(gEvent);
-        this.reduceLives(this.arena, arenaTeam, stack.getAmount());
+        this.reduceLives(arenaTeam, stack.getAmount());
     }
 
     @Override
@@ -366,8 +427,9 @@ public class GoalFood extends ArenaGoal {
             return;
         }
 
-        if (!this.chestMap.containsKey(((Chest) event.getInventory()
-                .getHolder()).getBlock())) {
+        Location chestLoc = ((Chest) event.getInventory().getHolder()).getLocation();
+
+        if (!SpawnManager.getBlocksContaining(this.arena, FOODCHEST).contains(new PABlockLocation(chestLoc))) {
             return;
         }
 
@@ -382,7 +444,7 @@ public class GoalFood extends ArenaGoal {
 
         final ArenaTeam team = aPlayer.getArenaTeam();
 
-        if (team == null || stack == null || stack.getType() != cookmap.get(this.getFoodMap().get(team))) {
+        if (team == null || stack == null || stack.getType() != COOK_MAP.get(this.teamFoodMap.get(team))) {
             return;
         }
 
@@ -393,53 +455,59 @@ public class GoalFood extends ArenaGoal {
             final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, "score:" +
                     aPlayer.getName() + ':' + team.getName() + ":-" + stack.getAmount());
             Bukkit.getPluginManager().callEvent(gEvent);
-            this.reduceLives(this.arena, team, -stack.getAmount());
+            this.reduceLives(team, -stack.getAmount());
         } else {
             // INTO container
             final PAGoalEvent gEvent = new PAGoalEvent(this.arena, this, "score:" +
                     aPlayer.getName() + ':' + team.getName() + ':' + stack.getAmount());
             Bukkit.getPluginManager().callEvent(gEvent);
-            this.reduceLives(this.arena, team, stack.getAmount());
+            this.reduceLives(team, stack.getAmount());
         }
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public void parseStart() {
+        this.clearBlockInventories();
 
         final int pAmount = this.arena.getConfig().getInt(CFG.GOAL_FOOD_FPLAYERITEMS);
         final int tAmount = this.arena.getConfig().getInt(CFG.GOAL_FOOD_FTEAMITEMS);
 
         for (ArenaTeam team : this.arena.getTeams()) {
-            int pos = new Random().nextInt(cookmap.size());
-            for (Material mat : cookmap.keySet()) {
-                if (pos <= 0) {
-                    this.getFoodMap().put(team, mat);
-                    break;
-                }
-                pos--;
-            }
-            int totalAmount = pAmount;
-            totalAmount += tAmount / team.getTeamMembers().size();
+            Random random = new Random();
 
-            if (totalAmount < 1) {
-                totalAmount = 1;
-            }
-            for (ArenaPlayer arenaPlayer : team.getTeamMembers()) {
+            Material teamMaterial;
 
-                arenaPlayer.getPlayer().getInventory().addItem(new ItemStack(this.getFoodMap().get(team), totalAmount));
-                arenaPlayer.getPlayer().updateInventory();
+            // Setting random ingredient per team. No duplicates except if there's more teams than ingredients.
+            do {
+                teamMaterial = RandomUtils.getRandom(COOK_MAP.keySet(), random);
+
+            } while (this.arena.getTeams().size() < COOK_MAP.size() && this.teamFoodMap.containsValue(teamMaterial));
+
+            this.teamFoodMap.put(team, teamMaterial);
+
+            int teamPartAmount = tAmount / team.getTeamMembers().size();
+            int totalAmount = Math.max(pAmount + teamPartAmount, 1);
+            
+            for (ArenaPlayer teamPlayer : team.getTeamMembers()) {
+                teamPlayer.getPlayer().getInventory().addItem(new ItemStack(teamMaterial, totalAmount));
+                teamPlayer.getPlayer().updateInventory();
             }
-            this.chestMap.put(SpawnManager.getBlockByExactName(this.arena, team.getName() + FOODCHEST).toLocation().getBlock(), team);
             this.getTeamLifeMap().put(team, this.arena.getConfig().getInt(CFG.GOAL_FOOD_FMAXITEMS));
         }
     }
 
-    private void reduceLives(final Arena arena, final ArenaTeam team, final int amount) {
+    private void reduceLives(final ArenaTeam team, final int amount) {
         final int iLives = this.getTeamLifeMap().get(team);
 
+        int maxILives = this.arena.getConfig().getInt(CFG.GOAL_FOOD_FMAXITEMS);
+        int newILives = Math.max(iLives - amount, 0);
+        int score = maxILives - newILives;
+        MSG selectedMsg = (amount < 0) ? MSG.GOAL_FOOD_ITEMS_REMOVED : MSG.GOAL_FOOD_ITEMS_PUT;
+        this.arena.broadcast(Language.parse(selectedMsg, team.getColoredName(), Math.abs(amount), score, maxILives));
+
         if (iLives <= amount && amount > 0) {
-            for (ArenaTeam otherTeam : arena.getTeams()) {
+            for (ArenaTeam otherTeam : this.arena.getTeams()) {
                 if (otherTeam.equals(team)) {
                     continue;
                 }
@@ -450,7 +518,7 @@ public class GoalFood extends ArenaGoal {
                     }
                 }
             }
-            WorkflowManager.handleEnd(arena, false);
+            WorkflowManager.handleEnd(this.arena, false);
             return;
         }
 
@@ -459,14 +527,14 @@ public class GoalFood extends ArenaGoal {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void refillInventory(final Player player) {
+    public void editInventoryOnRefill(final Player player) {
         final ArenaPlayer aPlayer = ArenaPlayer.fromPlayer(player);
         final ArenaTeam team = aPlayer.getArenaTeam();
         if (team == null) {
             return;
         }
 
-        player.getInventory().addItem(new ItemStack(this.getFoodMap().get(team), this.arena.getConfig().getInt(CFG.GOAL_FOOD_FPLAYERITEMS)));
+        player.getInventory().addItem(new ItemStack(this.teamFoodMap.get(team), this.arena.getConfig().getInt(CFG.GOAL_FOOD_FPLAYERITEMS)));
         player.updateInventory();
     }
 
@@ -474,6 +542,7 @@ public class GoalFood extends ArenaGoal {
     @Override
     public void reset(final boolean force) {
         this.getTeamLifeMap().clear();
+        this.clearBlockInventories();
     }
 
     @Override
@@ -506,5 +575,13 @@ public class GoalFood extends ArenaGoal {
         if (this.allowsJoinInBattle()) {
             this.arena.hasNotPlayed(ArenaPlayer.fromPlayer(player));
         }
+    }
+
+    private void clearBlockInventories() {
+        this.arena.getBlocks().stream()
+                .map(paBlock -> paBlock.getLocation().toLocation().getBlock().getState())
+                .filter(blockState -> blockState instanceof Container)
+                .map(blockState -> (Container) blockState)
+                .forEach(container -> container.getInventory().clear());
     }
 }

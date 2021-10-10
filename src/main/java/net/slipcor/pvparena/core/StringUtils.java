@@ -24,4 +24,12 @@ public class StringUtils {
     public static boolean equalsIgnoreCase(String str1, String str2) {
         return (str1 == null && str2 == null) || str1 != null && str1.equalsIgnoreCase(str2);
     }
+
+    public static boolean startsWithIgnoreCase(String string, String prefix) {
+        return string != null && prefix != null && string.toLowerCase().startsWith(prefix.toLowerCase());
+    }
+
+    public static boolean endsWithIgnoreCase(String string, String suffix) {
+        return string != null && suffix != null && string.toLowerCase().endsWith(suffix.toLowerCase());
+    }
 }

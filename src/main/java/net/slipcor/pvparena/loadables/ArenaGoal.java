@@ -6,8 +6,8 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlock;
-import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.classes.PADeathInfo;
+import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
@@ -28,9 +28,14 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 
-import static net.slipcor.pvparena.config.Debugger.trace;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import java.util.*;
+import static net.slipcor.pvparena.config.Debugger.trace;
 
 /**
  * <pre>
@@ -466,7 +471,7 @@ public class ArenaGoal implements IArenaCommandHandler {
      *
      * @param player the player being refilled
      */
-    public void refillInventory(final Player player) {
+    public void editInventoryOnRefill(final Player player) {
     }
 
     /**

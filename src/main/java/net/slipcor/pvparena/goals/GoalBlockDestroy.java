@@ -161,7 +161,7 @@ public class GoalBlockDestroy extends ArenaGoal {
     public void commitCommand(final CommandSender sender, final String[] args) {
         if (args[0].equalsIgnoreCase(BLOCK)) {
             if(args.length != 3) {
-                this.arena.msg(sender, MSG.ERROR_INVALID_ARGUMENT_COUNT, String.valueOf(args.length), "2");
+                this.arena.msg(sender, MSG.ERROR_INVALID_ARGUMENT_COUNT, String.valueOf(args.length), "3");
             } else {
                 if("set".equalsIgnoreCase(args[1])) {
                     this.commitSetBlockCommand(sender, args[2]);

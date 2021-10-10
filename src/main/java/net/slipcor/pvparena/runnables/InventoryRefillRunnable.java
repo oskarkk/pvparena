@@ -63,7 +63,6 @@ public class InventoryRefillRunnable implements Runnable {
                     debug(aPlayer, "forcing woolhead: {} / {}", aTeam.getName(), chatColor.name());
                     this.player.getInventory().setHelmet(
                             new ItemStack(ColorUtils.getWoolMaterialFromChatColor(chatColor), 1));
-                    this.arena.getGoal().refillInventory(this.player);
                 }
             } else if (aPlayer.hasCustomClass()) {
                 aPlayer.reloadInventory(false);
@@ -79,6 +78,7 @@ public class InventoryRefillRunnable implements Runnable {
                     this.player.getInventory().addItem(item);
                 }
             }
+            this.arena.getGoal().editInventoryOnRefill(this.player);
         } else {
             debug(aPlayer, "calls refillInventory but DOESN'T FIGHT");
         }

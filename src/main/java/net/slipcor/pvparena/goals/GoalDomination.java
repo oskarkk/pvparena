@@ -112,7 +112,7 @@ public class GoalDomination extends ArenaGoal {
     @Override
     public CommandTree<String> getGoalSubCommands(final Arena arena) {
         final CommandTree<String> result = new CommandTree<>(null);
-        result.define(new String[]{"set"});
+        result.define(new String[]{"add"});
         arena.getBlocks().forEach(paBlock -> result.define(new String[]{"remove", paBlock.getName()}));
         return result;
     }
@@ -466,13 +466,13 @@ public class GoalDomination extends ArenaGoal {
         if(args.length != 2 && args.length != 3) {
             this.arena.msg(sender, MSG.ERROR_INVALID_ARGUMENT_COUNT, String.valueOf(args.length), "2, 3");
         } else {
-            if("set".equalsIgnoreCase(args[1])) {
+            if("add".equalsIgnoreCase(args[1])) {
                 if (PAA_Region.activeSelections.containsKey(sender.getName())) {
                     PAA_Region.activeSelections.remove(sender.getName());
-                    this.arena.msg(sender, MSG.GOAL_DOMINATION_CLOSE_SELECTION, "flags");
+                    this.arena.msg(sender, MSG.GOAL_CLOSED_SELECTION);
                 } else {
                     PAA_Region.activeSelections.put(sender.getName(), this.arena);
-                    this.arena.msg(sender, MSG.GOAL_DOMINATION_SET_FLAG, "flags");
+                    this.arena.msg(sender, MSG.GOAL_DOMINATION_SET_FLAG);
                 }
             } else if("remove".equalsIgnoreCase(args[1])) {
                 if(args.length != 3) {
@@ -541,9 +541,7 @@ public class GoalDomination extends ArenaGoal {
     @Override
     public boolean commitSetBlock(final Player player, final Block block) {
 
-        if (PVPArena.hasAdminPerms(player)
-                || PVPArena.hasCreatePerms(player, this.arena)
-                && player.getInventory().getItemInMainHand().getType().equals(PVPArena.getInstance().getWandItem())) {
+        if (PVPArena.hasAdminPerms(player) || PVPArena.hasCreatePerms(player, this.arena)) {
 
             final Set<PABlockLocation> flags = SpawnManager.getBlocksStartingWith(this.arena, FLAG, null);
 
@@ -563,6 +561,7 @@ public class GoalDomination extends ArenaGoal {
             SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), flagName, null);
 
             this.arena.msg(player, MSG.GOAL_FLAGS_SET, flagName);
+            PAA_Region.activeSelections.remove(player.getName());
             return true;
         }
         return false;
