@@ -1,6 +1,6 @@
 # Infect
 
-> ℹ This goal is designed for **free** gamemode
+> ℹ This goal is designed to be played in free-for-all
 
 ## Description
 

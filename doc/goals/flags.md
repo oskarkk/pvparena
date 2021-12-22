@@ -1,6 +1,6 @@
 # Flags
 
-> ℹ This goal is designed for **team** gamemode
+> ℹ This goal is designed to be played in teams
 
 ## Description
 
@@ -9,9 +9,7 @@ To do this, simply hit/click on flags.
 
 ## Setup
 
-Firstly, check if flag type is that you want (wool by default) or change it by editing
-your arena configuration ou using `/pa set` command.
-You can use any solid block as flag. Flags automatically take team color if flag type is one
+You can use any solid block as flag. Flags automatically take team color if block type is one
 of the following material (color prefix doesn't matter):
 
 * WHITE_BANNER
@@ -27,7 +25,7 @@ of the following material (color prefix doesn't matter):
 
 <br>
 
-Flags have to be added afterwards. In order to do that, use `/pa [arenaname] flag [teamname]` \- this enables setting.
+To set a flag, use `/pa [arenaname] flag set [teamname]`. It enables block selection.
 Just left click on your flag block. Clicked block must have same type as defined in your config. However nothing will 
 happen.
 
@@ -39,9 +37,8 @@ Players claim this flag and bring it home. Only one team can bring this flag hom
 
 ## Config settings
 
-- `flives` \- the count of flags being brought home that lead to winning
-- `flagType` \- the material checked for flags (default: WHITE_WOOL). Plugin handle automatically flag colors if flagType 
-is a colorable item.
+- `flives` \- the count of flags being brought home that lead to winning - (default: 3)
+- `autocolor` \- if true, flag blocks will take teams color on startup - (default: true)
 - `mustBeSafe` \- do claimed flags prevent bringing home other flags? \- (default: true)
 - `woolFlagHead` \- should PVP Arena enforce putting a wool head on flag carriers? - (default: true)
 - `effect` \- the potion effect a player should get when carrying the flag (default: none; possible value: SLOWx2 - 

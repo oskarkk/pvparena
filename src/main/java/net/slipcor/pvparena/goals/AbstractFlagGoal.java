@@ -58,7 +58,6 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
     protected Map<ArenaTeam, String> flagMap = new HashMap<>();
     protected Map<ArenaTeam, BlockData> flagDataMap;
     protected Map<ArenaPlayer, ItemStack> headGearMap = new HashMap<>();
-    protected String blockName;
     protected String blockTeamName;
     protected ArenaTeam touchdownTeam;
 

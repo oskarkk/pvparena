@@ -6,37 +6,36 @@ Set an arena spawn to your current position, including orientation !
 
 ## Usage
 
-Command |  Definition
-------------- | -------------
-/pa [arena] spawn [spawnName] (teamName) (class) | Define a spawn for an arena
+| Command                                                 | Definition                  |
+|---------------------------------------------------------|-----------------------------|
+| /pa [arena] spawn set (teamName) [spawnName] (class)    | Define a spawn for an arena |
+| /pa [arena] spawn remove (teamName) [spawnName] (class) | Remove a spawn for an arena |
 
 For multi-spawn, you can set everything as name, as long as name **start with** the spawn type.  
 The spawn will be chosen randomly.
 
 Example with type "exit":
-- `/pa ctf spawn exit` - sets exit spawn of the arena "ctf"
-pa
+- `/pa ctf spawn set exit` - sets exit spawn of the arena "ctf"
+
 Example with type "spawn": 
-- `/pa ctf spawn spawn red` - sets the red team's spawn of the arena "ctf"
-- `/pa ctf spawn spawn2 red` - sets the second red team's spawn of the arena "ctf"
-- `/pa free spawn spawnEAST` - sets "spawnEAST" of the arena "free"
-- `/pa ctf spawn spawn red Pyro` - sets spawn only for Pyro class of red team
+- `/pa ctf spawn set red spawn` - sets the red team's spawn of the arena "ctf"
+- `/pa ctf spawn remove red spawn2` - removes the second red team's spawn of the arena "ctf"
+- `/pa free spawn set spawnEAST` - sets "spawnEAST" of the arena "free"
+- `/pa ctf spawn set red spawn Pyro` - sets spawn only for Pyro class of red team
 
 Example with type "lounge":
-- `/pa ctf spawn lounge red` - sets the red team's lounge spawn of the arena "ctf"
-- `/pa ctf spawn lounge2 red` - sets the second red team's lounge spawn of the arena "ctf"
-- `/pa free spawn loungeEAST` - sets lounge "loungeEAST" of the arena "free"
-- `/pa ctf spawn lounge red Pyro` - sets lounge spawn only for Pyro class of red team
-
+- `/pa ctf spawn set lounge red` - sets the red team's lounge spawn of the arena "ctf"
+- `/pa free spawn set lounge` - sets lounge  of the arena "free"
+- `/pa free spawn removed lounge` - removes lounge  of the arena "free"
 
 ## Details
 
-There are two syntax according to the [gamemode](gamemode.md) of your arena : 
-- If you're using a "free" arena, you can define unlimited spawns using syntax `/pa myArena spawn spawnX` where X should
+There are two syntax according to the gamemode (free or teams) of your arena goal: 
+- If you're using a "free" arena, you can define unlimited spawns using syntax `/pa myArena spawn set team spawnX` where X should
  be anything (word, digit, letter, etc).
-- If your arena works with teams, you have to use `/pa myArena spawn spawn team` where "team" is the name of one of your 
+- If your arena works with teams, you have to use `/pa myArena spawn set team spawn` where "team" is the name of one of your 
 team.
-- you can set spawn only for some class with `/pa myArena spawn spawn team class` where "class" is the name of one of your
+- you can set spawn only for some class with `/pa myArena set team spawn class` where "class" is the name of one of your
   arena class.
 
 If you get a message "spawn unknown", this is probably because you did not install/activate a [goal](../goals.md) or 

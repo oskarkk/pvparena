@@ -1,6 +1,6 @@
 # Domination
 
-> ℹ This goal is designed for **team** gamemode
+> ℹ This goal is designed to be played in teams
 
 ## Description
 
@@ -19,22 +19,21 @@ points wins.
 
 ## Setup
 
-Flags have to be added.In order to do that, use `/pa [arenaname] flag`. This toggles edit mode. 
+Flags have to be added.In order to do that, use `/pa [arenaname] add flag [teamName]`. This toggles edit mode. 
 Don't forget to type command again in order to exit edit mode after setting the flags. 
 Set them by clicking the flag type (WOOL by default).
 
-Given that flag must be able to change color, you can use the following blocks as flagtype 
-(color prefix doesn't matter):                                                                                  
-* WHITE_BANNER
-* WHITE_CARPET
-* WHITE_CONCRETE
-* WHITE_CONCRETE_POWDER 
-* WHITE_GLAZED_TERRACOTTA 	
-* WHITE_SHULKER_BOX
-* WHITE_STAINED_GLASS 
-* WHITE_STAINED_GLASS_PANE
-* WHITE_TERRACOTTA
-* WHITE_WALL_BANNER
+Given that flag must be able to change color, you can use the following blocks as flag blocks:                                                                                  
+* BANNERS
+* CARPETS
+* CONCRETE
+* CONCRETE_POWDER 
+* GLAZED_TERRACOTTA 	
+* SHULKER_BOX
+* STAINED_GLASS 
+* STAINED_GLASS_PANES
+* TERRACOTTA
+* WALL_BANNERS
 
 I suggest you to try glass block with a beacon bottom the flag. When flag will be claimed, glass blocks will change its
 color, altering beacon light ray in the same time :wink:

@@ -1,6 +1,6 @@
 # PlayerLives
 
-> ℹ This goal supports **free** gamemode
+> ℹ This goal is designed to be played in free-for-all
 
 ## Description
 

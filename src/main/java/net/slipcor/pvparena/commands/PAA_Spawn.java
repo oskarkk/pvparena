@@ -80,7 +80,7 @@ public class PAA_Spawn extends AbstractArenaCommand {
     }
 
     private void removeSpawn(Arena arena, Player player, String[] args) throws GameplayException {
-        // usage: /pa {arenaname} spawn [spawnname] remove (team) (class) | remove a spawn
+        // usage: /pa {arenaname} spawn remove (team) [spawnname] (class) | remove a spawn
         String[] parsedArgs = parseSpawnNameArgs(arena, args);
         String teamName = parsedArgs[0];
         String spawnName = parsedArgs[1];

@@ -1,6 +1,6 @@
 # TeamDeathMatch
 
-> ℹ This goal is designed for **team** gamemode
+> ℹ This goal is designed to be played in teams
 
 ## Description
 
