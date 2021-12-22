@@ -1,13 +1,16 @@
 package net.slipcor.pvparena.managers;
 
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.RandomUtils;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -128,24 +131,28 @@ public final class TeamManager {
     }
 
     /**
+     * get all teams that have active players
+     *
+     * @return set of teams that have active players
+     */
+    public static Set<ArenaTeam> getActiveTeams(final Arena arena) {
+        debug(arena, "getting active teams");
+
+        return arena.getTeams().stream()
+                .filter(team -> team.getTeamMembers().stream().anyMatch(ap -> ap.getStatus() == PlayerStatus.FIGHT))
+                .collect(Collectors.toSet());
+    }
+
+    /**
      * count all teams that have active players
      *
      * @return the number of teams that have active players
      */
     public static int countActiveTeams(final Arena arena) {
-        debug(arena, "counting active teams");
+        int activeTeams = getActiveTeams(arena).size();
 
-        final Set<String> activeteams = new HashSet<>();
-        for (ArenaTeam team : arena.getTeams()) {
-            for (ArenaPlayer ap : team.getTeamMembers()) {
-                if (ap.getStatus() == PlayerStatus.FIGHT) {
-                    activeteams.add(team.getName());
-                    break;
-                }
-            }
-        }
-        debug(arena, "result: " + activeteams.size());
-        return activeteams.size();
+        debug(arena, "Number of active teams: {}", activeTeams);
+        return activeTeams;
     }
 
     /**

@@ -1,13 +1,15 @@
 package net.slipcor.pvparena.goals;
 
 import net.slipcor.pvparena.PVPArena;
+import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.classes.PABlockLocation;
-import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.classes.PADeathInfo;
+import net.slipcor.pvparena.classes.PASpawn;
+import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.commands.PAA_Region;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
@@ -34,7 +36,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -62,7 +69,6 @@ public class GoalLiberation extends ArenaGoal {
     }
 
     private EndRunnable endRunner;
-    private String blockName;
     private String blockTeamName;
     private final Map<Player, List<ItemStack>> keptItemsMap = new HashMap<>();
 
@@ -79,6 +85,16 @@ public class GoalLiberation extends ArenaGoal {
     @Override
     public List<String> getGoalCommands() {
         return Collections.singletonList(BUTTON);
+    }
+
+    @Override
+    public CommandTree<String> getGoalSubCommands(final Arena arena) {
+        final CommandTree<String> result = new CommandTree<>(null);
+        arena.getTeamNames().forEach(teamName -> result.define(new String[]{"set", teamName}));
+        arena.getBlocks().stream().filter(b -> BUTTON.equalsIgnoreCase(b.getName()))
+                        .forEach(b -> result.define(new String[]{"remove", b.getTeamName()}));
+
+        return result;
     }
 
     @Override
@@ -188,7 +204,7 @@ public class GoalLiberation extends ArenaGoal {
     @Override
     public boolean checkSetBlock(final Player player, final Block block) {
 
-        if (StringUtils.isBlank(this.blockName) || !PAA_Region.activeSelections.containsKey(player.getName())) {
+        if (StringUtils.isBlank(this.blockTeamName) || !PAA_Region.activeSelections.containsKey(player.getName())) {
             return false;
         }
 
@@ -228,20 +244,34 @@ public class GoalLiberation extends ArenaGoal {
     @Override
     public void commitCommand(final CommandSender sender, final String[] args) {
         if (args[0].equals(BUTTON)) {
-            if (args.length >= 2) {
-                String teamName = args[1];
+            if (args.length != 3) {
+                this.arena.msg(sender, MSG.ERROR_INVALID_ARGUMENT_COUNT, String.valueOf(args.length), "3");
+            } else {
+                String teamName = args[2];
                 if (this.arena.getTeam(teamName) == null) {
-                    this.arena.msg(sender, MSG.ERROR_TEAM_NOT_FOUND, this.blockName);
+                    this.arena.msg(sender, MSG.ERROR_TEAM_NOT_FOUND, args[1]);
                     return;
                 }
                 this.blockTeamName = teamName;
-            } else {
-                this.blockTeamName = null;
-            }
-            this.blockName = args[0];
-            PAA_Region.activeSelections.put(sender.getName(), this.arena);
 
-            this.arena.msg(sender, MSG.GOAL_LIBERATION_TOSET, this.blockName);
+                if("set".equalsIgnoreCase(args[1])) {
+                    PAA_Region.activeSelections.put(sender.getName(), this.arena);
+                    this.arena.msg(sender, MSG.GOAL_LIBERATION_TOSET, teamName);
+                } else if ("remove".equalsIgnoreCase(args[1])) {
+                    Optional<PABlock> paBlock = this.arena.getBlocks().stream()
+                            .filter(block -> teamName.equalsIgnoreCase(block.getTeamName()) && block.getName().equalsIgnoreCase(BUTTON))
+                            .findAny();
+
+                    if (!paBlock.isPresent()) {
+                        this.arena.msg(sender, MSG.GOAL_LIBERATION_BTN_NOTFOUND, teamName);
+                        return;
+                    }
+                    SpawnManager.removeBlock(this.arena, paBlock.get());
+                    this.arena.msg(sender, MSG.GOAL_LIBERATION_BTN_REMOVED, teamName);
+                } else {
+                    this.blockTeamName = null;
+                }
+            }
         }
     }
 
@@ -264,11 +294,11 @@ public class GoalLiberation extends ArenaGoal {
                 }
                 ArenaModuleManager.announce(
                         this.arena,
-                        Language.parse(MSG.TEAM_HAS_WON,
-                                arenaTeam.getColoredName()), "WINNER");
+                        Language.parse(MSG.TEAM_HAS_WON, arenaTeam.getColoredName()),
+                        "WINNER"
+                );
 
-                this.arena.broadcast(Language.parse(MSG.TEAM_HAS_WON,
-                        arenaTeam.getColoredName()));
+                this.arena.broadcast(Language.parse(MSG.TEAM_HAS_WON, arenaTeam.getColoredName()));
                 break;
             }
 
@@ -277,8 +307,7 @@ public class GoalLiberation extends ArenaGoal {
             }
         }
 
-        this.endRunner = new EndRunnable(this.arena, this.arena.getConfig().getInt(
-                CFG.TIME_ENDCOUNTDOWN));
+        this.endRunner = new EndRunnable(this.arena, this.arena.getConfig().getInt(CFG.TIME_ENDCOUNTDOWN));
     }
 
     @Override
@@ -369,19 +398,18 @@ public class GoalLiberation extends ArenaGoal {
         // command : /pa button1 red
         // location: red.button1:
 
-        SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), this.blockName, this.blockTeamName);
-        this.arena.msg(player, MSG.GOAL_LIBERATION_SET, this.blockName);
+        SpawnManager.setBlock(this.arena, new PABlockLocation(block.getLocation()), BUTTON, this.blockTeamName);
+        this.arena.msg(player, MSG.GOAL_LIBERATION_SET, this.blockTeamName);
 
         PAA_Region.activeSelections.remove(player.getName());
-        this.blockName = null;
+        this.blockTeamName = null;
 
         return true;
     }
 
     @Override
     public void displayInfo(final CommandSender sender) {
-        sender.sendMessage("lives: "
-                + this.arena.getConfig().getInt(CFG.GOAL_LLIVES_LIVES));
+        sender.sendMessage(String.format("lives: %d", this.arena.getConfig().getInt(CFG.GOAL_LLIVES_LIVES)));
     }
 
     @Override

@@ -541,7 +541,6 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
                     continue;
                 }
                 for (ArenaPlayer arenaPlayer : team.getTeamMembers()) {
-                    arenaPlayer.addLosses();
                     arenaPlayer.setStatus(PlayerStatus.LOST);
                 }
             }
