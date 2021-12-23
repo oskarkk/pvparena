@@ -3,6 +3,7 @@ package net.slipcor.pvparena.commands;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
+import net.slipcor.pvparena.arena.PlayerStatus;
 import net.slipcor.pvparena.classes.PAClassSign;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Help.HELP;
@@ -21,6 +22,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static java.util.Arrays.asList;
+import static net.slipcor.pvparena.arena.PlayerStatus.FIGHT;
 import static net.slipcor.pvparena.arena.PlayerStatus.LOUNGE;
 
 /**
@@ -47,6 +50,20 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
             return;
         }
 
+        if (!(sender instanceof Player)) {
+            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
+            return;
+        }
+
+        ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer((Player) sender);
+        PlayerStatus pStatus = arenaPlayer.getStatus();
+
+        // Player can change arena class only in lounge or in fight with ingameClassSwith parameter set to true
+        if(!arena.equals(arenaPlayer.getArena()) || !asList(LOUNGE, FIGHT).contains(pStatus) ||
+                (pStatus == FIGHT && !arena.getConfig().getBoolean(CFG.USES_INGAMECLASSSWITCH))) {
+            return;
+        }
+
         if (args.length < 1) {
             Set<String> classes = new TreeSet<>();
             for (ArenaClass ac : arena.getClasses()) {
@@ -56,18 +73,6 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
                 classes.add(ChatColor.GREEN + ac.getName() + ChatColor.WHITE);
             }
             arena.msg(sender, MSG.CLASS_LIST, StringParser.joinSet(classes, ", "));
-            return;
-        }
-
-        if (!(sender instanceof Player)) {
-            Arena.pmsg(sender, MSG.ERROR_ONLY_PLAYERS);
-            return;
-        }
-
-        final ArenaPlayer arenaPlayer = ArenaPlayer.fromPlayer((Player) sender);
-
-        // Player can change arena class only in lounge or with ingameClassSwith parameter set to true
-        if(arenaPlayer.getStatus() != LOUNGE && !arena.getConfig().getBoolean(CFG.USES_INGAMECLASSSWITCH)) {
             return;
         }
 
@@ -151,12 +156,13 @@ public class PAG_Arenaclass extends AbstractArenaCommand {
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
         final CommandTree<String> result = new CommandTree<>(null);
-        if (arena == null) {
-            return result;
+
+        if (arena != null) {
+            arena.getClasses().stream()
+                    .filter(aClass -> !"custom".equalsIgnoreCase(aClass.getName()))
+                    .forEach(aClass -> result.define(new String[]{aClass.getName()}));
         }
-        for (ArenaClass aClass : arena.getClasses()) {
-            result.define(new String[]{aClass.getName()});
-        }
+
         return result;
     }
 }
