@@ -4,6 +4,10 @@
 
 This mod restores blocks (not entities) of BATTLE [region](../regions.md) after the match.
 
+## Installation
+
+Installation of this module can be done in a normal way. You'll find installation process in [modules page](../modules.md#installing-modules) of the doc.
+
 ## Config settings
 
 - hard \- the mod will restore EVERY block of your battle region, regardless of a known changed state (default: false)

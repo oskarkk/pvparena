@@ -5,6 +5,10 @@
 This module activates temporary permission system during a match. You can set specific permissions to any player in the
 arena or more specifically to a team or a class.
 
+## Installation
+
+Installation of this module can be done in a normal way. You'll find installation process in [modules page](../modules.md#installing-modules) of the doc.
+
 ## Config settings
 
 There is no dedicated config setting for TempPerms, every permission you set are written in the perms part of your arena 

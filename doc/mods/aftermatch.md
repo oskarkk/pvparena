@@ -4,9 +4,7 @@
 This mod adds a special ending to the game. After a set amount of time / kills, everyone is teleported to one spawn and only have one life left.
 ## Installation
 
-Unzip the module files (files tab, "PA Files v*.*.*") into the /pvparena/files folder and install them via
-- `/pa install [modname]`, activate per arena via
-- `/pa [arenaname] !tm [modname]`
+Installation of this module can be done in a normal way. You'll find installation process in [modules page](../modules.md#installing-modules) of the doc.
 ## Setup
 
 Set the aftermatch config to a valid setting, and set the after spawn, `/pa [arena] spawn after`

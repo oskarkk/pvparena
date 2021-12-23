@@ -6,6 +6,10 @@ Blocks under the player will dissolve just few milliseconds after they walk on i
 Use it with [PlayerLives](../goals/playerlives.md) goal to create TNT Run arenas or 
 spice up your spleef games !
 
+## Installation
+
+Installation of this module can be done in a normal way. You'll find installation process in [modules page](../modules.md#installing-modules) of the doc.
+
 ## Config settings
 
 - modules.blockdissolve.materials \- the material to dissolve (default: SNOW and each kind of WOOL)

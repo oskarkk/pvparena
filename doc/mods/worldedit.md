@@ -8,7 +8,9 @@ You can also use this module to design your arena [regions](../regions.md) with 
 
 ## Setup
 
-This module needs a full server restart to hook into WorldEdit properly, for the first time.
+Install the module in a normal way (you'll find installation process in 
+[modules page](../modules.md#installing-modules) of the doc).  
+After installation, the module needs a full server restart to hook into WorldEdit properly, for the first time.
 
 ## Config settings
 

@@ -6,10 +6,7 @@ This mod adds player limitations to specific team names.
 
 ## Installation
 
-Unzip the module files (files tab, "PA Files v*.*.*") into the /pvparena/files folder and install them via
-
-- `/pa install [modname]`, activate per arena via
-- `/pa [arenaname] !tm [modname]`
+Installation of this module can be done in a normal way. You'll find installation process in [modules page](../modules.md#installing-modules) of the doc.
 
 ## Setup
 

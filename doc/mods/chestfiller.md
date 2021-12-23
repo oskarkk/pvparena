@@ -6,10 +6,7 @@ This mod adds random chest contents. It places stuff you can configure inside ch
 
 ## Installation
 
-Unzip the module files (files tab, "PA Files v*.*.*") into the /pvparena/files folder and install them via
-
-- `/pa install [modname]`, activate per arena via
-- `/pa [arenaname] !tm [modname]`
+Check installation procedure of modules in  home page of the doc`
 
 ## Setup
 

@@ -5,6 +5,10 @@
 This module enables knockback effect for snowballs, eggs, fishing hooks and ender pearls in order to retrieve old spigot
 behavior.
 
+## Installation
+
+Installation of this module can be done in a normal way. You'll find installation process in [modules page](../modules.md#installing-modules) of the doc.
+
 ## Setup
 
 There is no special setup for this module, follow the [general module installation](../modules.md#installing-modules) 
