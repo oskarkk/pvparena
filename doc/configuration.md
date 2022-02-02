@@ -52,8 +52,9 @@ goal:
     tlives: 10
 items:
   keepAllOnRespawn: false #Keep inventory on respawn
-  excludeFromDrops: none #List of items not dropped on kill
-  keepOnRespawn: none #List of items kept on respawn (if keepAllOnRespawn is disabled)
+  excludeFromDrops: none #List of materials not dropped on kill (materials in this list override those in onlyDrops)
+  onlyDrops: none #List of materials which are the only to be dropped on kill (overrides keepAllOnRespawn)
+  keepOnRespawn: none #List of items kept on respawn (works only if keepAllOnRespawn is disabled / items in this list override those in onlyDrops)
   minplayers: 2 #Minimum number of players to start fighting
   random: true
   rewards: none #List of reward items given to win team team/player

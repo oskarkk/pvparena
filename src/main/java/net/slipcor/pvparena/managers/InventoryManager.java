@@ -59,15 +59,21 @@ public final class InventoryManager {
         List<ItemStack> keptItems = new ArrayList<>();
 
         debug(player, "dropping player inventory: " + player.getName());
-        List<Material> excludedItems = new ArrayList<>();
+        List<Material> excludedDroppedMaterials = new ArrayList<>();
         List<ItemStack> toKeepItems = new ArrayList<>();
+        List<Material> onlyDroppedMaterials = new ArrayList<>();
 
         ArenaPlayer ap = ArenaPlayer.fromPlayer(player);
 
         boolean keepAll = false;
 
         if (ap != null && ap.getArena() != null) {
-            excludedItems = Arrays.stream(ap.getArena().getConfig().getItems(CFG.ITEMS_EXCLUDEFROMDROPS))
+            excludedDroppedMaterials = Arrays.stream(ap.getArena().getConfig().getItems(CFG.ITEMS_EXCLUDEFROMDROPS))
+                    .filter(Objects::nonNull)
+                    .map(ItemStack::getType)
+                    .collect(Collectors.toList());
+
+            onlyDroppedMaterials = Arrays.stream(ap.getArena().getConfig().getItems(CFG.ITEMS_ONLYDROPS))
                     .filter(Objects::nonNull)
                     .map(ItemStack::getType)
                     .collect(Collectors.toList());
@@ -84,11 +90,11 @@ public final class InventoryManager {
                 continue;
             }
 
-            if (excludedItems.contains(dropped.getType())) {
+            if (excludedDroppedMaterials.contains(dropped.getType())) {
                 continue;
             }
 
-            if (keepAll) {
+            if (keepAll && (onlyDroppedMaterials.isEmpty() || !onlyDroppedMaterials.contains(dropped.getType()))) {
                 keptItems.add(dropped.clone());
                 continue;
             }
@@ -102,7 +108,7 @@ public final class InventoryManager {
 
             if(!selectedKeptItems.isEmpty()) {
                 keptItems.addAll(selectedKeptItems);
-            } else {
+            } else if(onlyDroppedMaterials.isEmpty() || onlyDroppedMaterials.contains(dropped.getType())) {
                 player.getWorld().dropItemNaturally(player.getLocation(), dropped);
             }
         }

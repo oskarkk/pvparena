@@ -95,6 +95,7 @@ public class Config {
         GENERAL_ADDLIVESPERPLAYER("general.addLivesPerPlayer", false, null),
 
         ITEMS_EXCLUDEFROMDROPS("items.excludeFromDrops", new ItemStack[0], null),
+        ITEMS_ONLYDROPS("items.onlyDrops", new ItemStack[0], null),
         ITEMS_KEEPONRESPAWN("items.keepOnRespawn", new ItemStack[0], null),
         ITEMS_KEEPALLONRESPAWN("items.keepAllOnRespawn", false, null),
         ITEMS_MINPLAYERS("items.minplayers", 2, null),
