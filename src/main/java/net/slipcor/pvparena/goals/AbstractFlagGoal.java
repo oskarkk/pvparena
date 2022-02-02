@@ -26,6 +26,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
@@ -641,10 +642,21 @@ public abstract class AbstractFlagGoal extends ArenaGoal {
         return SpawnManager.getBlockByExactName(this.arena, FLAG, arenaTeam.getName());
     }
 
-    protected boolean isSameTypeThanFlags(Material material) {
+    /**
+     * Check if the material is the same than the one used for the arena flags
+     * Reminder: arena flags have to be all the same
+     *
+     * The function adds a special comparison for banners because dropped "wall_banners" return a "banner" material
+     * @param materialToCheck the material to compare with flags
+     * @return True if it's the same material
+     */
+    protected boolean isSameTypeThanFlags(Material materialToCheck) {
         return this.getFlagDataMap().values().stream()
                 .findAny()
-                .map(flagBlockData -> ColorUtils.isSubType(material, flagBlockData.getMaterial()))
+                .map(flagBlockData -> {
+                    Material reference = flagBlockData.getMaterial();
+                    return (ColorUtils.isSubType(materialToCheck, reference)) || (Tag.BANNERS.isTagged(materialToCheck) && Tag.BANNERS.isTagged(reference));
+                })
                 .orElse(true);
     }
 

@@ -10,6 +10,7 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Rotatable;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -110,7 +111,7 @@ public final class ColorUtils {
     private static String getMaterialSuffix(Material material) {
         return getColorableSuffixes().stream()
                 .filter(suffix -> material.name().endsWith(suffix))
-                .findFirst()
+                .max(Comparator.comparingInt(String::length)) // get the suffix with the most of common characters
                 .orElse("");
     }
 
@@ -132,7 +133,7 @@ public final class ColorUtils {
      */
     public static void setNewFlagColor(Block flagBlock, ChatColor flagColor) {
         final BlockData originalBlockData = flagBlock.getBlockData().clone();
-        Material newMaterial = ColorUtils.getColoredMaterialFromChatColor(flagColor, flagBlock.getType());
+        Material newMaterial = ColorUtils.getColoredMaterialFromChatColor(flagColor, originalBlockData.getMaterial());
         BlockData newData = Bukkit.getServer().createBlockData(newMaterial);
 
         if(originalBlockData instanceof Directional) {

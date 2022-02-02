@@ -363,7 +363,7 @@ public class GoalPhysicalFlags extends AbstractFlagGoal {
                 }
                 this.applyEffects(player);
                 this.getFlagMap().put(arenaTeam, player.getName());
-                ItemStack flagItemStack = new ItemStack(block.getType());
+                ItemStack flagItemStack = block.getDrops().stream().findAny().get();
                 flagItemStack.getItemMeta().addEnchant(Enchantment.VANISHING_CURSE, ENCHANT_LVL_KEY, true);
                 flagItemStack.getItemMeta().addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 player.getInventory().addItem(flagItemStack);

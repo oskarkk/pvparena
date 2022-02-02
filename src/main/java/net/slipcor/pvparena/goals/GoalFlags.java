@@ -297,7 +297,7 @@ public class GoalFlags extends AbstractFlagGoal {
         Config cfg = this.arena.getConfig();
         sender.sendMessage("flag effect: " + cfg.getString(CFG.GOAL_FLAGS_FLAGEFFECT));
         sender.sendMessage("lives: " + cfg.getInt(CFG.GOAL_FLAGS_LIVES));
-        sender.sendMessage("auto color: " + StringParser.colorVar(cfg.getInt(CFG.GOAL_FLAGS_AUTOCOLOR)));
+        sender.sendMessage("auto color: " + StringParser.colorVar(cfg.getBoolean(CFG.GOAL_FLAGS_AUTOCOLOR)));
         sender.sendMessage(StringParser.colorVar("mustbesafe", cfg.getBoolean(CFG.GOAL_FLAGS_MUSTBESAFE))
                 + " | " + StringParser.colorVar("flaghead", this.hasWoolHead())
                 + " | " + StringParser.colorVar("alterOnCatch", cfg.getBoolean(CFG.GOAL_FLAGS_ALTERONCATCH)));
