@@ -104,11 +104,40 @@ public class Arena {
         return this.blocks;
     }
 
-    public ArenaClass getClass(final String className) {
+    public ArenaClass getClass(String className) {
         return this.classes.stream()
                 .filter(ac -> ac.getName().equalsIgnoreCase(className))
                 .findAny()
                 .orElse(null);
+    }
+
+    /**
+     * Convert the team class from autoClass configuration
+     * NB: AutoClass config should have one of the following formats:
+     * - className
+     * - teamName1:classNameA;teamName2:classNameB;defaultClassName
+     * @param autoClassStr raw string configuration of autoClass
+     * @param team The team object of the current player
+     * @return An arena class or null
+     */
+    public ArenaClass getAutoClass(String autoClassStr, ArenaTeam team) {
+        // Handle complex autoClass config
+        if (autoClassStr != null && autoClassStr.contains(":") && autoClassStr.contains(";")) {
+            final String[] definitions = autoClassStr.split(";");
+            String defaultClass = definitions[definitions.length - 1]; // last element of array is the name of the default class
+
+            String selectedClass = Arrays.stream(definitions)
+                    .map(def -> def.split(":"))
+                    .filter(defArray -> defArray.length > 1 && team.getName().equalsIgnoreCase(defArray[0]))
+                    .findAny()
+                    .map(defArray -> defArray[1])
+                    .orElse(defaultClass);
+
+            return this.getClass(selectedClass);
+        }
+
+        // Handle simple autoClass config (only class name)
+        return this.getClass(autoClassStr);
     }
 
     public Set<ArenaClass> getClasses() {
